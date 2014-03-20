@@ -121,6 +121,8 @@ such as:
   we have a special case in the code? Do we assume that the operator will
   recreate all the instances in their cloud?
 
+- Please specify expected Database migrations that accompany this change.
+
 Developer impact
 ----------------
 
