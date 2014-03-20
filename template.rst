@@ -60,14 +60,42 @@ What other ways could we do this thing? Why aren't we using those? This doesn't
 have to be a full literature review, but it should demonstrate that thought has
 been put into why the proposed solution is an appropriate one.
 
-End user impact
+REST API impact
 ---------------
 
-How will the feature be used? You could call this the user interface. It
-might take various forms:
+Each API method which is either added or changed should have the following
 
-- For an API extension, API samples are required, *NOT* simply nova command
-  line examples.
+* Specification for the method
+
+  * A description of what the method does suitable for use in
+    user documentation
+  * Method type (POST/PUT/GET/DELETE)
+  * Normal http response code(s)
+  * Expected error http response code(s)
+  * URL for the resource
+  * Parameters which can be passed via the url
+  * JSON schema definition for the body data if allowed
+  * JSON schema definition for the response data if any
+
+* Example use case including typical API samples for both data supplied
+  by the caller and the response
+
+Example JSON schema definitions can be found in the Nova tree
+https://github.com/openstack/nova/tree/master/nova/api/openstack/compute/schemas/v3
+
+Note that the schema should be defined as restrictively as
+possible. Parameters which are required should be marked as such and
+only under exceptional circumstances should additional parameters
+which are not defined in the schema be permitted (eg
+additionaProperties should be False).
+
+Reuse of existing predefined parameter types such as regexps for
+passwords and user defined names is highly encouraged.
+
+Other End user impact
+---------------------
+
+Aside from the API, are there other ways a user will interact with this feature?
 
 - Does this change have an impact on python-novaclient? What does the user
   interface there look like?
