@@ -100,6 +100,30 @@ Aside from the API, are there other ways a user will interact with this feature?
 - Does this change have an impact on python-novaclient? What does the user
   interface there look like?
 
+Performance Impact
+------------------
+
+Describe any potential performance impact on the system, for example
+how often will new code be called, and is there a major change to the calling
+pattern of existing code.
+
+Examples of things to consider here include:
+- A periodic task might look like a small addition but if it calls conductor or
+  another service the load is multiplied by the number of nodes in the system.
+
+- Scheduler filters get called once per host for every instance being created, so
+  any latency they introduce is linear with the size of the system.
+
+- A small change in a utility function or a commonly used decorator can have a
+  large impacts on performance.
+
+- Calls which result in a database queries (whether direct or via conductor) can
+  have a profound impact on performance when called in critical sections of the
+  code.
+
+- Will the change include any locking, and if so what considerations are there on
+  holding the lock?
+
 Deployer impact
 ---------------
 
