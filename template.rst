@@ -92,6 +92,12 @@ additionaProperties should be False).
 Reuse of existing predefined parameter types such as regexps for
 passwords and user defined names is highly encouraged.
 
+Notifications impact
+--------------------
+
+Please specify any changes to notifications. Be that an extra notification,
+changes to an existing notification, or removing a notification.
+
 Other End user impact
 ---------------------
 
