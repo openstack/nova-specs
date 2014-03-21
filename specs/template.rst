@@ -54,6 +54,25 @@ What other ways could we do this thing? Why aren't we using those? This doesn't
 have to be a full literature review, but it should demonstrate that thought has
 been put into why the proposed solution is an appropriate one.
 
+Data model impact
+-----------------
+
+Changes which require modifications to the data model often have a wider impact
+on the system.  The community often has strong opinions on how the data model
+should be evolved, from both a functional and performance perspective. It is
+therefore important to capture and gain agreement as early as possible on any
+proposed changes to the data model.
+
+Questions which need to be addressed by this section include:
+
+- What new data objects and/or database schema changes is this going to require?
+
+- What Database migrations will accompany this change.
+
+- How will the initial set of new data objects be generated, for example if you
+  need to take into account existing instances, or modify other existing data
+  describe how that will work.
+
 REST API impact
 ---------------
 
@@ -120,8 +139,6 @@ such as:
   instance directories created before the change landed?  Do we move them?  Do
   we have a special case in the code? Do we assume that the operator will
   recreate all the instances in their cloud?
-
-- Please specify expected Database migrations that accompany this change.
 
 Developer impact
 ----------------
