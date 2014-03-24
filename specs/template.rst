@@ -13,6 +13,7 @@
   template.  If you have nothing to say for a whole section, just write: None
   For help with syntax, see http://sphinx-doc.org/rest.html
   To test out your formatting, see http://rst.ninjs.org/
+  Please wrap text at 80 columns.
 
 ==========================================
 Example Spec - The title of your blueprint
