@@ -1,0 +1,9 @@
+AUTHORS
+ChangeLog
+build
+.tox
+.venv
+*.egg*
+*.swp
+*.swo
+*.pyc

@@ -14,9 +14,9 @@
   For help with syntax, see http://sphinx-doc.org/rest.html
   To test out your formatting, see http://rst.ninjs.org/
 
-=============================
- The title of your blueprint
-=============================
+==========================================
+Example Spec - The title of your blueprint
+==========================================
 
 Include the URL of your launchpad blueprint:
 
