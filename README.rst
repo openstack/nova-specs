@@ -9,17 +9,13 @@ workflow to how we review and merge changes to the code itself.
 The layout of this repository is::
 
   specs/<release>/
-    approved/
-    implemented/
-
-Specifications are proposed for a given release by adding it to the `approved`
-directory and posting it for review.  Once a given spec has been fully
-implemented in a release, it can be moved to the `implemented` directory.  This
-provides an easy view of what was actually implemented in a given release.  What
-remains in the `approved` directory will provide historical record of specs we
-approved but were not fully implemented.
 
 You can find an example spec in `doc/source/specs/template.rst`.
+
+Specifications are proposed for a given release by adding them to the
+`specs/<release>` directory and posting it for review.  The implementation
+status of a blueprint for a given release can be found by looking at the
+blueprint in launchpad.  Not all approved blueprints will get fully implemented.
 
 Specifications have to be re-proposed for every release.  The review may be
 quick, but even if something was previously approved, it should be re-reviewed
