@@ -75,7 +75,7 @@ Each API method which is either added or changed should have the following
   by the caller and the response
 
 Example JSON schema definitions can be found in the Nova tree
-https://github.com/openstack/nova/tree/master/nova/api/openstack/compute/schemas/v3
+http://git.openstack.org/cgit/openstack/nova/tree/nova/api/openstack/compute/schemas/v3
 
 Note that the schema should be defined as restrictively as
 possible. Parameters which are required should be marked as such and
