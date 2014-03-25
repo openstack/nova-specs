@@ -27,6 +27,11 @@ blueprints::
 
   http://blueprints.launchpad.net/nova
 
+Please note, Launchpad blueprints are still used for tracking the
+current status of blueprints. For more information, see::
+
+  https://wiki.openstack.org/wiki/Blueprints
+
 For more information about working with gerrit, see::
 
   https://wiki.openstack.org/wiki/Gerrit_Workflow

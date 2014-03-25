@@ -171,15 +171,6 @@ Primary assignee:
 Other contributors:
   <launchpad-id or None>
 
-Milestones
-----------
-
-Originally approved for:
-  Juno-1
-
-Completed:
-  None
-
 Work Items
 ----------
 
