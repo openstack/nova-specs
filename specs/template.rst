@@ -101,6 +101,9 @@ Each API method which is either added or changed should have the following
 * Example use case including typical API samples for both data supplied
   by the caller and the response
 
+* Discuss any policy changes, and discuss what things a deployer needs to
+  think about when defining their policy.
+
 Example JSON schema definitions can be found in the Nova tree
 http://git.openstack.org/cgit/openstack/nova/tree/nova/api/openstack/compute/schemas/v3
 
@@ -177,11 +180,11 @@ Examples of things to consider here include:
 - Will the change include any locking, and if so what considerations are there on
   holding the lock?
 
-Deployer impact
----------------
+Other Deployer impact
+---------------------
 
-Discuss things that will affect how you deploy and configure OpenStack,
-such as:
+Discuss things that will affect how you deploy and configure OpenStack
+that have not already been mentioned, such as:
 
 - What config options are being added? Should they be more generic than
   proposed (for example a flag that other hypervisor drivers might want to
