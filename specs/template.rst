@@ -238,3 +238,21 @@ Documentation Impact
 What is the impact on the docs team of this change? Some changes might require
 donating resources to the docs team to have the documentation updated. Don't
 repeat details discussed above, but please reference them here.
+
+
+References
+==========
+
+Please add any useful references here. You are not required to have any
+reference. Moreover, this specification should still make sense when your
+references are unavailable. Examples of what you could include are:
+
+- links to mailing list or IRC discussions
+
+- links to notes from a summit session
+
+- links to relevant research, if appropriate
+
+- related specifications as appropriate (e.g.  if it's an EC2 thing, link the EC2 docs)
+
+- anything else you feel it is worthwhile to refer to
