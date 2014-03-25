@@ -111,6 +111,9 @@ such as:
   implement as well)? Are the default values ones which will work well in
   real deployments?
 
+- Is this a change that takes immediate effect after its merged, or is it
+  something that has to be explicitly enabled?
+
 - If this change is a new binary, how would it be deployed?
 
 - Please state anything that those doing continuous deployment, or those
