@@ -1,9 +1,8 @@
-::
+..
+ This work is licensed under a Creative Commons Attribution 3.0 Unported
+ License.
 
-# This work is licensed under a Creative Commons Attribution 3.0 Unported
-# License.
-#
-# http://creativecommons.org/licenses/by/3.0/legalcode
+ http://creativecommons.org/licenses/by/3.0/legalcode
 
 ..
   This template should be in ReSTructured text. The filename in the git
@@ -128,6 +127,7 @@ how often will new code be called, and is there a major change to the calling
 pattern of existing code.
 
 Examples of things to consider here include:
+
 - A periodic task might look like a small addition but if it calls conductor or
   another service the load is multiplied by the number of nodes in the system.
 
