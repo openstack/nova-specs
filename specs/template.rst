@@ -86,6 +86,14 @@ Each API method which is either added or changed should have the following
   * Method type (POST/PUT/GET/DELETE)
   * Normal http response code(s)
   * Expected error http response code(s)
+
+    * A description for each possible error code should be included
+      describing semantic errors which can cause it such as
+      inconsistent parameters supplied to the method, or when an
+      instance is not in an appropriate state for the request to
+      succeed. Errors caused by syntactic problems covered by the JSON
+      schema defintion do not need to be included.
+
   * URL for the resource
   * Parameters which can be passed via the url
   * JSON schema definition for the body data if allowed
