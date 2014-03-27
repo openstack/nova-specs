@@ -68,7 +68,7 @@ Questions which need to be addressed by this section include:
 
 - What new data objects and/or database schema changes is this going to require?
 
-- What Database migrations will accompany this change.
+- What database migrations will accompany this change.
 
 - How will the initial set of new data objects be generated, for example if you
   need to take into account existing instances, or modify other existing data
