@@ -159,7 +159,6 @@ guidelines are a work in progress and are designed to help you identify
 security best practices.  For further information, feel free to reach out
 to the OpenStack Security Group at openstack-security@lists.openstack.org.
 
-
 Notifications impact
 --------------------
 
