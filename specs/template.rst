@@ -31,10 +31,10 @@ Problem description
 
 A detailed description of the problem:
 
-- For a new feature this might be use cases. Ensure you are clear about the
+* For a new feature this might be use cases. Ensure you are clear about the
   actors in each use case: End User vs Deployer
 
-- For a major reworking of something existing it would describe the
+* For a major reworking of something existing it would describe the
   problems in that feature that are being addressed.
 
 
@@ -65,11 +65,11 @@ proposed changes to the data model.
 
 Questions which need to be addressed by this section include:
 
-- What new data objects and/or database schema changes is this going to require?
+* What new data objects and/or database schema changes is this going to require?
 
-- What database migrations will accompany this change.
+* What database migrations will accompany this change.
 
-- How will the initial set of new data objects be generated, for example if you
+* How will the initial set of new data objects be generated, for example if you
   need to take into account existing instances, or modify other existing data
   describe how that will work.
 
@@ -82,8 +82,11 @@ Each API method which is either added or changed should have the following
 
   * A description of what the method does suitable for use in
     user documentation
+
   * Method type (POST/PUT/GET/DELETE)
+
   * Normal http response code(s)
+
   * Expected error http response code(s)
 
     * A description for each possible error code should be included
@@ -94,8 +97,11 @@ Each API method which is either added or changed should have the following
       schema defintion do not need to be included.
 
   * URL for the resource
+
   * Parameters which can be passed via the url
+
   * JSON schema definition for the body data if allowed
+
   * JSON schema definition for the response data if any
 
 * Example use case including typical API samples for both data supplied
@@ -123,12 +129,17 @@ Describe any potential security impact on the system.  Some of the items to
 consider include:
 
 * Does this change touch sensitive data such as tokens, keys, or user data?
+
 * Does this change alter the API in a way that may impact security, such as
   a new way to access sensitive information or a new way to login?
+
 * Does this change involve cryptography or hashing?
+
 * Does this change require the use of sudo or any elevated privileges?
+
 * Does this change involve using or parsing user-provided data? This could
   be directly at the API level or indirectly such as changes to a cache layer.
+
 * Can this change enable a resource exhaustion attack, such as allowing a
   single API interaction to consume significant server resources? Some examples
   of this include launching subprocesses for each connection, or entity
@@ -152,7 +163,7 @@ Other End user impact
 
 Aside from the API, are there other ways a user will interact with this feature?
 
-- Does this change have an impact on python-novaclient? What does the user
+* Does this change have an impact on python-novaclient? What does the user
   interface there look like?
 
 Performance Impact
@@ -164,20 +175,20 @@ pattern of existing code.
 
 Examples of things to consider here include:
 
-- A periodic task might look like a small addition but if it calls conductor or
+* A periodic task might look like a small addition but if it calls conductor or
   another service the load is multiplied by the number of nodes in the system.
 
-- Scheduler filters get called once per host for every instance being created, so
+* Scheduler filters get called once per host for every instance being created, so
   any latency they introduce is linear with the size of the system.
 
-- A small change in a utility function or a commonly used decorator can have a
+* A small change in a utility function or a commonly used decorator can have a
   large impacts on performance.
 
-- Calls which result in a database queries (whether direct or via conductor) can
+* Calls which result in a database queries (whether direct or via conductor) can
   have a profound impact on performance when called in critical sections of the
   code.
 
-- Will the change include any locking, and if so what considerations are there on
+* Will the change include any locking, and if so what considerations are there on
   holding the lock?
 
 Other Deployer impact
@@ -186,17 +197,17 @@ Other Deployer impact
 Discuss things that will affect how you deploy and configure OpenStack
 that have not already been mentioned, such as:
 
-- What config options are being added? Should they be more generic than
+* What config options are being added? Should they be more generic than
   proposed (for example a flag that other hypervisor drivers might want to
   implement as well)? Are the default values ones which will work well in
   real deployments?
 
-- Is this a change that takes immediate effect after its merged, or is it
+* Is this a change that takes immediate effect after its merged, or is it
   something that has to be explicitly enabled?
 
-- If this change is a new binary, how would it be deployed?
+* If this change is a new binary, how would it be deployed?
 
-- Please state anything that those doing continuous deployment, or those
+* Please state anything that those doing continuous deployment, or those
   upgrading from the previous release, need to be aware of. Also describe
   any plans to deprecate configuration values or features.  For example, if we
   change the directory name that instances are stored in, how do we handle
@@ -210,7 +221,7 @@ Developer impact
 Discuss things that will affect other developers working on OpenStack,
 such as:
 
-- If the blueprint proposes a change to the driver API, discussion of how
+* If the blueprint proposes a change to the driver API, discussion of how
   other hypervisors would implement the feature is required.
 
 
@@ -243,14 +254,14 @@ but we're mostly trying to understand the timeline for implementation.
 Dependencies
 ============
 
-- Include specific references to specs and/or blueprints in nova, or in other
+* Include specific references to specs and/or blueprints in nova, or in other
   projects, that this one either depends on or is related to.
 
-- If this requires functionality of another project that is not currently used
+* If this requires functionality of another project that is not currently used
   by Nova (such as the glance v2 API when we previously only required v1),
   document that fact.
 
-- Does this feature require any new library dependencies or code otherwise not
+* Does this feature require any new library dependencies or code otherwise not
   included in OpenStack? Or does it depend on a specific version of library?
 
 
@@ -283,12 +294,12 @@ Please add any useful references here. You are not required to have any
 reference. Moreover, this specification should still make sense when your
 references are unavailable. Examples of what you could include are:
 
-- links to mailing list or IRC discussions
+* Links to mailing list or IRC discussions
 
-- links to notes from a summit session
+* Links to notes from a summit session
 
-- links to relevant research, if appropriate
+* Links to relevant research, if appropriate
 
-- related specifications as appropriate (e.g.  if it's an EC2 thing, link the EC2 docs)
+* Related specifications as appropriate (e.g.  if it's an EC2 thing, link the EC2 docs)
 
-- anything else you feel it is worthwhile to refer to
+* Anything else you feel it is worthwhile to refer to
