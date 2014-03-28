@@ -8,7 +8,7 @@ Contents:
 
 .. toctree::
    :glob:
-   :maxdepth: 3
+   :maxdepth: 1
 
    specs/*
 
@@ -16,17 +16,9 @@ Juno approved specs:
 
 .. toctree::
    :glob:
-   :maxdepth: 2
+   :maxdepth: 1
 
-   specs/juno/approved/*
-
-Juno implemented specs:
-
-.. toctree::
-   :glob:
-   :maxdepth: 2
-
-   specs/juno/implemented/*
+   specs/juno/*
 
 ==================
 Indices and tables
