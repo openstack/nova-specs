@@ -130,7 +130,7 @@ additionaProperties should be False).
 Reuse of existing predefined parameter types such as regexps for
 passwords and user defined names is highly encouraged.
 
-Security Impact
+Security impact
 ---------------
 
 Describe any potential security impact on the system.  Some of the items to
@@ -166,7 +166,7 @@ Notifications impact
 Please specify any changes to notifications. Be that an extra notification,
 changes to an existing notification, or removing a notification.
 
-Other End user impact
+Other end user impact
 ---------------------
 
 Aside from the API, are there other ways a user will interact with this feature?
@@ -199,7 +199,7 @@ Examples of things to consider here include:
 * Will the change include any locking, and if so what considerations are there on
   holding the lock?
 
-Other Deployer impact
+Other deployer impact
 ---------------------
 
 Discuss things that will affect how you deploy and configure OpenStack
