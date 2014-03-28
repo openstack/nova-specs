@@ -116,11 +116,6 @@ html_theme = 'nature'
 # pixels large.
 #html_favicon = None
 
-# Add any paths that contain custom static files (such as style sheets) here,
-# relative to this directory. They are copied after the builtin static files,
-# so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
-
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.
 git_cmd = "git log --pretty=format:'%ad, commit %h' --date=local -n1"
@@ -206,20 +201,6 @@ latex_documents = [
 
 # If false, no module index is generated.
 #latex_domain_indices = True
-
-
-# -- Options for manual page output --------------------------------------------
-
-# One entry per manual page. List of tuples
-# (source start file, name, description, authors, manual section).
-man_pages = [
-    ('index', 'nova-specs', u'Nova Design Specs',
-     [u'OpenStack Nova Team'], 1)
-]
-
-# If true, show URL addresses after external links.
-#man_show_urls = False
-
 
 # -- Options for Texinfo output ------------------------------------------------
 
