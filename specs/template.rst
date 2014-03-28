@@ -114,6 +114,31 @@ additionaProperties should be False).
 Reuse of existing predefined parameter types such as regexps for
 passwords and user defined names is highly encouraged.
 
+Security Impact
+---------------
+
+Describe any potential security impact on the system.  Some of the items to
+consider include:
+
+* Does this change touch sensitive data such as tokens, keys, or user data?
+* Does this change alter the API in a way that may impact security, such as
+  a new way to access sensitive information or a new way to login?
+* Does this change involve cryptography or hashing?
+* Does this change require the use of sudo or any elevated privileges?
+* Does this change involve using or parsing user-provided data? This could
+  be directly at the API level or indirectly such as changes to a cache layer.
+* Can this change enable a resource exhaustion attack, such as allowing a
+  single API interaction to consume significant server resources? Some examples
+  of this include launching subprocesses for each connection, or entity
+  expansion attacks in XML.
+
+For more detailed guidance, please see the OpenStack Security Guidelines as
+a reference (https://wiki.openstack.org/wiki/Security/Guidelines).  These
+guidelines are a work in progress and are designed to help you identify
+security best practices.  For further information, feel free to reach out
+to the OpenStack Security Group at openstack-security@lists.openstack.org.
+
+
 Notifications impact
 --------------------
 
