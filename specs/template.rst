@@ -4,16 +4,6 @@
 
  http://creativecommons.org/licenses/by/3.0/legalcode
 
-..
-  This template should be in ReSTructured text. The filename in the git
-  repository should match the launchpad URL, for example a URL of
-  https://blueprints.launchpad.net/nova/+spec/awesome-thing should be named
-  awesome-thing.rst .  Please do not delete any of the sections in this
-  template.  If you have nothing to say for a whole section, just write: None
-  For help with syntax, see http://sphinx-doc.org/rest.html
-  To test out your formatting, see http://rst.ninjs.org/
-  Please wrap text at 80 columns.
-
 ==========================================
 Example Spec - The title of your blueprint
 ==========================================
@@ -24,6 +14,24 @@ https://blueprints.launchpad.net/nova/+spec/example
 
 Introduction paragraph -- why are we doing anything? A single paragraph of
 prose that operators can understand.
+
+Some notes about using this template:
+
+* Your spec should be in ReSTructured text, like this template.
+
+* Please wrap text at 80 columns.
+
+* The filename in the git repository should match the launchpad URL, for
+  example a URL of: https://blueprints.launchpad.net/nova/+spec/awesome-thing
+  should be named awesome-thing.rst
+
+* Please do not delete any of the sections in this template.  If you have
+  nothing to say for a whole section, just write: None
+
+* For help with syntax, see http://sphinx-doc.org/rest.html
+
+* To test out your formatting, build the docs using tox, or see:
+  http://rst.ninjs.org
 
 
 Problem description
