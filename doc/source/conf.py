@@ -85,6 +85,8 @@ pygments_style = 'sphinx'
 # A list of ignored prefixes for module index sorting.
 modindex_common_prefix = ['nova-specs.']
 
+# -- Options for man page output ----------------------------------------------
+man_pages = []
 
 # -- Options for HTML output ---------------------------------------------------
 

@@ -18,7 +18,8 @@ Juno approved specs:
    :glob:
    :maxdepth: 1
 
-   specs/juno/*
+.. Uncomment this once a spec merges.
+  specs/juno/*
 
 ==================
 Indices and tables
