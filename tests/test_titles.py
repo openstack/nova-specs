@@ -39,14 +39,11 @@ class TestTitles(testtools.TestCase):
 
     def _check_titles(self, titles):
         self.assertEqual(7, len(titles))
-
         problem = 'Problem description'
         self.assertIn(problem, titles)
-        self.assertEqual(0, len(titles[problem]))
 
         proposed = 'Proposed change'
         self.assertIn(proposed, titles)
-        self.assertEqual(9, len(titles[proposed]))
         self.assertIn('Alternatives', titles[proposed])
         self.assertIn('Data model impact', titles[proposed])
         self.assertIn('REST API impact', titles[proposed])
@@ -59,25 +56,20 @@ class TestTitles(testtools.TestCase):
 
         impl = 'Implementation'
         self.assertIn(impl, titles)
-        self.assertEqual(2, len(titles[impl]))
         self.assertIn('Assignee(s)', titles[impl])
         self.assertIn('Work Items', titles[impl])
 
         deps = 'Dependencies'
         self.assertIn(deps, titles)
-        self.assertEqual(0, len(titles[deps]))
 
         testing = 'Testing'
         self.assertIn(testing, titles)
-        self.assertEqual(0, len(titles[testing]))
 
         docs = 'Documentation Impact'
         self.assertIn(docs, titles)
-        self.assertEqual(0, len(titles[docs]))
 
         refs = 'References'
         self.assertIn(refs, titles)
-        self.assertEqual(0, len(titles[refs]))
 
     def test_template(self):
         files = ['specs/template.rst'] + glob.glob('specs/*/*')
