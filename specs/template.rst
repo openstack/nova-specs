@@ -33,6 +33,12 @@ Some notes about using this template:
 * To test out your formatting, build the docs using tox, or see:
   http://rst.ninjs.org
 
+* If you would like to provide a diagram with your spec, ascii diagrams are
+  required.  http://asciiflow.com/ is a very nice tool to assist with making
+  ascii diagrams.  The reason for this is that the tool used to review specs is
+  based purely on plain text.  Plain text will allow review to proceed without
+  having to look at additional files which can not be viewed in gerrit.  It will
+  also allow inline feedback on the diagram itself.
 
 Problem description
 ===================
