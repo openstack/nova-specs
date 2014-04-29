@@ -33,8 +33,8 @@ There are two issues which play a role in this.
 Proposed change
 ===============
 
-We propose the following in this blueprint to solve this issue without depending
-on kvm.
+We propose the following in this blueprint to solve this issue without
+depending on kvm.
 
 * Require that VIR_MIGRATE_UNDEFINE_SOURCE is not set. Instead wait for the
   condition that the instance is shutoff at the source.
@@ -44,9 +44,9 @@ on kvm.
   all the rotated files need to be rotated once.
 
 * Change get-console-log function such that console.log and console.log.1 are
-  merged in the response (within the MAX_CONSOLE_BYTES limit). It log rotation is
-  implemented then the function needs to read as many files as it takes to fill up
-  the MAX_CONSOLE_BYTES limit.
+  merged in the response (within the MAX_CONSOLE_BYTES limit). It log rotation
+  is implemented then the function needs to read as many files as it takes to
+  fill up the MAX_CONSOLE_BYTES limit.
 
 * The source VM would get undefined by the periodic task once the database is
   updated with the new hostname.
@@ -83,16 +83,16 @@ None
 Performance Impact
 ------------------
 
-* There's a brief window between the time the VM is activated in the destination
-  and before post-live-migration is completed. Any nova console-log requests will
-  return almost empty content during this window.
+* There's a brief window between the time the VM is activated in the
+  destination and before post-live-migration is completed. Any nova
+  console-log requests will return almost empty content during this window.
 
 Other deployer impact
 ---------------------
 
 * If people are using VIR_MIGRATE_UNDEFINE_SOURCE then they need to remove this
-  option to get this feature. If this flag exists we will fallback to not having
-  the console log migrated.
+  option to get this feature. If this flag exists we will fallback to not
+  having the console log migrated.
 
 Developer impact
 ----------------
@@ -131,8 +131,8 @@ Documentation Impact
 We expect to have the following documentation changes:
 
 * The migration flag changes to get console logs migrated
-* Expected empty console log during the VM offline period in the final stages of
-  the migration
+* Expected empty console log during the VM offline period in the final stages
+  of the migration
 
 References
 ==========

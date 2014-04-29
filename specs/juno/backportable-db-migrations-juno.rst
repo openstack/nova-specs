@@ -27,9 +27,9 @@ as placeholders to allow for migration backports if needed.
 Proposed change
 ===============
 
-The proposed change is to reserve 10 migrations for Icehouse backports.  These
-migrations would be no-ops and would simply result in an increment of the schema
-version.
+The proposed change is to reserve 10 migrations for Icehouse backports. These
+migrations would be no-ops and would simply result in an increment of the
+schema version.
 
 Alternatives
 ------------
