@@ -71,6 +71,15 @@ class TestTitles(testtools.TestCase):
         refs = 'References'
         self.assertIn(refs, titles)
 
+    def _check_lines_wrapping(self, tpl, raw):
+        for i, line in enumerate(raw.split("\n")):
+            if "http://" in line or "https://" in line:
+                continue
+            self.assertTrue(
+                len(line) < 80,
+                msg="%s:%d: Line limited to a maximum of 79 characters." %
+                (tpl, i+1))
+
     def test_template(self):
         files = ['specs/template.rst'] + glob.glob('specs/*/*')
         for filename in files:
@@ -78,6 +87,8 @@ class TestTitles(testtools.TestCase):
                             "spec's file must uses 'rst' extension.")
             with open(filename) as f:
                 data = f.read()
+
             spec = docutils.core.publish_doctree(data)
             titles = self._get_titles(spec)
             self._check_titles(titles)
+            self._check_lines_wrapping(filename, data)

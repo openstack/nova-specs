@@ -24,8 +24,9 @@ glance, neutron) send x-openstack-request-id.
 Proposed change
 ===============
 
-Use x-openstack-request-id when handling v3 requests for nova. There is existing
-middleware in oslo to generate the ID and attach the header to the response.
+Use x-openstack-request-id when handling v3 requests for nova. There is
+existing middleware in oslo to generate the ID and attach the header to
+the response.
 
 Alternatives
 ------------
@@ -34,8 +35,8 @@ The current approach -- keeping the existing header name -- is the alternative.
 This will perpetuate header name discontinuity among OpenStack services.
 
 Another alternative is to include the new header name for both v2 and v3. But
-the benefits of doing so is not great enough to justify altering the behavior of
-the existing API.
+the benefits of doing so is not great enough to justify altering the behavior
+of the existing API.
 
 Data model impact
 -----------------
@@ -64,10 +65,10 @@ Other end user impact
 ---------------------
 
 Users making requests using the v3 API will only receive the new header,
-x-openstack-request-id. python-novaclient uses x-compute-request-id (if present)
-when reporting an HTTPError; this will need to be updated to use the new header
-name when novaclient is using v3. Other clients moving from v2 to v3 will need
-to consider the header name change.
+x-openstack-request-id. python-novaclient uses x-compute-request-id (if
+present) when reporting an HTTPError; this will need to be updated to use the
+new header name when novaclient is using v3. Other clients moving from v2 to v3
+will need to consider the header name change.
 
 Performance Impact
 ------------------

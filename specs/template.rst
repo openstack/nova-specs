@@ -37,8 +37,8 @@ Some notes about using this template:
   required.  http://asciiflow.com/ is a very nice tool to assist with making
   ascii diagrams.  The reason for this is that the tool used to review specs is
   based purely on plain text.  Plain text will allow review to proceed without
-  having to look at additional files which can not be viewed in gerrit.  It will
-  also allow inline feedback on the diagram itself.
+  having to look at additional files which can not be viewed in gerrit.  It
+  will also allow inline feedback on the diagram itself.
 
 Problem description
 ===================
@@ -79,7 +79,8 @@ proposed changes to the data model.
 
 Questions which need to be addressed by this section include:
 
-* What new data objects and/or database schema changes is this going to require?
+* What new data objects and/or database schema changes is this going to
+  require?
 
 * What database migrations will accompany this change.
 
@@ -174,7 +175,8 @@ changes to an existing notification, or removing a notification.
 Other end user impact
 ---------------------
 
-Aside from the API, are there other ways a user will interact with this feature?
+Aside from the API, are there other ways a user will interact with this
+feature?
 
 * Does this change have an impact on python-novaclient? What does the user
   interface there look like?
@@ -191,18 +193,18 @@ Examples of things to consider here include:
 * A periodic task might look like a small addition but if it calls conductor or
   another service the load is multiplied by the number of nodes in the system.
 
-* Scheduler filters get called once per host for every instance being created, so
-  any latency they introduce is linear with the size of the system.
+* Scheduler filters get called once per host for every instance being created,
+  so any latency they introduce is linear with the size of the system.
 
 * A small change in a utility function or a commonly used decorator can have a
   large impacts on performance.
 
-* Calls which result in a database queries (whether direct or via conductor) can
-  have a profound impact on performance when called in critical sections of the
-  code.
+* Calls which result in a database queries (whether direct or via conductor)
+  can have a profound impact on performance when called in critical sections of
+  the code.
 
-* Will the change include any locking, and if so what considerations are there on
-  holding the lock?
+* Will the change include any locking, and if so what considerations are there
+  on holding the lock?
 
 Other deployer impact
 ---------------------
@@ -313,6 +315,7 @@ references are unavailable. Examples of what you could include are:
 
 * Links to relevant research, if appropriate
 
-* Related specifications as appropriate (e.g.  if it's an EC2 thing, link the EC2 docs)
+* Related specifications as appropriate (e.g.  if it's an EC2 thing, link the
+  EC2 docs)
 
 * Anything else you feel it is worthwhile to refer to
