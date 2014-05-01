@@ -19,7 +19,7 @@ Some notes about using this template:
 
 * Your spec should be in ReSTructured text, like this template.
 
-* Please wrap text at 80 columns.
+* Please wrap text at 79 columns.
 
 * The filename in the git repository should match the launchpad URL, for
   example a URL of: https://blueprints.launchpad.net/nova/+spec/awesome-thing
