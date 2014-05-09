@@ -11,6 +11,7 @@
 # under the License.
 
 import glob
+import re
 
 import docutils.core
 import testtools
@@ -80,6 +81,13 @@ class TestTitles(testtools.TestCase):
                 msg="%s:%d: Line limited to a maximum of 79 characters." %
                 (tpl, i+1))
 
+    def _check_no_cr(self, tpl, raw):
+        matches = re.findall('\r', raw)
+        self.assertEqual(
+            len(matches), 0,
+            "Found %s literal carriage returns in file %s" %
+            (len(matches), tpl))
+
     def test_template(self):
         files = ['specs/template.rst'] + glob.glob('specs/*/*')
         for filename in files:
@@ -92,3 +100,4 @@ class TestTitles(testtools.TestCase):
             titles = self._get_titles(spec)
             self._check_titles(titles)
             self._check_lines_wrapping(filename, data)
+            self._check_no_cr(filename, data)
