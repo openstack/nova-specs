@@ -38,13 +38,17 @@ class TestTitles(testtools.TestCase):
                 titles[section['name']] = section['subtitles']
         return titles
 
-    def _check_titles(self, titles):
-        self.assertEqual(7, len(titles))
-        problem = 'Problem description'
-        self.assertIn(problem, titles)
+    def _check_titles(self, fname, titles):
+        expected_titles = ('Problem description', 'Proposed change',
+                           'Implementation', 'Dependencies',
+                           'Testing', 'Documentation Impact',
+                           'References')
+        self.assertEqual(
+            sorted(expected_titles),
+            sorted(titles.keys()),
+            "Expected titles not found in document %s" % fname)
 
         proposed = 'Proposed change'
-        self.assertIn(proposed, titles)
         self.assertIn('Alternatives', titles[proposed])
         self.assertIn('Data model impact', titles[proposed])
         self.assertIn('REST API impact', titles[proposed])
@@ -56,21 +60,8 @@ class TestTitles(testtools.TestCase):
         self.assertIn('Developer impact', titles[proposed])
 
         impl = 'Implementation'
-        self.assertIn(impl, titles)
         self.assertIn('Assignee(s)', titles[impl])
         self.assertIn('Work Items', titles[impl])
-
-        deps = 'Dependencies'
-        self.assertIn(deps, titles)
-
-        testing = 'Testing'
-        self.assertIn(testing, titles)
-
-        docs = 'Documentation Impact'
-        self.assertIn(docs, titles)
-
-        refs = 'References'
-        self.assertIn(refs, titles)
 
     def _check_lines_wrapping(self, tpl, raw):
         for i, line in enumerate(raw.split("\n")):
@@ -98,6 +89,6 @@ class TestTitles(testtools.TestCase):
 
             spec = docutils.core.publish_doctree(data)
             titles = self._get_titles(spec)
-            self._check_titles(titles)
+            self._check_titles(filename, titles)
             self._check_lines_wrapping(filename, data)
             self._check_no_cr(filename, data)
