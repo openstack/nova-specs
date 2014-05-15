@@ -1,0 +1,224 @@
+..
+ This work is licensed under a Creative Commons Attribution 3.0 Unported
+ License.
+
+ http://creativecommons.org/licenses/by/3.0/legalcode
+
+=============================================
+Virt driver pinning guest vCPUs to host pCPUs
+=============================================
+
+https://blueprints.launchpad.net/nova/+spec/virt-driver-cpu-pinning
+
+This feature aims to improve the libvirt driver so that it is able to strictly
+pin guest vCPUS to host pCPUs. This provides the concept of "dedicated CPU"
+guest instances.
+
+Problem description
+===================
+
+If a host is permitting overcommit of CPUs, there can be prolonged time
+periods where a guest vCPU is not scheduled by the host, if another guest is
+competing for the CPU time. This means that workloads executing in a guest can
+have unpredictable latency, which may be unacceptable for the type of
+application being run.
+
+Depending on the workload being executed the end user or admin may wish to
+have control over how the guest used hyperthreads. To maximise cache
+efficiency, the guest may wish to be pinned to thread siblings. Conversely
+the guest may wish to avoid thread siblings (ie only pin to 1 sibling)
+or even avoid hosts with threads entirely.
+
+Proposed change
+===============
+
+The flavour extra specs will be enhanced to support two new parameters
+
+* hw:cpu_policy=shared|dedicated
+* hw:cpu_threads_policy=avoid|separate|isolate|prefer
+
+If the policy is set to 'shared' no change will be made compared to the current
+default guest CPU placement policy. The guest vCPUs will be allowed to freely
+float across host pCPUs, albeit potentially constrained by NUMA policy. If the
+policy is set to 'dedicated' then the guest vCPUs will be strictly pinned to a
+set of host pCPUs. In the absence of an explicit vCPU topology request, the
+virt drivers typically expose all vCPUs as sockets with 1 core and 1 thread.
+When strict CPU pinning is in effect the guest CPU topology will be setup to
+match the topology of the CPUs to which it is pinned. ie if a 2 vCPU guest is
+pinned to a single host core with 2 threads, then the guest will get a topology
+of 1 socket, 1 core, 2 threads.
+
+The threads policy will control how the scheduler / virt driver place guests
+wrt CPU threads. It will only apply if the sheduler policy is 'dedicated'
+
+ - avoid: the scheduler will not place the guest on a host which has
+   hyperthreads.
+ - separate: if the host has threads, each vCPU will be placed on a
+   different core. ie no two vCPUs will be placed on thread siblings
+ - isolate: if the host has threads, each vCPU will be placed on a
+   different core and no vCPUs from other guests will be able to be
+   placed on the same core. ie one thread sibling is guaranteed to
+   always be unused,
+ - prefer: if the host has threads, vCPU will be placed on the same
+   core, so they are thread siblings.
+
+The image metadata properties will also allow specification of the
+threads policy
+
+* hw_cpu_threads_policy=avoid|separate|isolate|prefer
+
+This will only be honoured if the flavour does not already have a threads
+policy set. This ensures the cloud administrator can have absolute control
+over threads policy if desired.
+
+The schedular will have to be enhanced so that it considers the usage of CPUs
+by existing guests. Use of a dedicated CPU policy will have to be accompanied
+by the setup of aggregates to split the hosts into two groups, one allowing
+overcommit of shared pCPUs and the other only allowing dedicated CPU guests.
+ie we do not want a situation with dedicated CPU and shared CPU guests on the
+same host. It is likely that the administrator will already need to setup host
+aggregates for the purpose of using huge pages for guest RAM. The same grouping
+will be usable for both dedicated RAM (via huge pages) and dedicated CPUs (via
+pinning).
+
+The compute host already has a notion of CPU sockets which are reserved for
+execution of base operating system services. This facility will be preserved
+unchanged. ie dedicated CPU guests will only be placed on CPUs which are not
+marked as reserved for the base OS.
+
+Alternatives
+------------
+
+There is no alternative way to ensure that a guest has predictable execution
+latency free of cache effects from other guests working on the host, that does
+not involve CPU pinning.
+
+The proposed solution is to use host aggregates for grouping compute hosts into
+those for dedicated vs overcommit CPU policy. An alternative would be to allow
+compute hosts to have both dedicated and overcommit guests, splitting them onto
+separate sockets. ie if there were for sockets, two sockets could be used for
+dedicated CPU guests while two sockets could be used for overcommit guests,
+with usage determined on a first-come, first-served basis. A problem with this
+approach is that there is not strict workload isolation even if separate
+sockets are used. Cached effects can be observed, and they will also contend
+for memory access, so the overcommit guests can negatively impact performance
+of the dedicated CPU guests even if on separate sockets. So while this would
+be simpler from an administrative POV, it would not give the same performance
+guarantees that are important for NFV use cases. It would none the less be
+possible to enhance the design in the future, so that overcommit & dedicated
+CPU guests could co-exist on the same host for those use cases where admin
+simplicity is more important than perfect performance isolation. It is believed
+that it is better to start off with the simpler to implement design based on
+host aggregates for the first iteration of this feature.
+
+Data model impact
+-----------------
+
+No impact.
+
+The new data items are stored in the existing flavour extra specs data model
+and in the host state metadata model.
+
+REST API impact
+---------------
+
+No impact.
+
+The existing APIs already support arbitrary data in the flavour extra specs.
+
+Security impact
+---------------
+
+No impact.
+
+Notifications impact
+--------------------
+
+No impact.
+
+The notifications system is not used by this change.
+
+Other end user impact
+---------------------
+
+There are no changes that directly impact the end user, other than the fact
+that their guest should have more predictable CPU execution latency.
+
+Performance Impact
+------------------
+
+The schedular will incur small further overhead if a threads policy is set
+on the image or flavour. This overhead will be negligible compared to that
+implied by the enhancements to support NUMA policy and huge pages. It is
+anticipated that dedicated CPU guests will typically be used in conjunction
+with huge pages.
+
+Other deployer impact
+---------------------
+
+The cloud administrator will gain the ability to define flavours which offer
+dedicated CPU resources. The administrator will have to place hosts into groups
+using aggregates such that the schedular can separate placement of guests with
+dedicated vs shared CPUs. Although not required by this design, it is expected
+that the administrator will commonly use the same host aggregates to group
+hosts for both CPU pinning and large page usage, since these concepts are
+complementary and expected to be used together. This will minimise the
+administrative burden of configuring host aggregates.
+
+Developer impact
+----------------
+
+It is expected that most hypervisors will have the ability to setup dedicated
+pCPUs for guests vs shared pCPUs. The flavour parameter is simple enough that
+any Nova driver would be able to support it.
+
+Implementation
+==============
+
+Assignee(s)
+-----------
+
+Primary assignee:
+  berrange
+
+Other contributors:
+  ndipanov
+
+Work Items
+----------
+
+* Enhance libvirt to support setup of strict CPU pinning for guests when the
+  appropriate policy is set in the flavour
+
+* Enhance the schedular to take account of threads policy when choosing
+  which host to place the guest on.
+
+Dependencies
+============
+
+* Virt driver guest NUMA node placement & topology
+
+   https://blueprints.launchpad.net/nova/+spec/virt-driver-numa-placement
+
+Testing
+=======
+
+It is unknown at this time if the gate hosts have sufficient pCPUs available
+to allow this feature to be effectively tested by tempest.
+
+Documentation Impact
+====================
+
+The new flavour parameter available to the cloud administrator needs to be
+documented along with recommendations about effective usage. The docs will
+also need to mention the compute host deployment pre-requisites such as the
+need to setup aggregates.
+
+References
+==========
+
+Current "big picture" research and design for the topic of CPU and memory
+resource utilization and placement. vCPU topology is a subset of this
+work
+
+* https://wiki.openstack.org/wiki/VirtDriverGuestCPUMemoryPlacement
