@@ -13,7 +13,9 @@ Include the URL of your launchpad blueprint:
 https://blueprints.launchpad.net/nova/+spec/example
 
 Introduction paragraph -- why are we doing anything? A single paragraph of
-prose that operators can understand.
+prose that operators can understand. The title and this first paragraph
+should be used as the subject line and body of the commit message
+respectively.
 
 Some notes about using this template:
 
