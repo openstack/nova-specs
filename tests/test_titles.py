@@ -17,6 +17,30 @@ import docutils.core
 import testtools
 
 
+TITLES = {
+    'Problem description': [],
+    'Proposed change': [
+        'Alternatives',
+        'Data model impact',
+        'REST API impact',
+        'Security impact',
+        'Notifications impact',
+        'Other end user impact',
+        'Performance Impact',
+        'Other deployer impact',
+        'Developer impact',
+    ],
+    'Implementation': [
+        'Assignee(s)',
+        'Work Items',
+    ],
+    'Dependencies': [],
+    'Testing': [],
+    'Documentation Impact': [],
+    'References': [],
+}
+
+
 class TestTitles(testtools.TestCase):
     def _get_title(self, section_tree):
         section = {
@@ -34,34 +58,32 @@ class TestTitles(testtools.TestCase):
         titles = {}
         for node in spec:
             if node.tagname == 'section':
+                # Note subsection subtitles are thrown away
                 section = self._get_title(node)
                 titles[section['name']] = section['subtitles']
         return titles
 
-    def _check_titles(self, fname, titles):
-        expected_titles = ('Problem description', 'Proposed change',
-                           'Implementation', 'Dependencies',
-                           'Testing', 'Documentation Impact',
-                           'References')
-        self.assertEqual(
-            sorted(expected_titles),
-            sorted(titles.keys()),
-            "Expected titles not found in document %s" % fname)
+    def _check_titles(self, filename, titles):
+        missing_sections = [x for x in TITLES.keys() if x not in titles.keys()]
+        extra_sections = [x for x in titles.keys() if x not in TITLES.keys()]
 
-        proposed = 'Proposed change'
-        self.assertIn('Alternatives', titles[proposed])
-        self.assertIn('Data model impact', titles[proposed])
-        self.assertIn('REST API impact', titles[proposed])
-        self.assertIn('Security impact', titles[proposed])
-        self.assertIn('Notifications impact', titles[proposed])
-        self.assertIn('Other end user impact', titles[proposed])
-        self.assertIn('Performance Impact', titles[proposed])
-        self.assertIn('Other deployer impact', titles[proposed])
-        self.assertIn('Developer impact', titles[proposed])
+        msgs = []
+        if len(missing_sections) > 0:
+            msgs.append("Missing sections: %s" % missing_sections)
+        if len(extra_sections) > 0:
+            msgs.append("Extra sections: %s" % extra_sections)
 
-        impl = 'Implementation'
-        self.assertIn('Assignee(s)', titles[impl])
-        self.assertIn('Work Items', titles[impl])
+        for section in TITLES.keys():
+            missing_subsections = [x for x in TITLES[section]
+                                   if x not in titles[section]]
+            # extra subsections are allowed
+            if len(missing_subsections) > 0:
+                msgs.append("Section '%s' is missing subsections: %s"
+                            % (section, missing_subsections))
+
+        if len(msgs) > 0:
+            self.fail("While checking '%s':\n  %s"
+                      % (filename, "\n  ".join(msgs)))
 
     def _check_lines_wrapping(self, tpl, raw):
         for i, line in enumerate(raw.split("\n")):
