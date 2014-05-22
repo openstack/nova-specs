@@ -235,7 +235,7 @@ Other contributors:
 Work Items
 ----------
 
-see: 
+see:
 https://review.openstack.org/#q,topic:bp/extensible-resource-tracking,n,z
 
 The first two work items have patches are ready for review:
