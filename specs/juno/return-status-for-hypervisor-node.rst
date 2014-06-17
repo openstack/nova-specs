@@ -59,7 +59,7 @@ REST API impact
   name: HypervisorStatus
   namespace: http://docs.openstack.org/compute/ext/hypervisor_status/api/v1.1
 
-  When the new extension "os-hypervisor-stats" is loaded, a new field 'status'
+  When the new extension "os-hypervisor-status" is loaded, a new field 'status'
   will be added to the os-hypervisor API.
 
 * For a later microversion of v2.1 API, no new extension needed, the
