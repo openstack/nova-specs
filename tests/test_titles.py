@@ -17,30 +17,6 @@ import docutils.core
 import testtools
 
 
-TITLES = {
-    'Problem description': [],
-    'Proposed change': [
-        'Alternatives',
-        'Data model impact',
-        'REST API impact',
-        'Security impact',
-        'Notifications impact',
-        'Other end user impact',
-        'Performance Impact',
-        'Other deployer impact',
-        'Developer impact',
-    ],
-    'Implementation': [
-        'Assignee(s)',
-        'Work Items',
-    ],
-    'Dependencies': [],
-    'Testing': [],
-    'Documentation Impact': [],
-    'References': [],
-}
-
-
 class TestTitles(testtools.TestCase):
     def _get_title(self, section_tree):
         section = {
@@ -63,9 +39,9 @@ class TestTitles(testtools.TestCase):
                 titles[section['name']] = section['subtitles']
         return titles
 
-    def _check_titles(self, filename, titles):
-        missing_sections = [x for x in TITLES.keys() if x not in titles.keys()]
-        extra_sections = [x for x in titles.keys() if x not in TITLES.keys()]
+    def _check_titles(self, filename, expect, actual):
+        missing_sections = [x for x in expect.keys() if x not in actual.keys()]
+        extra_sections = [x for x in actual.keys() if x not in expect.keys()]
 
         msgs = []
         if len(missing_sections) > 0:
@@ -73,9 +49,9 @@ class TestTitles(testtools.TestCase):
         if len(extra_sections) > 0:
             msgs.append("Extra sections: %s" % extra_sections)
 
-        for section in TITLES.keys():
-            missing_subsections = [x for x in TITLES[section]
-                                   if x not in titles[section]]
+        for section in expect.keys():
+            missing_subsections = [x for x in expect[section]
+                                   if x not in actual[section]]
             # extra subsections are allowed
             if len(missing_subsections) > 0:
                 msgs.append("Section '%s' is missing subsections: %s"
@@ -110,7 +86,12 @@ class TestTitles(testtools.TestCase):
 
 
     def test_template(self):
-        files = ['specs/template.rst'] + glob.glob('specs/*/*')
+        with open('specs/template.rst') as f:
+            template = f.read()
+        spec = docutils.core.publish_doctree(template)
+        template_titles = self._get_titles(spec)
+
+        files = glob.glob('specs/*/*')
         for filename in files:
             self.assertTrue(filename.endswith(".rst"),
                             "spec's file must uses 'rst' extension.")
@@ -119,7 +100,7 @@ class TestTitles(testtools.TestCase):
 
             spec = docutils.core.publish_doctree(data)
             titles = self._get_titles(spec)
-            self._check_titles(filename, titles)
+            self._check_titles(filename, template_titles, titles)
             self._check_lines_wrapping(filename, data)
             self._check_no_cr(filename, data)
             self._check_trailing_spaces(filename, data)
