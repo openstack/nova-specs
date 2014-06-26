@@ -59,17 +59,18 @@ nova/cmd/__init__.py.
 
 A few prepratory patches will be required due to the limitations of the
 i18n support:
+
 * The Message class does not support str(), so use of str() on translatable
-messages must be removed.  The most common case being when it is used on an
-exception that is being put into another translatable message or logged.
-This is due to the requirement by logging in Python 2.6 that str() return
-a UnicodeError.
+  messages must be removed.  The most common case being when it is used on an
+  exception that is being put into another translatable message or logged.
+  This is due to the requirement by logging in Python 2.6 that str() return
+  a UnicodeError.
 * The Message class does not support concatenation of translatable messages,
-so concatenation of translatable messages must be replaced with formatting.
-This is due to the complexity caused by trying to concatenate two
-independent Message instances potentially with overlapping replacement keys.
-There are very few of these and the use of formatting allows for better
-translation by translators.
+  so concatenation of translatable messages must be replaced with formatting.
+  This is due to the complexity caused by trying to concatenate two
+  independent Message instances potentially with overlapping replacement keys.
+  There are very few of these and the use of formatting allows for better
+  translation by translators.
 
 Alternatives
 ------------
@@ -121,6 +122,11 @@ Developer impact
 The developer impacts have already been in place for some time.  Developers
 have been using _() around messages that need translation.
 
+Note, however, that with the relatively new policy of not translating debug
+log messages, concatenating strings and exceptions will need care since the
+strings have to be cast to unicode. See https://review.openstack.org/#/c/78095/
+for examples. Cleaning this up is listed in the Work Items section.
+
 
 Implementation
 ==============
@@ -131,12 +137,11 @@ Assignee(s)
 Primary assignee:
   <jecarey@us.ibm.com>
 
-Other contributors:
-
 Work Items
 ----------
 
 I am planning to implement this as three patches in this order:
+
 * Remove concatenations of translatable messages
 * Remove use of str() on translatable messages
 * Add enable_lazy to nova/cmd/__init__.py
@@ -146,8 +151,9 @@ Dependencies
 ============
 
 None.
+
 * Note that gettextutil was synced with the latest oslo-incubator via
-commit 185e4562df47a101cf41d1e66d75de2644c78022.
+  commit 185e4562df47a101cf41d1e66d75de2644c78022.
 
 
 Testing
@@ -159,11 +165,9 @@ Testing
 * Hacking checks will be investigated and added for failures caused when
   enabling lazy translation.
 
-  * For example the changes in
-    https://review.openstack.org/#/q/status:abandoned+project:openstack/
-    nova+branch:master+topic:bp/i18n--messages,n,z>
-    which includes using str() (or six.text_type) on an exception used
-    as replacement text.
+  * For example the changes in https://review.openstack.org/#/c/78095/ and
+    https://review.openstack.org/#/c/78096/ which includes using str()
+    (or six.text_type) on an exception used as replacement text.
 
 
 Documentation Impact
