@@ -10,7 +10,7 @@ The layout of this repository is::
 
   specs/<release>/
 
-You can find an example spec in `doc/source/specs/template.rst`.
+You can find an example spec in `specs/template.rst`.
 
 Specifications are proposed for a given release by adding them to the
 `specs/<release>` directory and posting it for review.  The implementation
