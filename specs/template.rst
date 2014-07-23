@@ -32,8 +32,8 @@ Some notes about using this template:
 
 * For help with syntax, see http://sphinx-doc.org/rest.html
 
-* To test out your formatting, build the docs using tox, or see:
-  http://rst.ninjs.org
+* To test out your formatting, build the docs using tox and see the generated
+  HTML file in doc/build/html/specs/<path_of_your_file>
 
 * If you would like to provide a diagram with your spec, ascii diagrams are
   required.  http://asciiflow.com/ is a very nice tool to assist with making
