@@ -8,8 +8,10 @@
 Add ALL-IN operator to extra spec ops
 ======================================
 
-https://blueprints.launchpad.net/nova/+spec/add-all-in-list-
+`https://blueprints.launchpad.net/nova/+spec/add-all-in-list-
 operator-to-extra-spec-ops
+<https://blueprints.launchpad.net/nova/+spec/add-all-in-list-
+operator-to-extra-spec-ops>`_
 
 Allow extra spec to match all values in a list by adding the ALL-IN operator.
 
