@@ -33,7 +33,7 @@ are free to float across any host pCPUs and their RAM is allocated from any
 NUMA node. This is very wasteful of compute resources and increases memory
 access latency which is harmful for NFV use cases.
 
-If the RAM/vCPUs associated with a flavour are larger than any single NUMA
+If the RAM/vCPUs associated with a flavor are larger than any single NUMA
 node, it is important to expose NUMA topology to the guest so that the OS in
 the guest can intelligently schedule workloads it runs. For this to work the
 guest NUMA nodes must be directly associated with host NUMA nodes.
@@ -73,8 +73,8 @@ will involve the creation of a new scheduler filter to match the flavor/image
 config specification against the NUMA resource availability reported by the
 compute hosts.
 
-The flavour extra specs will support the specification of guest NUMA topology.
-This is important when the RAM / vCPU count associated with a flavour is larger
+The flavor extra specs will support the specification of guest NUMA topology.
+This is important when the RAM / vCPU count associated with a flavor is larger
 than any single NUMA node in compute hosts, by making it possible to have guest
 instances that span NUMA nodes. The compute driver will ensure that guest NUMA
 nodes are directly mapped to host NUMA nodes. It is expected that the default
@@ -91,7 +91,7 @@ control over the NUMA topology / fit characteristics.
 * hw:numa_mem.1=<ram-size> - mapping N GB of RAM to NUMA node 1
 
 The most common case will be that the admin only sets 'hw:numa_nodes' and then
-the flavour vCPUs and RAM will be divided equally across the NUMA nodes.
+the flavor vCPUs and RAM will be divided equally across the NUMA nodes.
 
 The 'hw:numa_mempolicy' option allows specification of whether it is mandatory
 for the instance's RAM allocations to come from the NUMA nodes to which it is
@@ -115,7 +115,7 @@ the main development effort.
 
 When scheduling, if only the hw:numa_nodes=NNN property is set the scheduler
 will synthesize hw:numa_cpus.NN and hw:numa_mem.NN properties such that the
-flavour allocation is equally spread across the desired number of NUMA nodes.
+flavor allocation is equally spread across the desired number of NUMA nodes.
 It will then look consider the available NUMA resources on hosts to find one
 that exactly matches the requirements of the guest. So, given an example
 config:
@@ -134,7 +134,7 @@ If a host has a single NUMA node with capability to run 8 CPUs and 4 GB of
 RAM it will not be considered a valid match. The same logic will be applied
 in the scheduler regardless of the hw:numa_mempolicy option setting.
 
-All of the properties described against the flavour could also be set against
+All of the properties described against the flavor could also be set against
 the image, with the leading ':' replaced by '_', as is normal for image
 property naming conventions:
 
@@ -150,7 +150,7 @@ topology characteristics, which is expected to be used frequently with NFV
 images. The properties can only be set against the image, however, if they
 are not already set against the flavor. So for example, if the flavor sets
 'hw:numa_nodes=2' but does not set any 'hw:numa_cpus' / 'hw:numa_mem' values
-then the image can optionally set those. If the flavour has, however, set a
+then the image can optionally set those. If the flavor has, however, set a
 specific property the image cannot override that. This allows the flavor
 admin to strictly lock down what is permitted if desired. They can force a
 non-NUMA topology by setting hw:numa_nodes=1 against the flavor.
@@ -252,35 +252,35 @@ There is no need for any use fo the notification system.
 Other end user impact
 ---------------------
 
-Depending on the flavour chosen, the guest OS may see NUMA nodes backing its
+Depending on the flavor chosen, the guest OS may see NUMA nodes backing its
 RAM allocation.
 
 There is no end user interaction in setting up NUMA policies of usage.
 
-The cloud administrator will gain the ability to set policies on flavours.
+The cloud administrator will gain the ability to set policies on flavors.
 
 Performance Impact
 ------------------
 
 The new scheduler features will imply increased performance overhead when
 determining whether a host is able to fit the memory and vCPU needs of the
-flavour. ie the current logic which just checks the vCPU count and RAM
+flavor. ie the current logic which just checks the vCPU count and RAM
 requirement against the host free memory will need to take account of the
 availability of resources in specific NUMA nodes.
 
 Other deployer impact
 ---------------------
 
-If the deployment has flavours whose RAM + vCPU allocations are larger than
+If the deployment has flavors whose RAM + vCPU allocations are larger than
 the size of the NUMA nodes in the compute hosts, the cloud administrator
-should strongly consider defining guest NUMA nodes in the flavour. This will
+should strongly consider defining guest NUMA nodes in the flavor. This will
 enable the compute hosts to have better NUMA utilization and improve perf of
 the guest OS.
 
 Developer impact
 ----------------
 
-The new flavour attributes could be used by any full machine virtualization
+The new flavor attributes could be used by any full machine virtualization
 hypervisor, however, it is not mandatory that they do so.
 
 Implementation
@@ -341,10 +341,10 @@ ie a scale beyond that which tempest sets up.
 Documentation Impact
 ====================
 
-The cloud administrator docs need to describe the new flavour parameters
+The cloud administrator docs need to describe the new flavor parameters
 and make recommendations on how to effectively use them.
 
-The end user needs to be made aware of the fact that some flavours will cause
+The end user needs to be made aware of the fact that some flavors will cause
 the guest OS to see NUMA topology.
 
 References

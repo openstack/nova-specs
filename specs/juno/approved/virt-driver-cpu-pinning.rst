@@ -32,7 +32,7 @@ or even avoid hosts with threads entirely.
 Proposed change
 ===============
 
-The flavour extra specs will be enhanced to support two new parameters
+The flavor extra specs will be enhanced to support two new parameters
 
 * hw:cpu_policy=shared|dedicated
 * hw:cpu_threads_policy=avoid|separate|isolate|prefer
@@ -67,7 +67,7 @@ threads policy
 
 * hw_cpu_threads_policy=avoid|separate|isolate|prefer
 
-This will only be honoured if the flavour does not already have a threads
+This will only be honoured if the flavor does not already have a threads
 policy set. This ensures the cloud administrator can have absolute control
 over threads policy if desired.
 
@@ -116,7 +116,7 @@ Data model impact
 
 No impact.
 
-The new data items are stored in the existing flavour extra specs data model
+The new data items are stored in the existing flavor extra specs data model
 and in the host state metadata model.
 
 REST API impact
@@ -124,7 +124,7 @@ REST API impact
 
 No impact.
 
-The existing APIs already support arbitrary data in the flavour extra specs.
+The existing APIs already support arbitrary data in the flavor extra specs.
 
 Security impact
 ---------------
@@ -148,7 +148,7 @@ Performance Impact
 ------------------
 
 The schedular will incur small further overhead if a threads policy is set
-on the image or flavour. This overhead will be negligible compared to that
+on the image or flavor. This overhead will be negligible compared to that
 implied by the enhancements to support NUMA policy and huge pages. It is
 anticipated that dedicated CPU guests will typically be used in conjunction
 with huge pages.
@@ -156,7 +156,7 @@ with huge pages.
 Other deployer impact
 ---------------------
 
-The cloud administrator will gain the ability to define flavours which offer
+The cloud administrator will gain the ability to define flavors which offer
 dedicated CPU resources. The administrator will have to place hosts into groups
 using aggregates such that the schedular can separate placement of guests with
 dedicated vs shared CPUs. Although not required by this design, it is expected
@@ -169,7 +169,7 @@ Developer impact
 ----------------
 
 It is expected that most hypervisors will have the ability to setup dedicated
-pCPUs for guests vs shared pCPUs. The flavour parameter is simple enough that
+pCPUs for guests vs shared pCPUs. The flavor parameter is simple enough that
 any Nova driver would be able to support it.
 
 Implementation
@@ -188,7 +188,7 @@ Work Items
 ----------
 
 * Enhance libvirt to support setup of strict CPU pinning for guests when the
-  appropriate policy is set in the flavour
+  appropriate policy is set in the flavor
 
 * Enhance the schedular to take account of threads policy when choosing
   which host to place the guest on.
@@ -209,7 +209,7 @@ to allow this feature to be effectively tested by tempest.
 Documentation Impact
 ====================
 
-The new flavour parameter available to the cloud administrator needs to be
+The new flavor parameter available to the cloud administrator needs to be
 documented along with recommendations about effective usage. The docs will
 also need to mention the compute host deployment pre-requisites such as the
 need to setup aggregates.

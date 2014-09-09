@@ -25,7 +25,7 @@ as 2 sockets with 4 cores each. If the vCPUs were exposed as 8 sockets
 with 1 core each, some of the vCPUs will be inaccessible to the guest.
 It is thus desirable to be able to control the mixture of cores and
 sockets exposed to the guest. The cloud administrator needs to be able
-to define topologies for flavours, to override the hypervisor defaults,
+to define topologies for flavors, to override the hypervisor defaults,
 such that commonly used OS' will not encounter their socket count limits.
 The end user also needs to be able to express preferences for topologies
 to use with their images.
@@ -39,7 +39,7 @@ are thread siblings. While this blueprint will describe how to set the
 threads count, it will only make sense to set this to a value > 1 once
 the CPU pinning feature is integrated in Nova.
 
-If the flavour admin wishes to define flavours which avoid scheduling on
+If the flavor admin wishes to define flavors which avoid scheduling on
 hosts which have pCPUs with threads > 1, then can use scheduler aggregates
 to setup host groups.
 
@@ -49,8 +49,8 @@ Proposed change
 The proposal is to add support for configuration of aspects of vCPU topology
 at multiple levels.
 
-At the flavour there will be the ability to define default parameters for the
-vCPU topology using flavour extra specs
+At the flavor there will be the ability to define default parameters for the
+vCPU topology using flavor extra specs
 
 * hw:cpu_sockets=NN - preferred number of sockets to expose to the guest
 * hw:cpu_cores=NN - preferred number of cores to expose to the guest
@@ -60,10 +60,10 @@ vCPU topology using flavour extra specs
 * hw:cpu_max_threads=NN - maximum number of threads to expose to the guest
 
 It is not expected that administrators will set all these parameters against
-every flavour. The simplest expected use case will be for the cloud admin to
-set "hw:cpu_max_sockets=2" to prevent the flavour exceeding 2 sockets. The
+every flavor. The simplest expected use case will be for the cloud admin to
+set "hw:cpu_max_sockets=2" to prevent the flavor exceeding 2 sockets. The
 virtualization driver will calculate the exact number of cores/sockets/threads
-based on the flavour vCPU count and this maximum sockets constraint.
+based on the flavor vCPU count and this maximum sockets constraint.
 
 For larger vCPU counts there may be many possible configurations, so the
 "hw:cpu_sockets", "hw:cpu_cores", "hw:cpu_threads" parameters enable the
@@ -90,18 +90,18 @@ instead of an initial colon.
 
 If the user sets "hw_cpu_max_sockets", "hw_cpu_max_cores", or
 "hw_cpu_max_threads", these must be strictly lower than the values
-already set against the flavour. The purpose of this is to allow the
+already set against the flavor. The purpose of this is to allow the
 user to further restrict the range of possible topologies that the compute
 host will consider using for the instance.
 
 The "hw_cpu_sockets", "hw_cpu_cores" & "hw_cpu_threads" values
 against the image may not exceed the "hw_cpu_max_sockets", "hw_cpu_max_cores"
-& "hw_cpu_max_threads" values set against the flavour or image. If the
+& "hw_cpu_max_threads" values set against the flavor or image. If the
 upper bounds are exceeded, this will be considered a configuration error
 and the instance will go into an error state and not boot.
 
 If there are multiple possible topology solutions implied by the set of
-parameters defined against the flavour or image, then the hypervisor will
+parameters defined against the flavor or image, then the hypervisor will
 prefer the solution that uses a greater number of sockets. This preference
 will likely be further refined when integrating support for NUMA placement
 in a later blueprint.
@@ -114,7 +114,7 @@ specified topology.
 
 Note that there is no requirement in this design or implementation for
 the compute host topologies to match what is being exposed to the guest.
-ie this will allow a flavour to be given sockets=2,cores=2 and still
+ie this will allow a flavor to be given sockets=2,cores=2 and still
 be used to launch instances on a host with sockets=16,cores=1. If the
 admin wishes to optionally control this, they will be able todo so by
 setting up host aggregates.
@@ -142,7 +142,7 @@ restrictions. The over-use of cores will limit the ability to do an effective
 job at NUMA placement, so it is desirable to use cores as little as possible.
 
 The settings could be defined exclusively against the images, and not make
-any use of flavour extra specs. This is undesirable because to have best
+any use of flavor extra specs. This is undesirable because to have best
 NUMA utilization, the cloud administrator will need to be able to constrain
 what topologies the user is allowed to use. The administrator would also
 like to have the ability to set up define behaviour so that guest can get
@@ -165,7 +165,7 @@ Data model impact
 
 No impact.
 
-The new properties will use the existing flavour extra specs and image
+The new properties will use the existing flavor extra specs and image
 property storage models.
 
 REST API impact
@@ -173,7 +173,7 @@ REST API impact
 
 No impact.
 
-The new properties will use the existing flavour extra specs and image
+The new properties will use the existing flavor extra specs and image
 property API facilities.
 
 Security impact
@@ -182,7 +182,7 @@ Security impact
 The choice of sockets vs cores can have an impact on host resource utilization
 when NUMA is involved, since over use of cores will prevent a guest being
 split across multiple NUMA nodes. This feature addresses this by allowing the
-flavour administrator to define hard caps, and ensuring the flavour will
+flavor administrator to define hard caps, and ensuring the flavor will
 always take priority over the image settings.
 
 Notifications impact
@@ -210,7 +210,7 @@ will be considered there.
 Other deployer impact
 ---------------------
 
-The flavour extra specs will gain new parameters in extra specs which a
+The flavor extra specs will gain new parameters in extra specs which a
 cloud administrator can choose to use. If none are set then the default
 behaviour is unchanged from previous releases.
 
@@ -250,7 +250,7 @@ Testing
 No tempest changes.
 
 The mechanisms for the cloud administrator and end user to set parameters
-against the flavour and/or image are already well tested. The new
+against the flavor and/or image are already well tested. The new
 functionality focuses on interpreting the parameters and setting corresponding
 libvirt XML parameters. This is something that is effectively covered by the
 unit testing framework.
@@ -258,7 +258,7 @@ unit testing framework.
 Documentation Impact
 ====================
 
-The new flavour extra specs and image properties will need to be documented.
+The new flavor extra specs and image properties will need to be documented.
 Guidance should be given to cloud administrators on how to make most
 effective use of the new features. Guidance should be given to the end user
 on how to use the new features to address their use cases.

@@ -50,11 +50,11 @@ would be a one-time setup task done when deploying new compute node hosts.
 Proposed change
 ===============
 
-The flavour extra specs will be enhanced to support a new parameter
+The flavor extra specs will be enhanced to support a new parameter
 
 * hw:mem_page_size=large|small|any|2MB|1GB
 
-In absence of any page size setting in the flavour, the current behaviour of
+In absence of any page size setting in the flavor, the current behaviour of
 using the small, default, page size will continue. A setting of 'large' says
 to only use larger page sizes for guest RAM, eg either 2MB or 1GB on x86;
 'small' says to only use the small page sizes, eg 4k on x86, and is the
@@ -67,9 +67,9 @@ common case would be to use page_size=large or page_size=any. The
 specification of explicit page sizes would be something that NFV workloads
 would require.
 
-The property defined for the flavour can also be set against the image, but
-the use of large pages would only be honoured if the flavour already had a
-policy or 'large' or 'any'. ie if the flavour said 'small', or a specific
+The property defined for the flavor can also be set against the image, but
+the use of large pages would only be honoured if the flavor already had a
+policy or 'large' or 'any'. ie if the flavor said 'small', or a specific
 numeric page size, the image would not be permitted to override this to access
 other large page sizes. Such invalid override in the image would result in
 an exception being raised and the attempt to boot the instance resulting in
@@ -94,7 +94,7 @@ The libvirt driver will be enhanced to report on large page availability per
 NUMA node, building on previously added NUMA topology reporting.
 
 The scheduler will be enhanced to take account of the page size setting on the
-flavour and pick hosts which have sufficient large pages available when
+flavor and pick hosts which have sufficient large pages available when
 scheduling the instance. Conversely if large pages are not requested, then the
 scheduler needs to avoid placing the instance on a host which has pre-reserved
 large pages. The enhancements for the scheduler will be done as part of the
@@ -222,7 +222,7 @@ REST API impact
 
 No impact.
 
-The existing APIs already support arbitrary data in the flavour extra specs.
+The existing APIs already support arbitrary data in the flavor extra specs.
 
 Security impact
 ---------------
@@ -255,7 +255,7 @@ Other deployer impact
 ---------------------
 
 The cloud administrator will gain the ability to set large page policy on the
-flavours they configured. The administrator will also have to configure their
+flavors they configured. The administrator will also have to configure their
 compute hosts to reserve large pages at boot time, and place those hosts into a
 group using aggregates.
 
@@ -267,9 +267,9 @@ Developer impact
 ----------------
 
 If other hypervisors allow the control over large page usage, they could be
-enhanced to support the same flavour extra specs settings. If the hypervisor
+enhanced to support the same flavor extra specs settings. If the hypervisor
 has self-determined control over large page usage, then it is valid to simply
-ignore this new flavour setting. ie do nothing.
+ignore this new flavor setting. ie do nothing.
 
 Implementation
 ==============
@@ -288,7 +288,7 @@ Work Items
 
 * Enhance libvirt driver to report available large pages per NUMA node in the
   host state data
-* Enhance libvirt driver to configure guests based on the flavour parameter
+* Enhance libvirt driver to configure guests based on the flavor parameter
   for page sizes
 * Add support to scheduler to place instances on hosts according to the
   availability of required large pages
@@ -325,7 +325,7 @@ guests that do not want to use large pages.
 Documentation Impact
 ====================
 
-The new flavour parameter available to the cloud administrator needs to be
+The new flavor parameter available to the cloud administrator needs to be
 documented along with recommendations about effective usage. The docs will
 also need to mention the compute host deployment pre-requisites such as the
 need to pre-allocate large pages at boot time and setup aggregates.

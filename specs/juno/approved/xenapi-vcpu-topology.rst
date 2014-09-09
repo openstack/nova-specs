@@ -54,7 +54,7 @@ Data model impact
 
 No impact.
 
-The new properties will use the existing flavour extra specs and image
+The new properties will use the existing flavor extra specs and image
 property storage models.
 
 REST API impact
@@ -62,7 +62,7 @@ REST API impact
 
 No impact.
 
-The new properties will use the existing flavour extra specs and image
+The new properties will use the existing flavor extra specs and image
 property API facilities.
 
 Security impact
@@ -71,7 +71,7 @@ Security impact
 The choice of sockets vs cores can have an impact on host resource utilization
 when NUMA is involved, since over use of cores will prevent a guest being
 split across multiple NUMA nodes. This feature addresses this by allowing the
-flavour administrator to define hard caps, and ensuring the flavour will
+flavor administrator to define hard caps, and ensuring the flavor will
 always take priority over the image settings.
 
 Notifications impact
@@ -99,7 +99,7 @@ will be considered there.
 Other deployer impact
 ---------------------
 
-The flavour extra specs will gain new parameters in extra specs which a
+The flavor extra specs will gain new parameters in extra specs which a
 cloud administrator can choose to use. If none are set then the default
 behaviour is unchanged from previous releases.
 
@@ -137,7 +137,7 @@ Testing of this feature will be covered by the XenServer CI.
 Documentation Impact
 ====================
 
-The new flavour extra specs and image properties will need to be documented.
+The new flavor extra specs and image properties will need to be documented.
 Guidance should be given to cloud administrators on how to make most
 effective use of the new features. Guidance should be given to the end user
 on how to use the new features to address their use cases.

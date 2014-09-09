@@ -24,7 +24,7 @@ domains which were not launched by Nova, for example, utility guests run by
 libguestfs for file injection. The libvirt domain uuid will match that of the
 Nova instance, but there is more information about a Nova instance that could
 usefully be provided to administrators. For example, the identity of the
-tenant who launched it, the original flavour name and/or settings, the time at
+tenant who launched it, the original flavor name and/or settings, the time at
 which the domain was launched, and the version number of the Nova instance that
 launched it (can be relevant if Nova is upgraded while a VM is running).
 
