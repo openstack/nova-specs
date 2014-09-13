@@ -28,7 +28,6 @@ sys.path.insert(0, os.path.abspath('.'))
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = ['redirect',
               'sphinx.ext.autodoc',
-              'sphinx.ext.intersphinx',
               'sphinx.ext.todo',
               'sphinx.ext.viewcode',
               'oslosphinx',
