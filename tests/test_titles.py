@@ -93,7 +93,7 @@ class TestTitles(testtools.TestCase):
             spec = docutils.core.publish_doctree(template)
             template_titles = self._get_titles(spec)
 
-            files = glob.glob("specs/%s/*" % release)
+            files = glob.glob("specs/%s/*/*" % release)
             for filename in files:
                 self.assertTrue(filename.endswith(".rst"),
                                 "spec's file must uses 'rst' extension.")

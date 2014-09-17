@@ -24,13 +24,21 @@ Contents:
    readme
    specs/*
 
-Juno approved specs:
+June implemented specs:
 
 .. toctree::
    :glob:
    :maxdepth: 1
 
-   specs/juno/*
+   specs/juno/implemented/*
+
+Juno approved (but not implemented) specs:
+
+.. toctree::
+   :glob:
+   :maxdepth: 1
+
+   specs/juno/approved/*
 
 ==================
 Indices and tables

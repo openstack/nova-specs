@@ -14,6 +14,15 @@ The layout of this repository is::
 
   specs/<release>/
 
+Where there are two sub-directories:
+
+  specs/<release>/approved: specifications approved but not yet implemented
+  specs/<release>/implemented: implemented specifications
+
+This directory structure allows you to see what we thought about doing,
+decided to do, and actually got done. Users interested in functionality in a
+given release should only refer to the ``implemented`` directory.
+
 You can find an example spec in ``specs/template.rst``.
 
 Specifications are proposed for a given release by adding them to the
