@@ -10,6 +10,7 @@ Contents:
    :glob:
    :maxdepth: 1
 
+   readme
    specs/*
 
 Juno approved specs:
