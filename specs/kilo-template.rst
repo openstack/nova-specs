@@ -48,13 +48,14 @@ Some notes about using this template:
 Problem description
 ===================
 
-A detailed description of the problem:
+A detailed description of the problem. What problem is this blueprint addressing?
 
-* For a new feature this might be use cases. Ensure you are clear about the
-  actors in each use case: End User vs Deployer
+Use Cases
+----------
 
-* For a major reworking of something existing it would describe the
-  problems in that feature that are being addressed.
+What use cases does this address? What impact on actors does this change have?
+Ensure you are clear about the actors in each use case: Developer, End User,
+Deployer etc.
 
 
 Proposed change
