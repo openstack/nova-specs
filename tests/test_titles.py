@@ -86,21 +86,23 @@ class TestTitles(testtools.TestCase):
 
 
     def test_template(self):
-        with open('specs/template.rst') as f:
-            template = f.read()
-        spec = docutils.core.publish_doctree(template)
-        template_titles = self._get_titles(spec)
+        releases = [x.split('/')[1] for x in glob.glob('specs/*/')]
+        for release in releases:
+            with open("specs/%s-template.rst" % release) as f:
+                template = f.read()
+            spec = docutils.core.publish_doctree(template)
+            template_titles = self._get_titles(spec)
 
-        files = glob.glob('specs/*/*')
-        for filename in files:
-            self.assertTrue(filename.endswith(".rst"),
-                            "spec's file must uses 'rst' extension.")
-            with open(filename) as f:
-                data = f.read()
+            files = glob.glob("specs/%s/*" % release)
+            for filename in files:
+                self.assertTrue(filename.endswith(".rst"),
+                                "spec's file must uses 'rst' extension.")
+                with open(filename) as f:
+                    data = f.read()
 
-            spec = docutils.core.publish_doctree(data)
-            titles = self._get_titles(spec)
-            self._check_titles(filename, template_titles, titles)
-            self._check_lines_wrapping(filename, data)
-            self._check_no_cr(filename, data)
-            self._check_trailing_spaces(filename, data)
+                spec = docutils.core.publish_doctree(data)
+                titles = self._get_titles(spec)
+                self._check_titles(filename, template_titles, titles)
+                self._check_lines_wrapping(filename, data)
+                self._check_no_cr(filename, data)
+                self._check_trailing_spaces(filename, data)
