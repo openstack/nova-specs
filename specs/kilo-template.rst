@@ -19,6 +19,9 @@ respectively.
 
 Some notes about using this template:
 
+* Not all blueprints need a spec. For more information see
+  http://docs.openstack.org/developer/nova/devref/kilo.blueprints.html#when-is-a-blueprint-needed
+
 * Your spec should be in ReSTructured text, like this template.
 
 * Please wrap text at 79 columns.
