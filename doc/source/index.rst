@@ -1,5 +1,16 @@
 .. nova-specs documentation master file
 
+========================
+Nova Project Priorities
+========================
+
+.. toctree::
+   :glob:
+   :maxdepth: 1
+
+   priorities/*
+
+
 ===========================
 Nova Project Specifications
 ===========================

@@ -57,6 +57,11 @@ What use cases does this address? What impact on actors does this change have?
 Ensure you are clear about the actors in each use case: Developer, End User,
 Deployer etc.
 
+Project Priority
+-----------------
+
+Does this blueprint fit under one of the :ref:`kilo-priorities`? If so which one
+and how?
 
 Proposed change
 ===============
