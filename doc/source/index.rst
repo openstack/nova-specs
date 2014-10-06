@@ -24,7 +24,7 @@ Contents:
    readme
    specs/*
 
-June implemented specs:
+Juno implemented specs:
 
 .. toctree::
    :glob:
