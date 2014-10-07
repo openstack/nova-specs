@@ -40,6 +40,14 @@ Juno approved (but not implemented) specs:
 
    specs/juno/approved/*
 
+Kilo approved (but not implemented) specs:
+
+.. toctree::
+   :glob:
+   :maxdepth: 1
+
+   specs/kilo/approved/*
+
 ==================
 Indices and tables
 ==================
