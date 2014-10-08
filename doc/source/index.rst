@@ -15,14 +15,12 @@ Nova Project Priorities
 Nova Project Specifications
 ===========================
 
-Contents:
+Project Documentation:
 
 .. toctree::
-   :glob:
-   :maxdepth: 1
+   :maxdepth: 2
 
    readme
-   specs/*
 
 Juno implemented specs:
 
