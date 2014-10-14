@@ -79,10 +79,15 @@ we will store a JSONified copy of the flavor on initial boot. Further,
 we will provide for storage of an 'old' and 'new' flavor to facilitate
 resize operations. The top-level structure will look like this::
 
- {'cur': {'flavorid': 'foo', 'memory_mb': 1024, ...},
+ {'cur': { ... serialized Flavor object ... }
   'new': None,
   'old': None,
  }
+
+When a flavor is stored in one of the three slots above, the form used
+will be the serialized NovaObject result. This means that the content
+in the database will be versioned and deserializing it from the
+database will work just like receiving one over RPC.
 
 The database migration for this change will simply add the new column,
 but not perform a data migration. Instead, the migration from
