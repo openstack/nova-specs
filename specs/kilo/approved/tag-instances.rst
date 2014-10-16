@@ -36,7 +36,9 @@ simple strings.
 Project Priority
 -----------------
 
-Partly falls under the cross project API consistency category.
+The kilo priorities list is currently undefined, But this partly falls under
+the cross project API consistency category.
+
 
 Proposed change
 ===============

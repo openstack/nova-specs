@@ -26,7 +26,7 @@ This is useful when user to know status of an instance
 
 Project Priority
 -----------------
-Low
+None
 
 Proposed change
 ===============
