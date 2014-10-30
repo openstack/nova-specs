@@ -18,9 +18,10 @@ Nova Project Specifications
 Project Documentation:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    readme
+   Specification Template (Kilo) <specs/kilo-template>
 
 Juno implemented specs:
 
