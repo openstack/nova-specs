@@ -72,7 +72,6 @@ copyright = u'%s, OpenStack Nova Team' % datetime.date.today().year
 exclude_patterns = [
     '_build',
     'specs/juno-template.rst',
-    'specs/kilo-template.rst',
 ]
 
 # The reST default role (used for this markup: `text`) to use for all documents.
