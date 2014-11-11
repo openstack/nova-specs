@@ -1,8 +1,14 @@
 .. nova-specs documentation master file
 
-========================
-Nova Project Priorities
-========================
+============================
+OpenStack Nova Project Plans
+============================
+
+Priorities
+==========
+
+During each design summit, we agree what the whole community wants to focus
+on for the upcoming release. This is the output of those discussions:
 
 .. toctree::
    :glob:
@@ -10,44 +16,31 @@ Nova Project Priorities
 
    priorities/*
 
+Specifications
+==============
 
-===========================
-Nova Project Specifications
-===========================
-
-Project Documentation:
-
-.. toctree::
-   :maxdepth: 1
-
-   readme
-   Specification Template (Kilo) <specs/kilo-template>
-
-Juno implemented specs:
+Here you can find the specs, and spec template, for each release:
 
 .. toctree::
    :glob:
    :maxdepth: 1
 
-   specs/juno/implemented/*
+   specs/kilo/index
+   specs/juno/index
 
-Juno approved (but not implemented) specs:
+Process
+=======
 
-.. toctree::
-   :glob:
-   :maxdepth: 1
-
-   specs/juno/approved/*
-
-Kilo approved (but not implemented) specs:
+Documentation for nova-specs process:
 
 .. toctree::
-   :glob:
    :maxdepth: 1
 
-   specs/kilo/approved/*
+   How to submit a spec <readme>
 
-==================
+For more details, look at spec template for the specific release, and see the
+wiki page on Blueprints: https://wiki.openstack.org/wiki/Blueprints
+
 Indices and tables
 ==================
 

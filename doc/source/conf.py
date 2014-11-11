@@ -71,7 +71,6 @@ copyright = u'%s, OpenStack Nova Team' % datetime.date.today().year
 # directories to ignore when looking for source files.
 exclude_patterns = [
     '_build',
-    'specs/juno-template.rst',
 ]
 
 # The reST default role (used for this markup: `text`) to use for all documents.
