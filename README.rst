@@ -25,6 +25,21 @@ given release should only refer to the ``implemented`` directory.
 
 You can find an example spec in ``specs/template.rst``.
 
+Additionally, we allow the proposal of specifications that do not have a
+developer assigned to them. These are proposed for review in the same manner as
+above, but are added to::
+
+  specs/backlog/approved
+
+Specifications in this directory indicate the original author has either
+become unavailable, or has indicated that they are not going to implement the
+specification. The specifications found here are available as projects for
+people looking to get involved with Nova. If you are interested in
+claiming a spec, start by posting a review for the specification that moves it
+from this directory to the next active release. Please set yourself as the new
+`primary assignee` and maintain the original author in the `other contributors`
+list.
+
 Specifications are proposed for a given release by adding them to the
 ``specs/<release>`` directory and posting it for review.  The implementation
 status of a blueprint for a given release can be found by looking at the

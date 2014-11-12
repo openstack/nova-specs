@@ -28,6 +28,14 @@ Here you can find the specs, and spec template, for each release:
    specs/kilo/index
    specs/juno/index
 
+There are also some partial specifications that can be found here:
+
+.. toctree::
+   :glob:
+   :maxdepth: 1
+
+   specs/backlog/index
+
 Process
 =======
 
