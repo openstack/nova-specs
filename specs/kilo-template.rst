@@ -81,6 +81,11 @@ propose to solve this problem?
 If this is one part of a larger effort make it clear where this piece ends. In
 other words, what's the scope of this effort?
 
+At this point, if you would like to just get feedback on if the problem and
+proposed change fit in nova, you can stop here and post this for review to get
+preliminary feedback. If so please say:
+Posting to get preliminary feedback on the scope of this spec.
+
 Alternatives
 ------------
 
