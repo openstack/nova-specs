@@ -17,10 +17,33 @@ prose that operators can understand. The title and this first paragraph
 should be used as the subject line and body of the commit message
 respectively.
 
-Some notes about using this template:
+Some notes about the nova-spec and blueprint process:
 
 * Not all blueprints need a spec. For more information see
   http://docs.openstack.org/developer/nova/devref/kilo.blueprints.html#when-is-a-blueprint-needed
+
+* The aim of this document is first to define the problem we need to solve,
+  and second agree the overall approach to solve that problem.
+
+* This is not intended to be extensive documentation for a new feature.
+  For example, there is no need to specify the exact configuration changes,
+
+  nor the exact details of any DB model changes. But you should still define
+  that such changes are required, and be clear on how that will affect
+  upgrades.
+
+* You should aim to get your spec approved before writing your code.
+  While you are free to write prototypes and code before getting your spec
+  approved, its possible that the outcome of the spec review process leads
+  you towards a fundamentally different solution than you first envisaged.
+
+* But, API changes are held to a much higher level of scrutiny.
+  As soon as an API change merges, we must assume it could be in production
+  somewhere, and as such, we then need to support that API change forever.
+  To avoid getting that wrong, we do want lots of details about API changes
+  upfront.
+
+Some notes about using this template:
 
 * Your spec should be in ReSTructured text, like this template.
 
