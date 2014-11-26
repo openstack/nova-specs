@@ -248,5 +248,5 @@ References
 
 .. [1] Parallels Cloud Server http://www.parallels.com/products/pcs
 .. [2] Ploop block device http://openvz.org/Ploop
-.. [3] PCS nova driver https://github.com/parallels/pcs-nova-driver
+.. [3] PCS nova driver https://github.com/CloudServer/pcs-nova-driver
 .. [4] OpenVZ kernel memory management model https://openvz.org/VSwap
