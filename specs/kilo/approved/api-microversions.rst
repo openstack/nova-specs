@@ -83,10 +83,10 @@ Design Priorities:
 
 * How will the code be internally structured. How do we make it:
 
-** Easy to see in the code that you are about to break API compatibility.
-** Make it easy to make backwards compatible changes
-** Make it possible to make backwards incompatible changes
-** Minimise code duplication to minimise maintenance overhead
+    * Easy to see in the code that you are about to break API compatibility.
+    * Make it easy to make backwards compatible changes
+    * Make it possible to make backwards incompatible changes
+    * Minimise code duplication to minimise maintenance overhead
 
 * How will we test this both for unittests and in integration. And
   what limits does that impose.
@@ -472,9 +472,5 @@ though.
 
 References
 ==========
-
-* Semver http://semver.org
-
-* Links to mailing list or IRC discussions
 
 * https://etherpad.openstack.org/p/kilo-nova-microversions
