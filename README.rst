@@ -56,7 +56,7 @@ blueprints <http://blueprints.launchpad.net/nova>`_
 Please note, Launchpad blueprints are still used for tracking the
 current status of blueprints. For more information, see https://wiki.openstack.org/wiki/Blueprints
 
-For more information about working with gerrit, see https://wiki.openstack.org/wiki/Gerrit_Workflow
+For more information about working with gerrit, see http://docs.openstack.org/infra/manual/developers.html#development-workflow
 
 To validate that the specification is syntactically correct (i.e. get more
 confidence in the Jenkins result), please execute the following command::
