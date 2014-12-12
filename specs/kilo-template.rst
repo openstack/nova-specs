@@ -331,6 +331,11 @@ Dependencies
 Testing
 =======
 
+Please discuss the important scenarios needed to test here, as well as
+specific edge cases we should be ensuring work correctly. For each
+scenario please specify if this requires specialized hardware, a full
+openstack environment, or can be simulated inside the Nova tree.
+
 Please discuss how the change will be tested. We especially want to know what
 tempest tests will be added. It is assumed that unit test coverage will be
 added so that doesn't need to be mentioned explicitly, but discussion of why
