@@ -96,18 +96,18 @@ A new 'cell_mapping' table will be added.  And it will be added outside of the
 current 'nova' database in a new 'nova_api' database.  This new database will
 have deployment ramifications as described below
 
-The table will look like:
+The table will look like:::
 
-CREATE TABLE `cell_mapping` (
-  `created_at` datetime DEFAULT NULL,
-  `updated_at` datetime DEFAULT NULL,
-  `deleted_at` datetime DEFAULT NULL,
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `uuid` varchar(36) NOT NULL,
-  `name` varchar(255) DEFAULT NULL,
-  `deleted` int(11) DEFAULT NULL,
-  `transport_url` mediumtext NOT NULL,
-  `database_connection` mediumtext NOT NULL)
+  CREATE TABLE `cell_mapping` (
+    `created_at` datetime DEFAULT NULL,
+    `updated_at` datetime DEFAULT NULL,
+    `deleted_at` datetime DEFAULT NULL,
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `uuid` varchar(36) NOT NULL,
+    `name` varchar(255) DEFAULT NULL,
+    `deleted` int(11) DEFAULT NULL,
+    `transport_url` mediumtext NOT NULL,
+    `database_connection` mediumtext NOT NULL)
 
 REST API impact
 ---------------
