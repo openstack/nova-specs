@@ -52,7 +52,7 @@ Proposed change
 
 The flavor extra specs will be enhanced to support a new parameter
 
-* hw:mem_page_size=large|small|any|2MB|1GB
+* hw:mem_page_size=large|small|any|<custom page size in KiB>
 
 In absence of any page size setting in the flavor, the current behaviour of
 using the small, default, page size will continue. A setting of 'large' says
@@ -147,20 +147,20 @@ availability per node. So it would then look like
                total = 10737418240
                free = 3221225472
             },
-            mempages = {
-               4096 = {
-                  total = 262144
-                  free = 262144
+            mempages = [{
+                 size_kb = 4,
+                 total = 262144,
+                 used = 262144,
+               }, {
+                 size_kb = 2048,
+                 total = 1024,
+                 used = 1024,
+               }, {
+                 size_kb = 1048576,
+                 total = 7,
+                 used = 0,
                }
-               2097152 = {
-                  total = 1024
-                  free = 1024
-               }
-               1073741824 = {
-                  total = 7
-                  free = 0
-               }
-            }
+            ]
             distances = [ 10, 20],
          },
          {
@@ -170,52 +170,24 @@ availability per node. So it would then look like
                total = 10737418240
                free = 5368709120
             },
-            mempages = {
-               4096 = {
-                  total = 262144
-                  free = 262144
+	    mempages = [{
+                 size_kb = 4,
+                 total = 262144,
+                 used = 512,
+               }, {
+                 size_kb = 2048,
+                 total = 1024,
+                 used = 128,
+               }, {
+                 size_kb = 1048576,
+                 total = 7,
+                 used = 4,
                }
-               2097152 = {
-                  total = 1024
-                  free = 1024
-               }
-               1073741824 = {
-                  total = 7
-                  free = 2
-               }
-            }
+            ]
             distances = [ 20, 10],
          }
      ],
   }
-
-The data provided to the extensible resource tracker would be similarly
-enhanced to include this page info in a flattened format, which can be
-efficiently queried based on the key name:
-
-* hw_numa_nodes=2
-* hw_numa_node0_cpus=4
-* hw_numa_node0_mem_total=10737418240
-* hw_numa_node0_mem_avail=3221225472
-* hw_numa_node0_mem_page_total_4=262144
-* hw_numa_node0_mem_page_avail_4=262144
-* hw_numa_node0_mem_page_total_2048=1024
-* hw_numa_node0_mem_page_avail_2048=1024
-* hw_numa_node0_mem_page_total_1048576=7
-* hw_numa_node0_mem_page_avail_1048576=0
-* hw_numa_node0_distance_node0=10
-* hw_numa_node0_distance_node1=20
-* hw_numa_node1_cpus=4
-* hw_numa_node1_mem_total=10737418240
-* hw_numa_node1_mem_avail=5368709120
-* hw_numa_node1_mem_page_total_4=262144
-* hw_numa_node1_mem_page_avail_4=262144
-* hw_numa_node1_mem_page_total_2048=1024
-* hw_numa_node1_mem_page_avail_2048=1024
-* hw_numa_node1_mem_page_total_1048576=7
-* hw_numa_node1_mem_page_avail_1048576=2
-* hw_numa_node1_distance_node0=20
-* hw_numa_node1_distance_node1=10
 
 REST API impact
 ---------------
@@ -281,7 +253,7 @@ Primary assignee:
   berrange
 
 Other contributors:
-  ndipanov
+  ndipanov, sahid-ferdjaoui
 
 Work Items
 ----------
@@ -309,10 +281,6 @@ Dependencies
   general large page support in libvirt, however, the performance benefits
   won't be fully realized until per-NUMA node large page allocation can be
   done.
-
-* Extensible resource tracker
-
-  https://blueprints.launchpad.net/nova/+spec/extensible-resource-tracking
 
 Testing
 =======
