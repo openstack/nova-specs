@@ -10,7 +10,7 @@ Support iSCSI live migration for different iSCSI target
 
 Include the URL of your launchpad blueprint:
 
-https://blueprints.launchpad.net/cinder/+spec/iscsi-live-migration-for-different-target
+https://blueprints.launchpad.net/nova/+spec/iscsi-live-migration-different-target
 
 Currently, Nova premises a situation which iSCSI target is not changed
 before and after live migration. Therefore, if destination node has
