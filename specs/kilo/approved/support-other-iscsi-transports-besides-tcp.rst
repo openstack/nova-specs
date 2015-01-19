@@ -9,7 +9,7 @@
 ====================================================================
 
 
-https://blueprints.launchpad.net/nova/+spec/add-transport-support-to-iscsi
+https://blueprints.launchpad.net/nova/+spec/add-open-iscsi-transport-support
 
 Currently open-iscsi in openstack does not allow the use of offload iscsi
 transports (cxgb4i, qla4xx, bnx2i etc) or other software iscsi transports
