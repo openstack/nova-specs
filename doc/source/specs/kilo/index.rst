@@ -9,7 +9,7 @@ Template:
 
    Specification Template (Kilo) <template>
 
-Juno implemented specs:
+Kilo implemented specs:
 
 .. toctree::
    :glob:
