@@ -87,8 +87,8 @@ control over the NUMA topology / fit characteristics.
 * hw:numa_mempolicy=preferred|strict - memory allocation policy
 * hw:numa_cpus.0=<cpu-list> - mapping of vCPUS N-M to NUMA node 0
 * hw:numa_cpus.1=<cpu-list> - mapping of vCPUS N-M to NUMA node 1
-* hw:numa_mem.0=<ram-size> - mapping N GB of RAM to NUMA node 0
-* hw:numa_mem.1=<ram-size> - mapping N GB of RAM to NUMA node 1
+* hw:numa_mem.0=<ram-size> - mapping N MB of RAM to NUMA node 0
+* hw:numa_mem.1=<ram-size> - mapping N MB of RAM to NUMA node 1
 
 The most common case will be that the admin only sets 'hw:numa_nodes' and then
 the flavor vCPUs and RAM will be divided equally across the NUMA nodes.
@@ -125,8 +125,8 @@ config:
 * hw:numa_nodes=2 - numa of NUMA nodes to expose to the guest.
 * hw:numa_cpus.0=0,1,2,3,4,5
 * hw:numa_cpus.1=6,7
-* hw:numa_mem.0=3
-* hw:numa_mem.1=1
+* hw:numa_mem.0=3072
+* hw:numa_mem.1=1024
 
 The scheduler will look for a host with 2 NUMA nodes with the ability to run
 6 CPUs + 3 GB of RAM on one node, and 2 CPUS + 1 GB of RAM on another node.
@@ -142,8 +142,8 @@ property naming conventions:
 * hw_numa_mempolicy=strict|prefered - memory allocation policy
 * hw_numa_cpus.0=<cpu-list> - mapping of vCPUS N-M to NUMA node 0
 * hw_numa_cpus.1=<cpu-list> - mapping of vCPUS N-M to NUMA node 1
-* hw_numa_mem.0=<ram-size> - mapping N GB of RAM to NUMA node 0
-* hw_numa_mem.1=<ram-size> - mapping N GB of RAM to NUMA node 1
+* hw_numa_mem.0=<ram-size> - mapping N MB of RAM to NUMA node 0
+* hw_numa_mem.1=<ram-size> - mapping N MB of RAM to NUMA node 1
 
 This is useful if the application in the image requires very specific NUMA
 topology characteristics, which is expected to be used frequently with NFV
@@ -208,23 +208,6 @@ appear as structured data
          }
      ],
   }
-
-To enable more efficient scheduling though, it would be desirable to also map
-NUMA topology into the extensible resource tracker schema. This would imply
-representing the hierarchical data above in a flattened format as a series of
-key, value pairs.
-
-* hw_numa_nodes=2
-* hw_numa_node0_cpus=4
-* hw_numa_node0_memtotal=10737418240
-* hw_numa_node0_memavail=3221225472
-* hw_numa_node0_distance_node0=10
-* hw_numa_node0_distance_node1=20
-* hw_numa_node1_cpus=4
-* hw_numa_node1_memtotal=10737418240
-* hw_numa_node1_memavail=5368709120
-* hw_numa_node1_distance_node0=20
-* hw_numa_node1_distance_node1=10
 
 
 REST API impact
@@ -298,8 +281,6 @@ Other contributors:
 Work Items
 ----------
 
-* Define a schema for reporting NUMA node resources and availability
-  for the host state API / extensible resource tracker
 * Enhance libvirt driver to report NUMA node resources & availability
 * Enhance libvirt driver to support setup of guest NUMA nodes.
 * Enhance libvirt driver to look at NUMA node availability when launching
@@ -321,10 +302,6 @@ Dependencies
   performance.
 
     https://www.redhat.com/archives/libvir-list/2014-June/msg00201.html
-
-* Extensible resource tracker
-
-  https://blueprints.launchpad.net/nova/+spec/extensible-resource-tracking
 
 Testing
 =======
