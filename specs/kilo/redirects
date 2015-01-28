@@ -1,1 +1,9 @@
 approved/io-ops-weight.rst ../implemented/io-ops-weight.rst
+approved/enforce-unique-instance-uuid-in-db.rst ../implemented/enforce-unique-instance-uuid-in-db.rst
+approved/hyper-v-smbfs-volume-support.rst ../implemented/hyper-v-smbfs-volume-support.rst
+approved/libvirt-smbfs-volume-support.rst ../implemented/libvirt-smbfs-volume-support.rst
+approved/nova-pagination.rst ../implemented/nova-pagination.rst
+approved/vmware-spbm-support.rst ../implemented/vmware-spbm-support.rst
+approved/virt-driver-cpu-pinning.rst ../implemented/virt-driver-cpu-pinning.rst
+approved/virt-driver-large-pages.rst ../implemented/virt-driver-large-pages.rst
+approved/relax-resource-name-restrictions.rst ../implemented/relax-resource-name-restrictions.rst
