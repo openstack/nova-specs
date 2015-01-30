@@ -78,22 +78,19 @@ This will consist of these steps:
 * The Ironic virt driver decides if a configdrive should be generated for this
   instance. If so:
 
-* The virt driver generates the configdrive and gzips it.
+* The virt driver generates the configdrive, gzips and base64 encode it.
 
-* The virt driver puts the gzipped image in some system and holds on to
-  a URI for the image.
+* The virt driver passes the encoded image to Ironic via the Ironic API.
 
-* The virt driver will pass this URI to Ironic.
+* The Ironic service will then store the image in some system and holds
+  on to a URI for it, or if no external system is configured, Ironic
+  will save the image into its database. The reference implementation
+  for this will be using Swift, with a configurable TTL.
 
-* If present, Ironic will pass this URI to its DeployDriver, which will
-  in turn provide it to the instance during provisioning, by means appropriate
-  to that driver.
-
-* Ironic uses this URI to write a configdrive partition on the
-  instance during provisioning.
-
-* The reference implementation for this will be using Swift, with a
-  configurable TTL.
+* Ironic pass the image to the deploy driver that will then expose it
+  to the tenant. The initial implementation will create a config drive
+  partition on the disk and copy the image onto it, but it could be extended
+  to use the virtual media out-of-band if the target hardware supports it.
 
 Alternatives
 ------------
@@ -121,8 +118,9 @@ None.
 Security impact
 ---------------
 
-This proposal involves storing end user data in Swift. This may be a security
-concern, as this data is not encrypted at rest.
+None for this spec, but Ironic might store the end user data in
+Swift. This may be a security concern, as this data is not encrypted
+at rest.
 
 Notifications impact
 --------------------
@@ -144,12 +142,7 @@ spent should be relatively small.
 Other deployer impact
 ---------------------
 
-The reference implementation will add a hard dependency on Swift for
-deployers that wish to use configdrive support with Ironic. Other
-implementations may remove this dependency.
-
-The reference implementation will also add corresponding config options
-for the Swift client.
+None.
 
 Developer impact
 ----------------
@@ -169,18 +162,10 @@ Primary assignee:
 Work Items
 ----------
 
-* Add a wrapper for python-swiftclient that can, at a minimum, upload objects
-  to Swift.
-
-* Implement the code and unit tests. This will involve changing the deploy()
-  function in Ironic's virt driver to generate the configdrive, upload
-  it to Swift, and pass the Swift URL for the configdrive in the PATCH
-  request to Ironic. The tear_down() method of Ironic's virt driver will
-  be changed to remove the configdrive key from instance_info. Unit tests will
-  need to be updated accordingly.
-
-* Configure tempest tests to properly exercise this feature.
-
+* Implement the code and unit tests. This will involve changing the
+  spawn() function in Ironic's virt driver to generate the configdrive,
+  gzip, base64 encode it and pass it to Ironic as part of the request BODY
+  of the API call to start the deployment of the Node.
 
 Dependencies
 ============
@@ -192,7 +177,7 @@ instance. [1]
 Testing
 =======
 
-Use tempest to test this feature, when configured properly.
+Unittests.
 
 
 Documentation Impact
