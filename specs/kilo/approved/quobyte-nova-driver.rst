@@ -128,11 +128,7 @@ Ica1820031f1fc8b66d7ed7fe76ffeb985cf0ef35
 Dependencies
 ============
 
-This change depends on the addition of disk driver IO policy configurability
-as implemented in `Change-Id: Iaaa298029e139690526a61de51b569dd8d34236d
-<https://review.openstack.org/#/c/117442/20>`_.
-
-Furthermore the corresponding `Cinder driver
+This change requires the corresponding `Cinder driver
 <https://blueprints.launchpad.net/cinder/+spec/quobyte-usp-driver>`_ is
 required, the respective code can be found at `Change-Id:
 I7ca13e28b000d7a07c2baecd5454e50be4c9640b
