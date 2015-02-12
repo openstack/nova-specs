@@ -285,7 +285,7 @@ None
 Testing
 =======
 
-Tempest tests to be added to check if network data is returned.
+Unit and functional tests will be added to check if network data is returned.
 
 Documentation Impact
 ====================
