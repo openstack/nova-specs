@@ -155,21 +155,21 @@ Client Interaction
 A client specifies the version of the API they want via the following
 approach, a new header::
 
-  X-OpenStack-Compute-API-Version: 2.114
+  X-OpenStack-Nova-API-Version: 2.114
 
 This conceptually acts like the accept header. This is a global API
 version.
 
 Semantically this means:
 
-* If X-OpenStack-Compute-API-Version is not provided, act as if min_version was
+* If X-OpenStack-Nova-API-Version is not provided, act as if min_version was
   sent.
 
-* If X-OpenStack-Compute-API-Version is sent, respond with the API at that
+* If X-OpenStack-Nova-API-Version is sent, respond with the API at that
   version. If that's outside of the range of versions supported,
   return 406 Not Acceptable.
 
-* If X-OpenStack-Compute-API-Version: latest (special keyword) return
+* If X-OpenStack-Nova-API-Version: latest (special keyword) return
   max_version of the API.
 
 This means out of the box, with an old client, an OpenStack
@@ -179,8 +179,8 @@ features.
 
 Two extra headers are always returned in the response:
 
-X-OpenStack-Compute-API-Version: version_number, experimental
-Vary: X-OpenStack-Compute-API-Version
+X-OpenStack-Nova-API-Version: version_number, experimental
+Vary: X-OpenStack-Nova-API-Version
 
 The first header specifies the version number of the API which was
 executed. Experimental is only returned if the operator has made a
@@ -197,7 +197,7 @@ details.
 Implementation design details
 -----------------------------
 
-On each request the X-OpenStack-Compute-API-Version header string will be
+On each request the X-OpenStack-Nova-API-Version header string will be
 converted to an APIVersionRequest object in the wsgi code. Routing
 will occur in the usual manner with the version object attached to the
 request object (which all API methods expect). The API methods can
@@ -381,7 +381,7 @@ None
 Other end user impact
 ---------------------
 
-SDK authors will need to start using the X-OpenStack-Compute-API-Version header
+SDK authors will need to start using the X-OpenStack-Nova-API-Version header
 to get access to new features. The fact that new features will only be
 added in new versions will encourage them to do so.
 
@@ -433,7 +433,7 @@ Work Items
 ----------
 
 * Implement APIVersions class
-* Implement handling of X-OpenStack-Compute-API-Version header
+* Implement handling of X-OpenStack-Nova-API-Version header
 * Implement routing of methods called based on version header.
 * Find and implement first API change requiring a microversion bump.
 
