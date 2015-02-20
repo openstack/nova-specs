@@ -233,7 +233,7 @@ EC2 API afterwards) we can take:
 
 1. Not return any information in question.
 2. Store everything in standalone EC2 API DB and provide all the information
-for EC2 API run instances and some dummy values for nova-run instances.
+   for EC2 API run instances and some dummy values for nova-run instances.
 
 All of the alternatives presume cutting direct novaDB access.
 
@@ -309,6 +309,12 @@ Other contributors:
   Andrey Pavlov (apavlov-e)
 
 or nova team.
+
+Work Items
+----------
+
+Expose decided public APIs
+
 
 Dependencies
 ============
