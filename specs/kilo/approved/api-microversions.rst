@@ -218,15 +218,13 @@ Note: This list is not meant to be an exhaustive list
 Within a controller case, methods can be marked with a decorator
 to indicate what API versions they implement. For example::
 
-::
+  @api_version(min_version='2.1', max_version='2.9')
+  def show(self, req, id):
+     pass
 
->  @api_version(min_version='2.1', max_version='2.9')
->  def show(self, req, id):
->     pass
->
->  @api_version(min_version='3.0')
->  def show(self, req, id):
->     pass
+  @api_version(min_version='3.0')
+  def show(self, req, id):
+     pass
 
 An incoming request for version 2.2 of the API would end up
 executing the first method, whilst an incoming request for version
@@ -236,20 +234,18 @@ For cases where the method implementations are very similar with just
 minor differences a lot of duplicated code can be avoided by versioning
 internal methods intead. For example::
 
+  @api_version(min_version='2.1')
+  def _version_specific_func(self, req, arg1):
+     pass
 
->   @api_version(min_version='2.1')
->   def _version_specific_func(self, req, arg1):
->      pass
->
->   @api_version(min_version='2.5')
->   def _version_specific_func(self, req, arg1):
->      pass
->
->   def show(self, req, id):
->      .... common stuff ....
->      self._version_specific_func(req, "foo")
->       .... common stuff ....
+  @api_version(min_version='2.5')
+  def _version_specific_func(self, req, arg1):
+     pass
 
+  def show(self, req, id):
+     .... common stuff ....
+     self._version_specific_func(req, "foo")
+        .... common stuff ....
 
 Reducing the duplicated code to a minimum minimises maintenance
 overhead. So the technique we use would depend on individual
@@ -260,14 +256,13 @@ A version object is passed down to the method attached to the request
 object so it is also possible to do very specific checks in a
 method. For example::
 
-> def show(self, req, id):
->    .... stuff ....
->
->    if req.ver_obj.matches(start_version, end_version):
->      .... Do version specific stuff ....
->
->    ....  stuff ....
+  def show(self, req, id):
+    .... stuff ....
 
+    if req.ver_obj.matches(start_version, end_version):
+      .... Do version specific stuff ....
+
+    ....  stuff ....
 
 Note that end_version is optional in which case it will match any
 version greater than or equal to start_version.
@@ -285,10 +280,11 @@ Note that both min_version and max_version would be optional
 parameters.
 
 A method, extension, or a field in a request or response can be
-removed from the API by specifying a max_version.
+removed from the API by specifying a max_version::
 
->  @api_version(min_version='2.1', max_version='2.9')
->  def show(self, req, id):
+  @api_version(min_version='2.1', max_version='2.9')
+  def show(self, req, id):
+    ....  stuff ....
 
 If a request for version 2.11 is made by a client, the client will
 receive a 404 as if the method does not exist at all. If the minimum
