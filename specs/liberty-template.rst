@@ -80,7 +80,8 @@ Some notes about using this template:
 Problem description
 ===================
 
-A detailed description of the problem. What problem is this blueprint addressing?
+A detailed description of the problem. What problem is this blueprint
+addressing?
 
 Use Cases
 ----------
@@ -92,8 +93,8 @@ Deployer etc.
 Project Priority
 -----------------
 
-Does this blueprint fit under one of the :ref:`kilo-priorities`? If so which one
-and how?
+Does this blueprint fit under one of the :ref:`kilo-priorities`? If so which
+one and how?
 
 Proposed change
 ===============
