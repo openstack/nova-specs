@@ -41,9 +41,10 @@ from this directory to the next active release. Please set yourself as the new
 list.
 
 Specifications are proposed for a given release by adding them to the
-``specs/<release>`` directory and posting it for review.  The implementation
-status of a blueprint for a given release can be found by looking at the
-blueprint in launchpad.  Not all approved blueprints will get fully implemented.
+``specs/<release>/approved`` directory and posting it for review.  The
+implementation status of a blueprint for a given release can be found by
+looking at the blueprint in launchpad.  Not all approved blueprints will get
+fully implemented.
 
 Specifications have to be re-proposed for every release.  The review may be
 quick, but even if something was previously approved, it should be re-reviewed
