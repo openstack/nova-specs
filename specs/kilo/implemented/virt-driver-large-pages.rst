@@ -72,13 +72,12 @@ Proposed change
 
 The flavor extra specs will be enhanced to support a new parameter
 
-* hw:mem_page_size=large|small|any|2MB|1GB
+* hw:mem_page_size=large|any|2MB|1GB
 
 In absence of any page size setting in the flavor, the current behaviour of
 using the small, default, page size will continue. A setting of 'large' says
 to only use larger page sizes for guest RAM, eg either 2MB or 1GB on x86;
-'small' says to only use the small page sizes, eg 4k on x86, and is the
-default; 'any' means to leave policy upto the compute driver implementation to
+'any' means to leave policy upto the compute driver implementation to
 decide. When seeing 'any' the libvirt driver might try to find large pages,
 but fallback to small pages, but other drivers may choose alternate policies
 for 'any'. Finally an explicit page size can be set if the workload has very
@@ -89,7 +88,7 @@ would require.
 
 The property defined for the flavor can also be set against the image, but
 the use of large pages would only be honoured if the flavor already had a
-policy or 'large' or 'any'. ie if the flavor said 'small', or a specific
+policy or 'large' or 'any'. ie if the flavor said a specific
 numeric page size, the image would not be permitted to override this to access
 other large page sizes. Such invalid override in the image would result in
 an exception being raised and the attempt to boot the instance resulting in
@@ -123,19 +122,18 @@ involves altering the logic done in that blueprint, so that instead of just
 looking at free memory in each NUMA node, it instead looks at the free page
 count for the desired page size.
 
-As illustrated later in this document each host will be reporting on all
-page sizes available and this information will be available to the scheduler.
-So when it interprets 'small', it will consider the smallest page size
-reported by the compute node. Conversely when intepreting 'large' it will
-consider any page size except the smallest one. This obviously implies that
-there is potential for 'large' and 'small' to have different meanings
-depending on the host being considered. For the use cases where this would
-be a problem, an explicit page size would be requested instead of using
-these symbolic named sizes. It will also have to consider whether the page
-size is a multiple of the flavor memory size. If the instance is using
-multiple NUMA nodes, it will have to consider whether the RAM in each
-guest node is a multiple of the page size, rather than the total memory
-size.
+As illustrated later in this document each host will be reporting on
+all page sizes available and this information will be available to the
+scheduler. When intepreting 'large' it will consider any page size
+except the smallest one. This obviously implies that there is
+potential for 'large' and 'small' to have different meanings depending
+on the host being considered. For the use cases where this would be a
+problem, an explicit page size would be requested instead of using
+these symbolic named sizes. It will also have to consider whether the
+page size is a multiple of the flavor memory size. If the instance is
+using multiple NUMA nodes, it will have to consider whether the RAM in
+each guest node is a multiple of the page size, rather than the total
+memory size.
 
 Alternatives
 ------------
@@ -167,20 +165,20 @@ availability per node. So it would then look like
                total = 10737418240
                free = 3221225472
             },
-            mempages = {
-               4096 = {
-                  total = 262144
-                  free = 262144
+            mempages = [{
+                 size_kb = 4,
+                 total = 262144,
+                 used = 262144,
+               }, {
+                 size_kb = 2048,
+                 total = 1024,
+                 used = 1024,
+               }, {
+                 size_kb = 1048576,
+                 total = 7,
+                 used = 0,
                }
-               2097152 = {
-                  total = 1024
-                  free = 1024
-               }
-               1073741824 = {
-                  total = 7
-                  free = 0
-               }
-            }
+            ]
             distances = [ 10, 20],
          },
          {
@@ -190,52 +188,24 @@ availability per node. So it would then look like
                total = 10737418240
                free = 5368709120
             },
-            mempages = {
-               4096 = {
-                  total = 262144
-                  free = 262144
+	    mempages = [{
+                 size_kb = 4,
+                 total = 262144,
+                 used = 512,
+               }, {
+                 size_kb = 2048,
+                 total = 1024,
+                 used = 128,
+               }, {
+                 size_kb = 1048576,
+                 total = 7,
+                 used = 4,
                }
-               2097152 = {
-                  total = 1024
-                  free = 1024
-               }
-               1073741824 = {
-                  total = 7
-                  free = 2
-               }
-            }
+            ]
             distances = [ 20, 10],
          }
      ],
   }
-
-The data provided to the extensible resource tracker would be similarly
-enhanced to include this page info in a flattened format, which can be
-efficiently queried based on the key name:
-
-* hw_numa_nodes=2
-* hw_numa_node0_cpus=4
-* hw_numa_node0_mem_total=10737418240
-* hw_numa_node0_mem_avail=3221225472
-* hw_numa_node0_mem_page_total_4=262144
-* hw_numa_node0_mem_page_avail_4=262144
-* hw_numa_node0_mem_page_total_2048=1024
-* hw_numa_node0_mem_page_avail_2048=1024
-* hw_numa_node0_mem_page_total_1048576=7
-* hw_numa_node0_mem_page_avail_1048576=0
-* hw_numa_node0_distance_node0=10
-* hw_numa_node0_distance_node1=20
-* hw_numa_node1_cpus=4
-* hw_numa_node1_mem_total=10737418240
-* hw_numa_node1_mem_avail=5368709120
-* hw_numa_node1_mem_page_total_4=262144
-* hw_numa_node1_mem_page_avail_4=262144
-* hw_numa_node1_mem_page_total_2048=1024
-* hw_numa_node1_mem_page_avail_2048=1024
-* hw_numa_node1_mem_page_total_1048576=7
-* hw_numa_node1_mem_page_avail_1048576=2
-* hw_numa_node1_distance_node0=20
-* hw_numa_node1_distance_node1=10
 
 REST API impact
 ---------------
@@ -330,10 +300,6 @@ Dependencies
   general large page support in libvirt, however, the performance benefits
   won't be fully realized until per-NUMA node large page allocation can be
   done.
-
-* Extensible resource tracker
-
-  https://blueprints.launchpad.net/nova/+spec/extensible-resource-tracking
 
 Testing
 =======
