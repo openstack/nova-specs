@@ -373,3 +373,20 @@ references are unavailable. Examples of what you could include are:
   EC2 docs)
 
 * Anything else you feel it is worthwhile to refer to
+
+
+History
+=======
+
+Optional section for liberty intended to be used each time the spec
+is updated to describe new design, API or any database schema
+updated. Useful to let reader understand what's happened along the
+time.
+
+.. list-table:: Revisions
+   :header-rows: 1
+
+   * - Release Name
+     - Description
+   * - Liberty
+     - Introduced
