@@ -17,6 +17,12 @@ import docutils.core
 import testtools
 
 
+# Used for new sections introduced during a release.
+# - "History" introduced in Liberty should be
+# mandatory for M.
+OPTIONAL_SECTIONS = ("History",)
+
+
 class TestTitles(testtools.TestCase):
     def _get_title(self, section_tree):
         section = {
@@ -40,7 +46,8 @@ class TestTitles(testtools.TestCase):
         return titles
 
     def _check_titles(self, filename, expect, actual):
-        missing_sections = [x for x in expect.keys() if x not in actual.keys()]
+        missing_sections = [x for x in expect.keys() if (
+            x not in actual.keys()) and (x not in OPTIONAL_SECTIONS)]
         extra_sections = [x for x in actual.keys() if x not in expect.keys()]
 
         msgs = []
