@@ -58,7 +58,7 @@ class TestTitles(testtools.TestCase):
 
         for section in expect.keys():
             missing_subsections = [x for x in expect[section]
-                                   if x not in actual[section]]
+                                   if x not in actual.get(section, {})]
             # extra subsections are allowed
             if len(missing_subsections) > 0:
                 msgs.append("Section '%s' is missing subsections: %s"
@@ -94,6 +94,7 @@ class TestTitles(testtools.TestCase):
 
     def test_template(self):
         releases = [x.split('/')[1] for x in glob.glob('specs/*/')]
+        self.assertTrue(len(releases), "Not able to find spec directories")
         for release in releases:
             with open("specs/%s-template.rst" % release) as f:
                 template = f.read()
@@ -103,7 +104,8 @@ class TestTitles(testtools.TestCase):
             files = glob.glob("specs/%s/*/*" % release)
             for filename in files:
                 self.assertTrue(filename.endswith(".rst"),
-                                "spec's file must uses 'rst' extension.")
+                                "spec %s must use 'rst' extension."
+                                % filename)
                 with open(filename) as f:
                     data = f.read()
 
