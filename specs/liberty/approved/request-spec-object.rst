@@ -163,9 +163,15 @@ from the nested dict's keys to object attribute notation:
 
     fields = {
         'image': fields.ObjectField('ImageMeta', nullable=False),
-        # instance_properties could eventually be deconstructed into component
-        # parts
-        'instance_properties': fields.ObjectField('Instance'),
+        'root_gb': fields.IntegerField(nullable=False),
+        'ephemeral_gb': fields.IntegerField(nullable=False),
+        'memory_mb: fields.IntegerField(nullable=False),
+        'vcpus': fields.IntegerField(nullable=False),
+        'numa_topology': fields.ObjectField('InstanceNUMATopology',
+                                            nullable=True),
+        'project_id': fields.StringField(nullable=True),
+        'os_type': fields.StringField(nullable=True),
+        'availability_zone': fields.StringField(nullable=True),
         'instance_type': fields.ObjectField('Flavor', nullable=False),
         'num_instances': fields.IntegerField(default=1),
         'force_hosts': fields.StringField(nullable=True),
