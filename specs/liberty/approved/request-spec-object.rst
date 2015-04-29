@@ -162,7 +162,7 @@ from the nested dict's keys to object attribute notation:
     VERSION = '1.0'
 
     fields = {
-        'image': fields.DictOfStringsField(nullable=False),
+        'image': fields.ObjectField('ImageMeta', nullable=False),
         # instance_properties could eventually be deconstructed into component
         # parts
         'instance_properties': fields.ObjectField('Instance'),
