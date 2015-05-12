@@ -109,6 +109,30 @@ Note however that V2.1 will not support the XML version of the V2 API,
 only the JSON one. However the XML version of the V2 API is currently
 marked as deprecated.
 
+Another impact is strong input validation of JSON-Schema. JSON-Schema
+contains the "additionalProperties" feature which can deny undefined
+properties in an input request. V2 API just ignored undefined properties
+if a request contain, but V2.1 API denies the request and returns a
+BadRequest response to a client.
+
+During V2.1 development, we found that Tempest also passed undefined
+properties to Nova API, and Nova V2 API just ignored them then tests
+succeeded. However Nova V2.1 API rejected these requests and tests
+failed. So that was Tempest bug, but we imagined this kind of problem
+would happen on the other SDKs. Before fixing this Tempest bug, we
+investigated major SDKs(fog, jclouds)'s code and we confirmed these SDKs
+send a valid request without undefined properties and they don't contain
+this kind of problem.
+
+We cannot check all SDKs/clients in the world, and we cannot confirm
+this problem never happens on V2.1 API. This kind of problem must be due
+to clients' code and users of clients will be able to know these existing
+code passed meaningless properties. That means this strong validation will
+be a chance to improve clients' code quality. However, this problem will
+be painful for public cloud environments and this is a big concern of V2.1
+adoption. We need some adoption way like validation relaxation or something
+in the future.
+
 Security impact
 ---------------
 
