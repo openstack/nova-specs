@@ -29,7 +29,7 @@ Here you can find the specs, and spec template, for each release:
    specs/kilo/index
    specs/juno/index
 
-There are also some partial specifications that can be found here:
+There are also some approved backlog specifications that are looking for owners:
 
 .. toctree::
    :glob:
