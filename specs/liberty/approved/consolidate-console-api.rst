@@ -61,7 +61,7 @@ definition:
 
 Request::
 
-    POST /servers/<uuid>/console
+    POST /servers/<uuid>/remote-consoles
     {
         "protocol": ["vnc"|"rdp"|"serial"|"spice"],
         "type": ["novnc"|"xpvnc"|"rdp-html5"|"spice-html5"|"serial"]
@@ -83,6 +83,10 @@ Some of failure scenarios and their corresponding error code include:
 * wrong values for protocol/type in the request - "400 Bad Request"
 * the instance is not yet ready - "409 Conflict"
 * the virt driver doesn't support this console type - "501 Not Implemented"
+
+The old API 'os-getVNCConsole', 'os-getSPICEConsole', 'os-getSerialConsole'
+and 'os-getRDPConsole' will be removed at the microversion which new API
+added.
 
 Security impact
 ---------------
