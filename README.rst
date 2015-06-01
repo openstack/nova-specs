@@ -8,7 +8,8 @@ OpenStack Nova Specifications
 
 This git repository is used to hold approved design specifications for additions
 to the Nova project.  Reviews of the specs are done in gerrit, using a similar
-workflow to how we review and merge changes to the code itself.
+workflow to how we review and merge changes to the code itself. For specific
+policies around specification review, refer to the end of this document.
 
 The layout of this repository is::
 
@@ -66,3 +67,23 @@ confidence in the Jenkins result), please execute the following command::
 
 After running ``tox``, the documentation will be available for viewing in HTML
 format in the ``doc/build/`` directory.
+
+Specification review policies
+-----------------------------
+
+For specifications `approved for a previous release but never merged in that
+release` you can re-propose your specification by doing the following:
+
+* Copy (not move) your specification to the right directory for the current release.
+* Update the document to comply with the new template.
+* If there are no functional changes to the specification (only template changes) then add the `Previously-approved: <release>` tag to your commit message.
+* Send for review.
+* nova-specs-core will merge specifications which meet these requirements with a single +2.
+
+For specifications `that depend on code in other OpenStack projects merging`
+we will not approve the nova specification until the code in that other project
+has merged. The best example of this is Cinder and Neutron drivers. To
+indicate your specification is in this state, please use the Depends-On git
+commit message tag. The correct format is `Depends-On: <change id of other
+work>`. nova-specs-core can approve the specification at any time, but it wont
+merge until the code we need to land in the other project has merged as well.
