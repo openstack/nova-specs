@@ -48,7 +48,7 @@ though, each project has tried to reinvent the wheel each time duplicating
 each others work leading to a plethora of incomplete & inconsistent databases.
 The libosinfo project started as an attempt to provide a common solution for
 virtualization applications to use when configuring virtual machines. It
-provides a user extendable database of information about operating systems,
+provides a user extendible database of information about operating systems,
 including facts such as the supported device types, minimum resource level
 requirements, installation media and more. Around this database is a C API for
 querying information, made accessible to non-C languages (including python) via
@@ -171,7 +171,7 @@ Alternatives
 A 1st alternative would be for Nova to maintain its own database of preferred
 hardware settings for each operating system. This is the trap most previous
 virtualization applications have fallen into. This has a significant burden
-because of the huge variety of operating systems in existance. It is
+because of the huge variety of operating systems in existence. It is
 undesirable to attempt to try to reinvent the libosinfo wheel which is already
 mostly round in shape.
 
@@ -289,7 +289,7 @@ Work Items
 Dependencies
 ============
 
-The Nova libvirt driver will gain an optional dependancy on the libosinfo
+The Nova libvirt driver will gain an optional dependency on the libosinfo
 project/library. This will be accessed by the GObject introspection Python
 bindings. On Fedora / RHEL systems this will entail installation of the
 'libosinfo' packages and either the 'pyobject2' or 'python3-gobject' packages
@@ -308,7 +308,7 @@ Testing
 The unit tests will of course cover the new code.
 
 To test in Tempest would need a gate job which has the suitable packages
-installed. This can be achieved by updating devstack to install the neccessary
+installed. This can be achieved by updating devstack to install the necessary
 bits. Some new tests would need to be created to set the new glance image
 property and then verify that the guest virtual machine has received the
 expected configuration changes.

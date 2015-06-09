@@ -159,7 +159,7 @@ This limits the schema changes that can be safely executed online to
 that of the lowest common denominator of databases supported by Nova.
 
 This would also require changes to sqlalchemy-migrate to be able to
-manage seperate streams of migrations.
+manage separate streams of migrations.
 
 Another option would be remove the use of sqlalchemy-migrate for schema
 changes altogether. The 'db sync' command to nova-manage would be

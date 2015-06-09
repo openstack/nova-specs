@@ -28,7 +28,7 @@ initiator information, discover volumes being attached to a host and to
 remove volumes already attached.  This is essentially the purpose of
 Nova's libvirt volume drivers.
 
-Cinder has offically removed the embedded brick library and has switched
+Cinder has officially removed the embedded brick library and has switched
 to using the pypi os-brick library at the start of the Liberty release.
 
 This spec lays out the removal of the duplicate code in Nova's
