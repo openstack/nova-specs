@@ -12,7 +12,7 @@ https://blueprints.launchpad.net/nova/+spec/nova-api-policy-final-part
 
 NOTE: This spec follow up the rest work of nova api policy blueprint:
 https://blueprints.launchpad.net/nova/+spec/v3-api-policy , In the Kilo
-The v2.1 policy improvement already finshed, but only finished part of db
+The v2.1 policy improvement already finished, but only finished part of db
 policy improvement and rest of those works will be continue in Liberty.
 The detail is described at 'Work Items' section.
 
@@ -137,9 +137,9 @@ REST API layer is the place to enforce policy consistently.
     For V2.1: api:[extension_alias]:[action]
     For ec2: ec2_api:[action]
 
-  * We won't use 'compute' and 'compute_extension' to distingish the core and
+  * We won't use 'compute' and 'compute_extension' to distinguish the core and
     extension API. Because the core API may be changed in the future.
-  * We also remove the API verison from the policy rule. Because after we have
+  * We also remove the API version from the policy rule. Because after we have
     Micro-version, the version will be changed often.
 
 * For volume related extensions, there isn't any thing can do, there already
