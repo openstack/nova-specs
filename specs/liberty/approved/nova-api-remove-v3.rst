@@ -10,19 +10,26 @@ Remove 'v3' from nova API code tree
 
 https://bugs.launchpad.net/nova/+bug/1462901
 
-The Nova V2.1 REST API was released as part Kilo. But the V2.1 API code still
-remains under the old directory 'nova/api/openstack/compute/plugins/v3' with
-the old name 'v3'. The V3 API doesn't exist anymore; it is now referred to as
-the V2.1 API.
+When trying to work on Nova API code, there are many confusing
+concepts in the directory tree which make it harder than it should be
+to map what's in the tree to what's in the API.
 
-We should cleanup any V3-related stuff, and restructure the nova code tree to
-remove the references to V3, to avoid confusion for developers.
+Example confusions:
+
+* v2.1 code is in ``nova/api/openstack/compute/plugins/v3``. People
+  get confused about what v3 is.
+* there are both ``plugins`` and ``contrib`` directories
+* the v2.0 code is in the top level ``nova/api/openstack/compute``
+  even though it's deprecated.
+
+We should clean up the api directory structure to be less confusing so
+that it reduces cognitive load in working on the code base, and makes
+more sense to new contributors.
 
 Problem description
 ===================
 
-The V3 API has been replaced by V2.1 API. The word 'v3' in the nova code tree
-confuses people a lot.
+See above.
 
 Use Cases
 ----------
@@ -37,19 +44,60 @@ This is a priority work item under the Nova API in Liberty.
 Proposed change
 ===============
 
-* Move the V2 API code which is currently under 'nova/api/openstack/compute'
-  and 'nova/api/openstack/compute/contrib' into
-  'nova/api/openstack/compute/v2'. The 'V2' API will be deprecated in the
-  future.
-* The Nova V2.1 REST API refers to the new Nova REST API with Microversion.
-  The evolution of v2.1 will be done by Microversion in the future. So the
-  proposal is that the API version won't be included in any code path. The V2.1
-  API which is now under 'nova/api/openstack/compute/plugins/v3' will be moved
-  into 'nova/api/openstack/compute'. This means that the V2.1 API will be the
-  only compute API supported by Nova. The JSON-Schema used by v2.1 API moves
-  into 'nova/api/openstack/compute/schemas'.
-* Remove any reference to 'v3' from the code, tests, and configuration files.
-  Examples: APIRouterV3, and v3 endpoint entry in api-paste.ini, etc.
+The api directory structure should look something more like this (this
+is an example with some key data, not the entire set of moves):
+
+::
+   nova/api/openstack/
+       compute/ - all the os compute api
+           legacy-v2/ - the entry point for all the v2 code. This will
+                        make it easier to remove in the future
+
+           servers.py - the v2.1 servers implementation
+
+           flavors.py - the v2.1 flavors implementation
+
+           servers/   - a directory containing code which adds resources
+                        to servers
+
+           servers/actions/pause.py (renamed from pause_server.py)
+
+           servers/actions/ - all chunks of code that add actions
+
+           flavors/ - all chuncks of code that extend add things to
+                      flavors
+
+           etc...
+
+
+Basically take all the v2 code, put it in the corner so it's not the
+first thing people find.
+
+Then take the rest of the code and make it have no version in its
+name, and create a directory structure on disk that mirrors the REST
+URI structure as much as possible. Making it simpler to understand
+where things fit in the REST strucuture.
+
+
+* Move the V2 API code which is currently under
+  ``nova/api/openstack/compute`` and
+  ``nova/api/openstack/compute/contrib`` into
+  ``nova/api/openstack/compute/legacy-v2``. The 'V2' API will be
+  deprecated in the future.
+* The Nova V2.1 REST API refers to the new Nova REST API with
+  Microversion.  The evolution of v2.1 will be done by Microversion in
+  the future. So the proposal is that the API version won't be
+  included in any code path. The V2.1 API which is now under
+  ``nova/api/openstack/compute/plugins/v3`` will be moved into
+  ``nova/api/openstack/compute``. This means that the V2.1 API will be
+  the only compute API supported by Nova. The JSON-Schema used by v2.1
+  API moves into ``nova/api/openstack/compute/schemas``.
+* Remove any reference to 'v3' from the code, tests, and configuration
+  files.  Examples: APIRouterV3, and v3 endpoint entry in
+  api-paste.ini, etc.
+* Restructure the code on disk for the v2.1 code to more accurately
+  reflect the REST uri structure of the resources those components
+  represent.
 
 Alternatives
 ------------
