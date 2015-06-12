@@ -3,7 +3,7 @@ README
 =======
 
 OpenStack Nova Specifications
------------------------------
+=============================
 
 
 This git repository is used to hold approved design specifications for additions
@@ -69,7 +69,24 @@ After running ``tox``, the documentation will be available for viewing in HTML
 format in the ``doc/build/`` directory.
 
 Specification review policies
------------------------------
+=============================
+
+There are a number of review policies which nova-specs-core will apply when
+reviewing proposed specifications. They are:
+
+Trivial specifications
+----------------------
+
+Proposed changes which are trivial (very small amounts of code) and don't
+change any of our public APIs are sometimes not required to provide a
+specification. In these cases a LaunchPad blue print is considered sufficient.
+These proposals are approved during the `Open Discussion` portion of the
+weekly nova IRC meeting. If you think your proposed feature is trivial and
+meets these requirements, we recommend you bring it up for discussion there
+before writing a full specification.
+
+Previously approved specifications
+----------------------------------
 
 For specifications `approved for a previous release but never merged in that
 release` you can re-propose your specification by doing the following:
@@ -80,6 +97,9 @@ release` you can re-propose your specification by doing the following:
 * Send for review.
 * nova-specs-core will merge specifications which meet these requirements with a single +2.
 
+Specifications which depend on merging code in other OpenStack projects
+-----------------------------------------------------------------------
+
 For specifications `that depend on code in other OpenStack projects merging`
 we will not approve the nova specification until the code in that other project
 has merged. The best example of this is Cinder and Neutron drivers. To
@@ -87,3 +107,13 @@ indicate your specification is in this state, please use the Depends-On git
 commit message tag. The correct format is `Depends-On: <change id of other
 work>`. nova-specs-core can approve the specification at any time, but it wont
 merge until the code we need to land in the other project has merged as well.
+
+New libvirt image backends
+--------------------------
+
+There are some cases where an author might propose adding a new libvirt
+driver image storage backend which does not require code in other OpenStack
+projects. An example was the ceph image storage backend, if we treat that as
+separate from the ceph volume support code. Implementing a new image storage
+backend in the libvirt drive always requires a specification because of our
+historical concerns around adequate CI testing.
