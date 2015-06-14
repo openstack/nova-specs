@@ -20,11 +20,42 @@ Where there are two sub-directories:
   specs/<release>/approved: specifications approved but not yet implemented
   specs/<release>/implemented: implemented specifications
 
+The lifecycle of a specification
+--------------------------------
+
+Developers proposing a specification should propose a new file in the
+``approved`` directory. nova-specs-core will review the change in the usual
+manner for the OpenStack project, and eventually it will get merged if a
+consensus is reached. At this time the Launchpad blueprint is also approved.
+The developer is then free to propose code reviews to implement their
+specification. These reviews should be sure to reference the Launchpad
+blueprint in their commit message for tracking purposes.
+
+Once all code for the feature is merged into Nova, the Launchpad blueprint is
+marked complete. As the developer of an approved specification it is your
+responsibility to mark your blueprint complete when all of the required
+patches have merged.
+
+Periodically, someone from nova-specs-core will move implemented specifications
+from the ``approved`` directory to the ``implemented`` directory. Whilst
+individual developers are welcome to propose this move for their implemented
+specifications, we have generally just done this in a batch at the end of the
+release cycle. It is important to create redirects when this is done so that
+existing links to the approved specification are not broken. Redirects aren't
+symbolic links, they are defined in a file which sphinx consumes. An example
+is at ``specs/kilo/redirects``.
+
 This directory structure allows you to see what we thought about doing,
 decided to do, and actually got done. Users interested in functionality in a
 given release should only refer to the ``implemented`` directory.
 
+Example specifications
+----------------------
+
 You can find an example spec in ``specs/template.rst``.
+
+Backlog specifications
+----------------------
 
 Additionally, we allow the proposal of specifications that do not have a
 developer assigned to them. These are proposed for review in the same manner as
@@ -41,24 +72,22 @@ from this directory to the next active release. Please set yourself as the new
 `primary assignee` and maintain the original author in the `other contributors`
 list.
 
-Specifications are proposed for a given release by adding them to the
-``specs/<release>/approved`` directory and posting it for review.  The
-implementation status of a blueprint for a given release can be found by
-looking at the blueprint in launchpad.  Not all approved blueprints will get
-fully implemented.
-
-Specifications have to be re-proposed for every release.  The review may be
-quick, but even if something was previously approved, it should be re-reviewed
-to make sure it still makes sense as written.
+Design documents for releases prior to Juno
+-------------------------------------------
 
 Prior to the Juno development cycle, this repository was not used for spec
 reviews.  Reviews prior to Juno were completed entirely through `Launchpad
 blueprints <http://blueprints.launchpad.net/nova>`_
 
 Please note, Launchpad blueprints are still used for tracking the
-current status of blueprints. For more information, see https://wiki.openstack.org/wiki/Blueprints
+current status of blueprints. For more information, see
+https://wiki.openstack.org/wiki/Blueprints
 
-For more information about working with gerrit, see http://docs.openstack.org/infra/manual/developers.html#development-workflow
+Working with gerrit and specification unit tests
+------------------------------------------------
+
+For more information about working with gerrit, see
+http://docs.openstack.org/infra/manual/developers.html#development-workflow
 
 To validate that the specification is syntactically correct (i.e. get more
 confidence in the Jenkins result), please execute the following command::
@@ -79,7 +108,7 @@ Trivial specifications
 
 Proposed changes which are trivial (very small amounts of code) and don't
 change any of our public APIs are sometimes not required to provide a
-specification. In these cases a LaunchPad blue print is considered sufficient.
+specification. In these cases a Launchpad blueprint is considered sufficient.
 These proposals are approved during the `Open Discussion` portion of the
 weekly nova IRC meeting. If you think your proposed feature is trivial and
 meets these requirements, we recommend you bring it up for discussion there
@@ -88,8 +117,10 @@ before writing a full specification.
 Previously approved specifications
 ----------------------------------
 
-For specifications `approved for a previous release but never merged in that
-release` you can re-propose your specification by doing the following:
+`Specifications are only approved for a single release`. If your specification
+was previously approved but not implemented (or not completely implemented),
+then you must seek re-approval for the specification. You can re-propose your
+specification by doing the following:
 
 * Copy (not move) your specification to the right directory for the current release.
 * Update the document to comply with the new template.
