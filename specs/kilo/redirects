@@ -30,3 +30,4 @@ approved/vmware-vsan-support.rst ../implemented/vmware-vsan-support.rst
 approved/input-output-based-numa-scheduling.rst ../implemented/input-output-based-numa-scheduling.rst
 approved/encryption-with-barbican.rst ../implemented/encryption-with-barbican.rst
 approved/add-all-in-list-operator-to-extra-spec-ops.rst ../implemented/add-all-in-list-operator-to-extra-spec-ops.rst
+approved/add-locking-information-in-server-get-response.rst ../implemented/add-locking-information-in-server-get-response.rst
