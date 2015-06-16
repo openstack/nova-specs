@@ -44,9 +44,9 @@ Proposed change
 
 A new ``host_status`` field will be added to the ``/servers/{server_id}`` and
 ``/servers/detail`` endpoints. ``host_status`` will be ``UP`` if nova-compute's
-state is up, ``EXTERNALLY_DEFINED_TO_BE_DOWN`` if nova-compute is forced_down,
-``UNKNOWN`` if nova-compute last_seen_up is not up-to-date and  ``MAINTENANCE``
-if nova-compute's state disabled. Needed information can be retriewed by host
+state is up, ``DOWN`` if nova-compute is forced_down, ``UNKNOWN`` if
+nova-compute last_seen_up is not up-to-date and ``MAINTENANCE`` if
+nova-compute's state disabled. Needed information can be retriewed by host
 API and servicegroup API if new policy allows. forced_down flag handling is
 described in this spec:
 http://specs.openstack.org/openstack/nova-specs/specs/liberty/implemented/mark-host-down.html
@@ -123,7 +123,7 @@ Case where nova-compute enabled, but forced_down::
     200 OK
     {
       "server": {
-        "host_status": "EXTERNALLY_DEFINED_TO_BE_DOWN",
+        "host_status": "DOWN",
         ...
       }
     }
@@ -153,8 +153,7 @@ host_status:
 
 ::
 
-  "os_compute_api:servers:show:host_status": "is_admin:True or
-  user_id:%(user_id)s"
+  "os_compute_api:servers:show:host_status": "rule:admin_api"
 
 
 Security impact
