@@ -16,19 +16,19 @@ Problem description
 
 We can't add tenant access to a public flavor.
 Trying to do such a thing results in a confusing error message
-when later we show the flavor.
+when later we show the flavor::
 
-jichen@cloudcontroller:~$ nova flavor-access-add 1 2
-+-----------+-----------+
-| Flavor_ID | Tenant_ID |
-+-----------+-----------+
-| 1         |         2 |
-+-----------+-----------+
+ $ nova flavor-access-add 1 2
+ +-----------+-----------+
+ | Flavor_ID | Tenant_ID |
+ +-----------+-----------+
+ | 1         |         2 |
+ +-----------+-----------+
 
-jichen@cloudcontroller:~$ nova flavor-access-list --flavor 1
-ERROR (CommandError): Failed to get access list for public flavor type.
+ $ nova flavor-access-list --flavor 1
+ ERROR (CommandError): Failed to get access list for public flavor type.
 
-we should check whether the flavor is public or not
+We should check whether the flavor is public or not
 and reject add access to public flavor API call.
 But this is backward incompatible bug, every API change need spec,
 so a microversion is needed to handle this problem.
