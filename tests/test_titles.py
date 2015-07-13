@@ -72,6 +72,9 @@ class TestTitles(testtools.TestCase):
         for i, line in enumerate(raw.split("\n")):
             if "http://" in line or "https://" in line:
                 continue
+            # Allow lines which do not contain any whitespace
+            if re.match("\s*[^\s]+$", line):
+                continue
             self.assertTrue(
                 len(line) < 80,
                 msg="%s:%d: Line limited to a maximum of 79 characters." %
