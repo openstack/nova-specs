@@ -1,0 +1,1 @@
+../../../../specs/mitaka-template.rst
