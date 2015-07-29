@@ -5,34 +5,33 @@
  http://creativecommons.org/licenses/by/3.0/legalcode
 
 =============================================================
-Add 'locked_by' in server GET (Show and List Detail) Response
+Add 'locked' in server Detail Response
 =============================================================
 
 https://blueprints.launchpad.net/nova/+spec/add-locking-information-in-server-get-response
 
 Currently admin or owner can lock/unlock the instance but there is no way to
-know who locked the instance.
+know whether instance is locked.
 This spec is to propose a way to know lock information by adding new
-'locked_by' attribute in server GET APIs (Show and List Detail) Response.
+'locked' attribute in server GET APIs Response.
 
 Problem description
 ===================
 
 Currently Instance can be locked and unlocked by admin or owner. But there is
-no way to get to know who locked the server. Even users cannot know
+no way to get to know who locked the instance. Even users cannot know
 whether that instance is locked or not.
 
 Use Cases
 ----------
 
-User can know whether instance is locked and who locked the instance. When
-user want to perform any action on instance and it is locked then it return
-error about instance not in proper state. If there is prior way to know whether
-instance is locked and who has locked then, it will be easy for user/admin
-to do appropriate action accordingly.
+User can know whether instance is locked. When user want to perform any action
+on instance and it is locked then it return error about instance not in proper
+state. If there is prior way to know whether instance is locked, it will be
+easy for user/admin to do appropriate action accordingly.
 
 As lock/unlock action can be performed by admin or owner (more than one role),
-'locked_by' information can be very useful.
+'locked' information can be very useful.
 
 Project Priority
 -----------------
@@ -42,19 +41,22 @@ None.
 Proposed change
 ===============
 
-Add new 'locked_by' attribute in server GET APIs (Show and List Detail)
-Response which will provide instance lock information.
+Add new attribute 'locked' in server detail response which will
+provide instance lock information.
 
-Returned value by 'locked_by' attribute will be-
+Returned value by 'locked' attribute will be-
 
-* 'admin' - If instance is locked by admin.
-* 'owner' - If instance is locked by owner.
-* null - If instance is not locked.
+* True - If instance is locked.
+* False - If instance is not locked.
 
-When user will query about instance details (List Detail or Show), 'locked_by'
+When user will query about instance details (List Detail or Show), 'locked'
 information will be returned in response.
 
-If 'locked_by' is null then it means instance is not locked.
+NOTE- To show locking information in details, it will be good to add that as
+separate resource. Something - servers/server_id/lock. From this user can get
+detailed information about lock for example- locked_by, lock reason,
+time stamp etc.
+But as liberty spec deadline is passed, we can add that in M release.
 
 Alternatives
 ------------
@@ -114,7 +116,7 @@ REST API impact
             'status': {'type': 'string'},
             .
             .
-            'locked_by': {'enum': [None, 'admin', 'owner']},
+            'locked': {'type': 'boolean'},
             .
             .
             .
@@ -144,7 +146,7 @@ None.
 Other end user impact
 ---------------------
 
-python-novaclient needs to be updated in order to show the 'locked_by'
+python-novaclient needs to be updated in order to show the 'locked'
 in the 'nova show' commands.
 
 Performance Impact
@@ -179,7 +181,7 @@ Other contributors:
 Work Items
 ----------
 
-* Add 'locked_by' in server GET APIs (Show and List Detail)
+* Add 'locked' in server GET APIs (Show and List Detail)
   Response.
 * Modify Sample and unit tests accordingly.
 
