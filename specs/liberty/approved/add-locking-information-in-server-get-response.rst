@@ -4,9 +4,9 @@
 
  http://creativecommons.org/licenses/by/3.0/legalcode
 
-=============================================================
+======================================
 Add 'locked' in server Detail Response
-=============================================================
+======================================
 
 https://blueprints.launchpad.net/nova/+spec/add-locking-information-in-server-get-response
 
@@ -52,11 +52,26 @@ Returned value by 'locked' attribute will be-
 When user will query about instance details (List Detail or Show), 'locked'
 information will be returned in response.
 
-NOTE- To show locking information in details, it will be good to add that as
-separate resource. Something - servers/server_id/lock. From this user can get
-detailed information about lock for example- locked_by, lock reason,
-time stamp etc.
-But as liberty spec deadline is passed, we can add that in M release.
+When "locked" is "true", it means there is a lock on instance, it does not
+mean instance is locked for requested users.
+For example - When instance is locked by the owner but listed by an admin,
+"locked" will be "true" even admin can override the owner lock.
+
+So "locked" provides only concrete information whether instance is locked
+or not.
+
+We could have provide lock information by exposing "locked_by" (which
+holds the lock owner information in current implementation) directly but
+as in most cases instance will not be locked so its value will be null.
+And its always better to expose the simple and concrete information than
+implementation one which can be changed in future as lock things can be
+expanded in future.
+
+NOTE-
+Lock can be made it's own resource at a later time which will help to know
+complete information about instance lock (locked by whom, lock reason,
+time stamp etc).
+New lock API can looks like something - servers/server_id/lock.
 
 Alternatives
 ------------
