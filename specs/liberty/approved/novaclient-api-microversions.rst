@@ -76,13 +76,15 @@ but an old client is used to communicate to it.
 * The client makes a connection to Nova, not specifying the HTTP header
   X-OpenStack-Nova-API-Version
 * Nova does not see the X-OpenStack-Nova-API-Version HTTP header
-* Nova communicates using 2.1 microversion, which is equal to v2.0
-  (stable/kilo) of the REST API, and all communication with the client uses
-  that version of the interface.
+* If Nova supports 2.1 microversion, which is equal to v2.0 (stable/kilo) of
+  the REST API, Nova makes all communications with the client use that version
+  of the interface. If microversion 2.1 support is dropped, Nova will return
+  a proper exception, which the client should show to the user.
 
 
 Use Case 3A: New Client communicating with Nova V2.0 (not user-specified)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[cli specific use case]
 This is the where the user does not request a particular microversion to a
 new client that support microversions and tries to communicate with an old
 Nova.
@@ -93,53 +95,54 @@ Nova.
 * The client makes a connection to Nova and ask supported API versions.
 * Nova doesn't look for, or parse the HTTP header. It just return json with
   API versions [3].
-* The client checks versions info, informs the user that it cannot
+* The client checks versions info and chooses 2.0 to use (until 2.1
+  microversion is supported by new client) or informs the user that it cannot
   communicate to Nova using microversion and exits.
-
 
 Use Case 3B: New Client communicating with Nova V2.0 (user-specified)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 This is the where the user requests a particular microversion to a
 new client that support microversions and tries to communicate with Nova V2.0.
 
+From CLI:
+
 * The user specifies a microversion that is valid for the client.
-* The client makes a connection to Nova V2.0, supplying a
-  X-OpenStack-Nova-API-Version HTTP header
-* Nova doesn't look for, or parse the HTTP header. It communicates using
-  the only API code path it knows about, that being v2.0
-* The client does not receive a X-OpenStack-Nova-API-Version header in
-  the response, and from that is able to assume that the version of Nova that
-  it is talking to does not support microversions. That is, it is using
-  a version of the REST API that predates v2.0.
-* The client informs the user that it cannot communicate to Nova using that
-  microversion and exits.
+* The client makes a connection to Nova and asks for supported API versions.
+* Nova doesn't look for, or parse the HTTP header. It just returns json with
+  API versions [3].
+* The client checks version info and informs the user that it cannot
+  communicate to Nova using the requested microversion and exits.
+
+From python code (BE CAREFUL):
+
+* The user specifies a microversion that is valid for the client.
+* The client attempts to make a connection to Nova.
+* Nova doesn't look for or parse the HTTP header.  It just processes the call
+  and returns a response with the results and without the HTTP header.
+* The client doesn't check that the header is missing; the request has already
+  been processed, so there is no reason to do so.
 
 Use Case 3C: New Client communicating with Nova V2.0 (backward-compatibility)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 This is the way to use Nova V2.0 via new client.
 
 * The user specifies a compute api version to "2.0".
-* The client checks that minor part of version is zero and assumes that a
-  microversion is not used.
+* [cli specific step] The client makes a connection to Nova and asks for
+  supported API versions.
 * The client makes a connection to Nova V2.0, without adding a
   X-OpenStack-Nova-API-Version HTTP header.
 * Nova doesn't look for, or parse the HTTP header. It communicates using
   the only API code path it knows about, that being v2.0.
 * The client doesn't look for, or parse the HTTP header, it knows that
-  microversions doens't used.
+  microversions doesn't used.
 * The client processes received data, display it to user and exits.
 
-Another supported way:
+Another supported way (CLI-only):
 
 * The user specifies a compute api version to "None".
 * The client uses default major version(2.0 for now).
-* The client makes a connection to Nova V2.0, without adding a
-  X-OpenStack-Nova-API-Version HTTP header
-* Nova doesn't look for, or parse the HTTP header. It communicates using
-  the only API code path it knows about, that being v2.0
-* The client doesn't look for, or parse the HTTP header, it knows that
-  microversions doens't used.
-* The client processes received data, display it to user and exits.
+* The client applies steps from the previous use case beginning from version
+  negotiation.
 
 
 Use Case 4: New Client, user specifying an invalid version number
@@ -164,6 +167,18 @@ This is the case where a new client requests a version that is older than the
 Nova V2.1 can handle. For example, the client supports microversions
 2.1 to 2.6, and Nova supports versions 2.8 to 2.15.
 
+From CLI:
+
+* The user specifies a compute api version of "2.6".
+* The client makes a connection to Nova and asks for supported API versions.
+* Nova doesn't look for or parse the HTTP header. It just returns json with the
+  API versions [3].
+* As the client does not support a version supported by Nova, it cannot
+  continue and reports such to the user.
+
+From python code:
+
+* The user specifies a compute api version of "2.6".
 * The client makes a connection to Nova, supplying 2.6 as the requested
   microversion.
 * Nova responds with a 406 Not Acceptable.
@@ -193,19 +208,22 @@ This is the case where a new client requests a version that is supported
 by Nova V2.1. For example, the client supports microversions 2.8 to 2.10, and
 Nova supports versions 2.1 to 2.12.
 
+* [cli specific step] The client makes a connection to Nova and asks for
+  supported API versions.
 * The client makes a connection to Nova, supplying 2.10 as the requested
   microversion.
 * As Nova can support this microversion, it responds by sending back a
-  response of 2.10 in the X-OpenStack-Nova-API-Version HTTP header.
+  response with 2.10 in the X-OpenStack-Nova-API-Version HTTP header.
 
 
 Use Case 8: New Client/Nova V2.1: Version request of 'latest'
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[cli specific use case]
 This is the case where a new client requests a version of 'latest' from a
 Nova V2.1.
 
 * The user specify 'latest' microversion to use.
-* The client makes a connection to Nova and ask supported API versions.
+* The client makes a connection to Nova and asks for supported API versions.
 * Nova doesn't look for, or parse the HTTP header. It just return json with
   API versions[3].
 * The client checks API version info and makes conclusion that current version
@@ -272,6 +290,31 @@ would be nice to mention here:
 
 Checked version should be transmitted to ``novaclient.client.Client`` function.
 
+.. _latest-microversion:
+
+"latest" microversion
+~~~~~~~~~~~~~~~~~~~~~
+"latest" microversion is the maximum version. Despite the fact that Nova-API
+accepts the value of "latest" in the header, the client doesn't use this
+approach. The client discovers the "latest" microversion supported by both
+the API and the client, and uses it in communication with Nova-API.
+
+Discovery should proceed as follows:
+
+* The client makes one extra call to Nova API - list all versions[3];
+* The client determines the current version by comparing the API response and
+  the endpoint URL;
+* The client checks that the current version supports microversions by checking
+  the values "min_version" and "version" of the current version.
+  If the current version doesn't support microversions ("min_version" and
+  "version" are empty), the client uses the default major version (2.0).
+* The client chooses the latest microversion supported by both novaclient and
+  the Nova API.
+
+.. note :: The "latest" version is supported only by the CLI. For version
+   discovery while using python-novaclient as a library, use the
+   ``novaclient.api_versions.discover_version()`` method.
+
 Default Version
 ~~~~~~~~~~~~~~~
 The default microversion should be changed to 'latest'. The goal of this
@@ -299,35 +342,14 @@ If microversion(minor part of APIVersion) is specified, client should add
 special header X-OpenStack-Nova-API-Version to each call and validate response
 includes equal header too, which means API side supports microversions.
 
-.. _latest-microversion:
-
-"latest" microversion
-~~~~~~~~~~~~~~~~~~~~~
-"latest" microversion is a maximum version. Despite the fact that Nova-API
-accepts value "latest" in the header, the client doesn't use such approach.
-The client discovers the "latest" microversion supported by both API, client
-sides and uses it in communication with Nova-API.
-
-Discover should be processed by following steps:
-
-* The client makes one extra call to Nova API - list all versions[3];
-* The client finds info about current version by comparing obtained and used
-  endpoint URLs;
-* The client checks that current version supports microversions by checking
-  values "min_version" and "version" of current version. If current version
-  doesn't support microversions("min_version" and "version" are empty),
-  the client raises an exception with this information.
-* The client chooses latest microversion supported by both novaclient and
-  Nova API.
-
-NOTE: To decrease number of extra calls, the client should cache discovered
-versions. Since different methods/API calls can have different "latest"
-versions, each discovered versions should be cached with related method.
-
 python-novaclient from developer side of view : adding new microverions
 -----------------------------------------------------------------------
+The variables ``novaclient.API_MIN_VERSION`` and ``novaclient.API_MAX_VERSION``
+should be updated each time a new microversion is added or an old one is
+removed.
+
 Each "versioned" method of ResourceManager should be labeled with specific
-decorator. Such decorator should accept two arguments: start version and end
+decorator. The decorator accepts two arguments: start version and end
 version (optional). Example:
 
 .. code-block:: python
@@ -336,29 +358,35 @@ version (optional). Example:
   from novaclient import base
 
   class SomeResourceManager(base.Manager)
-      @api_version(min_version='2.0')
+      @api_versions.wraps(min_version='2.0')
       def show(self, req, id):
           pass
 
-      @api_versions.wrap(start_version='2.2', end_version='2.8')
+      @api_versions.wraps(start_version='2.2', end_version='2.8')
       def show(self, req, id):
           pass
 
-      @api_version(start_version='2.9')
+      @api_versions.wraps(start_version='2.9')
       def show(self, req, id):
           pass
 
 "versioned" commands should be labeled with decorator the same way as
-ResourceManager's methods:
+ResourceManager's methods. ``@api_versions.wraps()`` decorator should be placed
+before or after the CLI arg decorators. Example:
 
 .. code-block:: python
 
   from novaclient import api_versions
+  from novaclient.openstack.common import cliutils
 
   @api_versions.wraps("2.0")
+  @cliutils.arg("name", help="Name of the something")
+  @cliutils.arg("action", help="Some action")
   def do_some_show(cs, args):
       pass
 
+  @cliutils.arg("name", help="Name of the something")
+  @cliutils.arg("action", help="Some action")
   @api_versions.wraps(start_version='2.2', end_version='2.8')
   def do_some_show(cs, args):
       pass
@@ -411,7 +439,7 @@ If a client chose to use that header to request a specific version, Nova
 would respond, either accepting the requested version for future communication,
 or rejecting that version request as not being supportable.
 
-If a client chose not to use that header, Nova would assume that the REST API
+If a client chooses not to use that header, Nova would assume that the REST API
 to be used would be v2.1 (that is, the same API that was present in the 'Kilo'
 release). This is how the REST API works today.
 
@@ -452,7 +480,8 @@ Assignee(s)
 Primary assignee:
 ::
 
-  akurilin - Andrey Kurilin <andr.kurilin@gmail.com>
+  andreykurilin - Andrey Kurilin <andr.kurilin@gmail.com>
+  xuhj - Alex Xu <hejie.xu@intel.com>
 
 Work Items
 ----------
