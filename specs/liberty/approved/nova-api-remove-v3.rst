@@ -50,7 +50,7 @@ is an example with some key data, not the entire set of moves):
 ::
    nova/api/openstack/
        compute/ - all the os compute api
-           legacy-v2/ - the entry point for all the v2 code. This will
+           legacy_v2/ - the entry point for all the v2 code. This will
                         make it easier to remove in the future
 
            servers.py - the v2.1 servers implementation
@@ -82,7 +82,7 @@ where things fit in the REST strucuture.
 * Move the V2 API code which is currently under
   ``nova/api/openstack/compute`` and
   ``nova/api/openstack/compute/contrib`` into
-  ``nova/api/openstack/compute/legacy-v2``. The 'V2' API will be
+  ``nova/api/openstack/compute/legacy_v2``. The 'V2' API will be
   deprecated in the future.
 * The Nova V2.1 REST API refers to the new Nova REST API with
   Microversion.  The evolution of v2.1 will be done by Microversion in
@@ -98,6 +98,9 @@ where things fit in the REST strucuture.
 * Restructure the code on disk for the v2.1 code to more accurately
   reflect the REST uri structure of the resources those components
   represent.
+* Note that existing api-paste.ini files refer to the `APIRouter` and
+  `APIRouterV21` classes. We will have to maintain these names so that when
+  people upgrade we don't break things.
 
 Alternatives
 ------------
@@ -160,7 +163,9 @@ Primary assignee:
 Work Items
 ----------
 
-* Move all V2 code under 'v2' directory.
+* Move all V2 code under 'legacy_v2' directory.
+* Update all existing references to 'nova.api.openstack.compute' to point to
+  'nova.api.openstack.compute.legacy_v2' instead.
 * Move all V2.1 code to the toplevel directory.
 * Move V2.1's json-schema out of v3 directory.
 * Remove v3 endpoint from api-paste.ini.
