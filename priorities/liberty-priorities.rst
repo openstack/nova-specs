@@ -36,22 +36,74 @@ Priorities without a clear plan
 Here are some things we would like to be a priority, but we are currently
 lacking either a clear plan or someone to lead that effort:
 
-* A plan for the future of flavors, image properties and host aggregates
+* A plan for the future of flavors, image properties and host aggregates.
+
+  * Flavor extra specs are leading to a poor API experience. Poor discovery
+    of whether a feature is available, and often leaking implementation
+    details.
+  * Image creators are exposed to many hypervisor specific image properties
+    when trying to get the best performance for their image. We need a better
+    way to deal with that.
+  * Many private cloud users want more flexibility than flavors allow.
+    One of the main trade-offs being losing the capacity planning
+    simplification strict flavors can bring.
+  * Those who like flavors are faced with an explosion of flavors that might
+    be better handled as some kind of optional add on. With some features
+    users are forced to create images to set some image property to get the
+    feature they want activated.
+  * This fights against our mission for all deployments to have the same API.
+
 * Tasks for API triggered operations
+
+  * It is often hard for a user to tell if the action triggered by their API
+    request has actually completed.
+  * While we have instance actions, they do not cover all operations yet
+  * We do have request-ids but they are quite hidden in headers, and not well
+    documented as a way to track actions
+  * The error handling for operations being interrupted when forcibly
+    restarting nova-compute is messy and non-standard, need more consistency.
+  * Ideally there would be a more async API with web call backs or a more
+    event friendly protocol, but that effort is really separate.
+
 * Simplify Quotas
+
+  * The current quota code has proved unreliable
+  * A premature optimisation has been identified that causes DB level races,
+    we should experiment with removing that optimisation.
+  * The quota reservation and commit system is complicated, we should consider
+    removing that complexity, if possible.
+  * This effort should make it easier to add new features like nested quotas.
+
 * Revisit how we talk to Glance, Neutron and Cinder APIs
-* Neutron/Nova-network integration (Fast Path, VIF plug)
+
+  * Cinder has created os-brick, which should make it easier to support
+    new volume drivers in Nova, and stop duplicate code.
+  * Neutron VIF driver code in Nova has similar issues to the volume drivers.
+    As neutron becomes more decentralized, we need to model the same in our
+    VIF driver logic in Nova. A new library has been proposed.
+  * More generally, we have had lots of issues with races in the create port
+    code that lives in the neutron network API. Ideally we can create some new
+    Neutron APIs that reduce the impedance miss match, and reduce races.
+  * With glance, there is some code duplicated in both Cinder and Nova to
+    access data in glance, including support for the v2 API. It would be good
+    to have a library to reduce that duplication.
+
 * Feature Test Classification
+
+  * Our users should also be clear about what features are experimental vs
+    tested and ready for production vs deprecated and scheduled for removal.
+  * We should look again at the hypervisor support matrix, and look at ways
+    to dig into our testing gaps and plug them. Be that missing tempest tests,
+    or missing test environments/combinations.
+  * Ideally this should include plugging any documentation gaps, particularly
+    around API documentation.
+
 * Fixing more bugs
 
-`John Garbutt`_ will work with the Nova community to get backlog specs defined
-for all of the above. Firstly, it will make clear the scope of each bullet.
-Secondly, we hope it will then be easier to then find help addressing these
-items.
-
-Should we find people to work on these items, it is possible we might promote
-them to an official priority later in the release, should there appear to be
-room in the review pipeline.
+  * We need to get all the pending bug fixes reviewed
+  * Need to get a better understanding of all the bugs without fixes
+  * Look to identify key themes, like the Quota bugs, to identify areas
+    that need some attention.
 
 Cells v2
 --------
