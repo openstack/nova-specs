@@ -63,8 +63,10 @@ Request::
 
     POST /servers/<uuid>/remote-consoles
     {
-        "protocol": ["vnc"|"rdp"|"serial"|"spice"],
-        "type": ["novnc"|"xpvnc"|"rdp-html5"|"spice-html5"|"serial"]
+        "remote_console": {
+            "protocol": ["vnc"|"rdp"|"serial"|"spice"],
+            "type": ["novnc"|"xpvnc"|"rdp-html5"|"spice-html5"|"serial"]
+        }
     }
 
 The 'type' parameter in the request is optional and should be used when the
@@ -74,9 +76,11 @@ Response::
 
     200 OK
     {
-        "url": string,
-        "protocol": ["vnc"|"rdp"|"serial"|"spice"],
-        "type": ["novnc"|"xpvnc"|"rdp-html5"|"spice-html5"|"serial"]
+        "remote_console": {
+            "url": string,
+            "protocol": ["vnc"|"rdp"|"serial"|"spice"],
+            "type": ["novnc"|"xpvnc"|"rdp-html5"|"spice-html5"|"serial"]
+        }
     }
 
 Some of failure scenarios and their corresponding error code include:
