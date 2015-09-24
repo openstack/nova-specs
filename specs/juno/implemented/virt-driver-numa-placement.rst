@@ -139,7 +139,7 @@ the image, with the leading ':' replaced by '_', as is normal for image
 property naming conventions:
 
 * hw_numa_nodes=NN - numa of NUMA nodes to expose to the guest.
-* hw_numa_mempolicy=strict|prefered - memory allocation policy
+* hw_numa_mempolicy=strict|preferred - memory allocation policy
 * hw_numa_cpus.0=<cpu-list> - mapping of vCPUS N-M to NUMA node 0
 * hw_numa_cpus.1=<cpu-list> - mapping of vCPUS N-M to NUMA node 1
 * hw_numa_mem.0=<ram-size> - mapping N MB of RAM to NUMA node 0
