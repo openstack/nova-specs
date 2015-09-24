@@ -83,6 +83,12 @@ This will only be honoured if the flavor does not already have a threads
 policy set. This ensures the cloud administrator can have absolute control
 over threads policy if desired.
 
+.. NOTE::
+   Configurable CPU thread policies as outlined above were not implemented in
+   OpenStack "Kilo". This feature has since been separated out into a
+   separate proposal attached to
+   https://blueprints.launchpad.net/nova/+spec/virt-driver-cpu-thread-pinning.
+
 The scheduler will have to be enhanced so that it considers the usage of CPUs
 by existing guests. Use of a dedicated CPU policy will have to be accompanied
 by the setup of aggregates to split the hosts into two groups, one allowing
@@ -286,3 +292,7 @@ work
 Previously approved for Juno but implementation not completed
 
 * https://review.openstack.org/93652
+
+Virt driver pinning guest vCPUs threads to host pCPUs threads blueprint
+
+* https://blueprints.launchpad.net/nova/+spec/virt-driver-cpu-thread-pinning
