@@ -230,28 +230,6 @@ An incoming request for version 2.2 of the API would end up
 executing the first method, whilst an incoming request for version
 3.1 of the API would result in the second being executed.
 
-For cases where the method implementations are very similar with just
-minor differences a lot of duplicated code can be avoided by versioning
-internal methods intead. For example::
-
-  @api_version(min_version='2.1')
-  def _version_specific_func(self, req, arg1):
-     pass
-
-  @api_version(min_version='2.5')
-  def _version_specific_func(self, req, arg1):
-     pass
-
-  def show(self, req, id):
-     .... common stuff ....
-     self._version_specific_func(req, "foo")
-        .... common stuff ....
-
-Reducing the duplicated code to a minimum minimises maintenance
-overhead. So the technique we use would depend on individual
-circumstances of what code is common/different and where in the method
-it is.
-
 A version object is passed down to the method attached to the request
 object so it is also possible to do very specific checks in a
 method. For example::
