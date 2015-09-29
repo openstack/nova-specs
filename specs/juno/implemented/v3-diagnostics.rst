@@ -324,7 +324,7 @@ We can now at least document the fields that are returned and their meaning.
 If we do decide to update the v2 support we will need to update:
 
 Please also update:
-http://docs.openstack.org/admin-guide-cloud/content/instance_usage_statistics.html
+http://docs.openstack.org/user-guide-admin/common/nova_show_usage_statistics_for_hosts_instances.html
 http://docs.openstack.org/user-guide/content/usage_statistics.html
 http://docs.openstack.org/user-guide/content/novaclient_commands.html
 http://docs.openstack.org/trunk/openstack-ops/content/lay_of_the_land.html#diagnose-compute

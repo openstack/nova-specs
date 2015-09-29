@@ -231,7 +231,7 @@ Documentation Impact
   well:
 
    * http://docs.openstack.org/training-guides/content/developer-getting-started.html
-   * http://docs.openstack.org/admin-guide-cloud/content/compute-service.html
+   * http://docs.openstack.org/admin-guide-cloud/compute.html
    * http://docs.openstack.org/trunk/openstack-ops/content/cloud_controller_design.html
 
 * There are database topics in the security guide, chapters 32-34, so there
