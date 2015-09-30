@@ -351,10 +351,14 @@ party testing, gate enhancements, etc).
 Documentation Impact
 ====================
 
-What is the impact on the docs team of this change? Some changes might require
-donating resources to the docs team to have the documentation updated. Don't
-repeat details discussed above, but please reference them here.
-
+Which audiences are affected most by this change, and which documentation
+titles on docs.openstack.org should be updated because of this change? Don't
+repeat details discussed above, but reference them here in the context of
+documentation for multiple audiences. For example, the Operations Guide targets
+cloud operators, and the End User Guide would need to be updated if the change
+offers a new feature available through the CLI or dashboard. If a config option
+changes or is deprecated, note here that the documentation needs to be updated
+to reflect this specification's change.
 
 References
 ==========
