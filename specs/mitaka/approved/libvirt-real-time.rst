@@ -102,16 +102,16 @@ For this reason, an administrator will need to make use of host aggregates
 to partition their compute hosts into those which support real time and
 those which do not.
 
-There will then need to be a property available on the flavour
+There will then need to be a property available on the flavor
 
 * hw:cpu_realtime=yes|no
 
-which will indicate whether instances booted with that flavour will be
-run with a realtime policy. Flavours with this property set to 'yes'
+which will indicate whether instances booted with that flavor will be
+run with a realtime policy. Flavors with this property set to 'yes'
 will need to be associated with the host aggregate that contains hosts
 supporting realtime.
 
-A pre-requisite for enabling the realtime feature on a flavour is that
+A pre-requisite for enabling the realtime feature on a flavor is that
 it must also have 'hw:cpu_policy' is set to 'dedicated'. ie all real
 time guests must have exclusive pCPUs assigned to them. You cannot give
 a real time policy to vCPUs that are susceptible to overcommit, as that
@@ -127,7 +127,7 @@ not need to know the details of how the requirements are met, merely
 that the cloud can support the necessary latency guarantees.
 
 In the case of the libvirt driver with the KVM hypervisor, it is expected
-that setting the real time flavour will result in the following guest
+that setting the real time flavor will result in the following guest
 configuration changes
 
 * Entire QEMU and guest RAM will be locked into memory
@@ -148,7 +148,7 @@ Most guest OS will run with multiple vCPUs and have at least one of
 their vCPUs dedicated to running non-realtime house keeping tasks.
 Given this, the intention is that the emulator threads be co-located
 with the vCPU that is running non-realtime tasks. This will in turn
-require another tunable, which can be set either on the flavour, or
+require another tunable, which can be set either on the flavor, or
 on the image. This will indicate which vCPUs will have realtime policy
 enabled:
 
@@ -256,8 +256,8 @@ are already assigned to a guest.
 Other deployer impact
 ---------------------
 
-The operator will have the ability to define real time flavours by setting a
-flavour extra spec property.
+The operator will have the ability to define real time flavors by setting a
+flavor extra spec property.
 
 The operator will likely wish to make use of host aggregates to assign a
 certain set of compute nodes for use in combination with huge pages and CPU
@@ -267,7 +267,7 @@ not alter that.
 Developer impact
 ----------------
 
-Other virt drivers may wish to support the flavour/image properties for
+Other virt drivers may wish to support the flavor/image properties for
 enabling real time scheduling of their instances, if their hypervisor has
 such a feature.
 
@@ -289,7 +289,7 @@ Work Items
 The primary work items are
 
 * Add the 'hw_cpu_realtime_mask' field to the ImageMetaProps object
-* Update the libvirt guest XML configuration when the real time flavour or
+* Update the libvirt guest XML configuration when the real time flavor or
   image properties are present
 * Update the Nova deployment documentation to outline what host OS setup
   steps are required in order to make best use of the real time feature

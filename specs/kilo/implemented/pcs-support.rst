@@ -48,7 +48,7 @@ or vm_mode=hvm to run hypervisor based instances). So PCS hosts will support
 arbitrary mix of machine and container based guests.
 In case a cloud administrator needs a way to partition hosts into groups so
 that some hosts exclusively run machine virt, while other hosts exclusively
-run container virt, host aggregates and flavours extra specs should be used.
+run container virt, host aggregates and flavors extra specs should be used.
 
 nova.conf extract example:
 [libvirt]
