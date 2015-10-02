@@ -285,7 +285,7 @@ Work Items
 * Enhance libvirt driver to support setup of guest NUMA nodes.
 * Enhance libvirt driver to look at NUMA node availability when launching
   guest instances and pin all guests to best NUMA node
-* Add support to schedular for picking hosts based on the NUMA availability
+* Add support to scheduler for picking hosts based on the NUMA availability
   instead of simply considering the total RAM/vCPU availability.
 
 Dependencies

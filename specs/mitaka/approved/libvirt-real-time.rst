@@ -32,7 +32,7 @@ have sub-optimal characteristics that will cause latency spikes in QEMU,
 as may underling host hardware. Avoiding these problems requires that the
 host kernel and operating system be configured in a particular manner, as
 well as the careful choice of which QEMU features to exercise. It also
-requires that suitable schedular policies are configured for the guest
+requires that suitable scheduler policies are configured for the guest
 vCPUs.
 
 Assigning huge pages to a guest ensures that guest RAM cannot be swapped out
@@ -49,9 +49,9 @@ actually demands it.
 
 As an indication of the benefits and tradeoffs of realtime, it is useful
 to consider some real performance numbers. With bare metal and dedicated
-CPUs but non-realtime schedular policy, worst case latency is on the order
+CPUs but non-realtime scheduler policy, worst case latency is on the order
 of 150 microseconds, and mean latency is approx 2 microseconds. With KVM
-and dedicated CPUs and a realtime schedular policy, worst case latency
+and dedicated CPUs and a realtime scheduler policy, worst case latency
 is 14 microseconds, and mean latency is < 10 microseconds. This shows
 that while realtime brings significant benefits in worst case latency,
 the mean latency is still significantly higher than that achieved on
@@ -169,10 +169,10 @@ be run on a host pCPU that is completely separate from those
 running the vCPUs. This would, for example, allow for running
 of guest OS, where all vCPUs must be real-time capable, and so
 cannot reserve a vCPU for real-time tasks. This would require
-the schedular to treat the emulator threads as essentially being
+the scheduler to treat the emulator threads as essentially being
 a virtual CPU in their own right. Such an enhancement is considered
 out of scope for this blueprint in order to remove any dependency
-on schedular modifications. It will be dealt with in a new blueprint
+on scheduler modifications. It will be dealt with in a new blueprint
 
 * https://blueprints.launchpad.net/nova/+spec/libvirt-emulator-threads-policy
 

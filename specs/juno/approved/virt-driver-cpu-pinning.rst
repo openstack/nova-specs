@@ -71,7 +71,7 @@ This will only be honoured if the flavor does not already have a threads
 policy set. This ensures the cloud administrator can have absolute control
 over threads policy if desired.
 
-The schedular will have to be enhanced so that it considers the usage of CPUs
+The scheduler will have to be enhanced so that it considers the usage of CPUs
 by existing guests. Use of a dedicated CPU policy will have to be accompanied
 by the setup of aggregates to split the hosts into two groups, one allowing
 overcommit of shared pCPUs and the other only allowing dedicated CPU guests.
@@ -147,7 +147,7 @@ that their guest should have more predictable CPU execution latency.
 Performance Impact
 ------------------
 
-The schedular will incur small further overhead if a threads policy is set
+The scheduler will incur small further overhead if a threads policy is set
 on the image or flavor. This overhead will be negligible compared to that
 implied by the enhancements to support NUMA policy and huge pages. It is
 anticipated that dedicated CPU guests will typically be used in conjunction
@@ -158,7 +158,7 @@ Other deployer impact
 
 The cloud administrator will gain the ability to define flavors which offer
 dedicated CPU resources. The administrator will have to place hosts into groups
-using aggregates such that the schedular can separate placement of guests with
+using aggregates such that the scheduler can separate placement of guests with
 dedicated vs shared CPUs. Although not required by this design, it is expected
 that the administrator will commonly use the same host aggregates to group
 hosts for both CPU pinning and large page usage, since these concepts are
@@ -190,7 +190,7 @@ Work Items
 * Enhance libvirt to support setup of strict CPU pinning for guests when the
   appropriate policy is set in the flavor
 
-* Enhance the schedular to take account of threads policy when choosing
+* Enhance the scheduler to take account of threads policy when choosing
   which host to place the guest on.
 
 Dependencies
