@@ -38,11 +38,6 @@ If a refresh quotas usage feature is implemented in Nova an operator can
 correct the usage without running a SQL query directly on the database.
 
 
-Project Priority
------------------
-
-None
-
 Proposed change
 ===============
 

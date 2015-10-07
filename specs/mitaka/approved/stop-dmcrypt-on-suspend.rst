@@ -34,11 +34,6 @@ Use Cases
 An encrypted instance operating on sensitive data is stopped but not destroyed
 -- the work to be resumed later.
 
-Project Priority
-----------------
-
-None
-
 
 Proposed change
 ===============

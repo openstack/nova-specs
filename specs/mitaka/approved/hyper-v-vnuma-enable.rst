@@ -39,10 +39,6 @@ Hyper-V related restrictions:
 * Hyper-V cannot create instances with asymmetric NUMA topology.
 * Hyper-V cannot guarantee CPU pinning.
 
-Project Priority
------------------
-
-None
 
 Proposed change
 ===============

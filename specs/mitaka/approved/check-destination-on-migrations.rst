@@ -53,11 +53,6 @@ specific destination wouldn't impact my existing instances running on that
 destination host because of some affinity that I missed.
 
 
-Project Priority
------------------
-
-Part of the 'scheduler' priority accepted for Liberty.
-
 Proposed change
 ===============
 

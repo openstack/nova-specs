@@ -64,11 +64,6 @@ that is holding people back from deploying Glance v2. This in turn is causing
 some problems for the DefCore effort.
 
 
-Project Priority
------------------
-
-None
-
 Proposed change
 ===============
 

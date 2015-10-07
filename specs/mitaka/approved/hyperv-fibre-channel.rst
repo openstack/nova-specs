@@ -26,10 +26,6 @@ This blueprint addresses deployers possessing FC based infrastructure.
 This will enable attaching volumes exported by Cinder FC based backends using
 the retrieved target informations such as WWN and LUN.
 
-Project Priority
------------------
-
-None
 
 Proposed change
 ===============

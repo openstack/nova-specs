@@ -32,11 +32,6 @@ Use Cases
 * Operators/users want to move an instance through a migration or resize and
   want the destination to satisfy the same requirements as the source.
 
-Project Priority
-----------------
-
-Priorities for Mitaka have not yet been decided.
-
 
 Proposed change
 ===============

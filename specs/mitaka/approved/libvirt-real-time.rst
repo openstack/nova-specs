@@ -78,10 +78,6 @@ cloud and the service/system it is communicating with. Such networking
 guarantees are largely impractical to achieve when using remote public
 clouds across the internet.
 
-Project Priority
-----------------
-
-None
 
 Proposed change
 ===============

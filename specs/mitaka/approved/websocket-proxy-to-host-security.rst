@@ -51,11 +51,6 @@ With this blueprint, Carol would be unable to view the VNC or SPICE traffic
 (since it would we encrypted) and would be unable to connect to the VM's
 console with her own VNC client (since it would require authentication).
 
-Project Priority
-----------------
-
-None
-
 
 Proposed change
 ===============

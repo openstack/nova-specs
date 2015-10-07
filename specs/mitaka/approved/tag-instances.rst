@@ -33,10 +33,6 @@ A typical end-user would like to attach a set of strings to an instance. The
 user does not wish to use key/value pairs to tag the instance with some
 simple strings.
 
-Project Priority
-----------------
-
-None
 
 Proposed change
 ===============

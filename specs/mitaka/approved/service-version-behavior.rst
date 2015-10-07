@@ -50,10 +50,6 @@ steps and more forgiving behavior from nova.
 As an operator, I want more automated checks preventing an ancient
 compute node from trying to rejoin after an extended hiatus.
 
-Project Priority
------------------
-
-The priorities for Mitaka are not yet defined.
 
 Proposed change
 ===============

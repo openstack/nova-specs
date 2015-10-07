@@ -36,10 +36,6 @@ Use Cases
 
 * It will allow tenants to be guaranteed performance
 
-Project Priority
------------------
-
-None
 
 Proposed change
 ===============

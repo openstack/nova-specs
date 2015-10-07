@@ -28,10 +28,6 @@ Use Cases
 This feature will increase the security of the spawned instances, assuring
 their integrity before they boot.
 
-Project Priority
------------------
-
-None
 
 Proposed change
 ===============

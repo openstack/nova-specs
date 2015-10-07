@@ -41,12 +41,6 @@ Use Cases
   of BaseResourceMonitor.
 
 
-Project Priority
------------------
-
-None
-
-
 Proposed change
 ===============
 
@@ -186,5 +180,3 @@ References
 ==========
 
 http://pcp.io/
-
-

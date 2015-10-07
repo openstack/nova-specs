@@ -30,10 +30,6 @@ Deployer may want to exclude specific VF(s) to be used for other purposes.
 For instance VF can be used to connect compute node to storage node
 by running iSER (iSCSI Extensions for RDMA) transport.
 
-Project Priority
------------------
-
-None
 
 Proposed change
 ===============

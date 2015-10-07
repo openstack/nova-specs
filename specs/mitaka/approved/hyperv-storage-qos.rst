@@ -31,10 +31,6 @@ Use Cases
 
 * Set IOPS caps for instance local disks by using flavor extra specs
 
-Project Priority
------------------
-
-None
 
 Proposed change
 ===============

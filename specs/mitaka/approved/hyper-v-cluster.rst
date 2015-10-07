@@ -33,10 +33,6 @@ This feature is particularly useful for its increased performance, highly
 available VMs and virtual machine and virtual machine network health
 detection.
 
-Project Priority
------------------
-
-None
 
 Proposed change
 ===============

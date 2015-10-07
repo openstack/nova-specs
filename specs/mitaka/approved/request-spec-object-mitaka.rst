@@ -40,12 +40,6 @@ Use Cases
 This is a pure refactoring effort for cleaning up all the interfaces in between
 Nova and the scheduler so the scheduler could be split out by the next cycle.
 
-Project Priority
------------------
-
-This blueprint is part of a global effort around the 'scheduler' refactoring
-for helping it to be split out. It was formerly identified as a priority in
-Kilo.
 
 Proposed change
 ===============

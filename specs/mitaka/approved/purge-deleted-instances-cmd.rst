@@ -34,10 +34,6 @@ Use Cases
 As a cloud operator, I want to manage the size of my database by purging
 soft deleted instances - and I don't care about archiving to shadow tables.
 
-Project Priority
------------------
-
-None
 
 Proposed change
 ===============

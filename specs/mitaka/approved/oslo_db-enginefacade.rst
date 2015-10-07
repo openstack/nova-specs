@@ -57,11 +57,6 @@ this separation. This allows us to automatically use a slave database
 connection for all read-only transactions. It is currently only used when
 explicitly requested in code.
 
-Project Priority
------------------
-
-None
-
 
 Proposed change
 ===============

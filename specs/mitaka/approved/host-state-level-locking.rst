@@ -76,11 +76,6 @@ There is no specific use case that this is aimed at. It is an internal
 refactoring aimed at improving data consistency in the scheduler, and thus
 overall effectiveness of placement decisions.
 
-Project Priority
------------------
-
-Yes - This is work related to the scheduler, one of the priority topics for
-Liberty.
 
 Proposed change
 ===============

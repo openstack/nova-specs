@@ -33,10 +33,6 @@ Use Cases
   failure domain, and buildout reasons. When partitioned, flavor
   information needs to be stored at API level.
 
-Project Priority
------------------
-
-Nova CellV2 is a project priority in liberty.
 
 Proposed change
 ===============
