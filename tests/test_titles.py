@@ -69,7 +69,16 @@ class TestTitles(testtools.TestCase):
                       % (filename, "\n  ".join(msgs)))
 
     def _check_lines_wrapping(self, tpl, raw):
+        code_block = False
         for i, line in enumerate(raw.split("\n")):
+            # NOTE(ndipanov): Allow code block lines to be longer than 79 ch
+            if code_block:
+                if not line or line.startswith(" "):
+                    continue
+                else:
+                    code_block = False
+            if "::" in line:
+                code_block = True
             if "http://" in line or "https://" in line:
                 continue
             # Allow lines which do not contain any whitespace
