@@ -84,7 +84,7 @@ A detailed description of the problem. What problem is this blueprint
 addressing?
 
 Use Cases
-----------
+---------
 
 What use cases does this address? What impact on actors does this change have?
 Ensure you are clear about the actors in each use case: Developer, End User,
