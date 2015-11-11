@@ -21,17 +21,17 @@ Some applications must exhibit real-time or near real-time behavior. This
 is general possible by making use of processor affinity and binding vCPUs to
 pCPUs. This functionality currently exist in Nova. However, it is also
 necessary to consider thread affinity in the context of simultaneous
-multithreading (SMT) enabled systems. In these systems, competition for shared
-resources can result in unpredictable behavior.
+multithreading (SMT) enabled systems, such as those with Intel(R)
+Hyper-Threading Technology. In these systems, competition for shared resources
+can result in unpredictable behavior.
 
 Use Cases
 ----------
 
-Depending on the workload being executed the end user or cloud admin may
-wish to have control over how the guest used hyperthreads. To maximise cache
+Depending on the workload being executed the end user or cloud admin may wish
+to have control over how the guest uses hardware threads. To maximise cache
 efficiency, the guest may wish to be pinned to thread siblings. Conversely
-the guest may wish to avoid thread siblings (i.e. only pin to one sibling)
-or even avoid hosts with threads entirely. This level of control is of
+the guest may wish to avoid thread siblings. This level of control is of
 particular importance to Network Function Virtualization (NFV) deployments,
 which care about maximizing cache efficiency of vCPUs.
 
@@ -45,35 +45,40 @@ Proposed change
 
 The flavor extra specs will be enhanced to support one new parameter:
 
-* hw:cpu_threads_policy=avoid|separate|isolate|require
+* hw:cpu_thread_policy=prefer|isolate|require
 
 This policy is an extension to the already implemented CPU policy parameter:
 
 * hw:cpu_policy=shared|dedicated
 
 The threads policy will control how the scheduler / virt driver places guests
-with respect to CPU threads. It will only apply if the scheduler policy is
-'dedicated'
+with respect to CPU threads. It will only apply if the CPU policy is
+'dedicated', i.e. guest vCPUs are being pinned to host pCPUs.
 
- - avoid: the scheduler will not place the guest on a host which has
-   hyperthreads.
- - separate: if the host has threads, each vCPU will be placed on a
-   different core. ie no two vCPUs will be placed on thread siblings
- - isolate: if the host has threads, each vCPU will be placed on a
-   different core and no vCPUs from other guests will be able to be
-   placed on the same core. ie one thread sibling is guaranteed to
-   always be unused,
- - require: if the host has threads, vCPU will be placed on the same
-   core, so they are thread siblings.
+ - prefer: The host may or may not have an SMT architecture. This retains the
+   legacy behavior, whereby siblings are prefered when available. This is the
+   default if no policy is specified.
+ - isolate: The host must not have an SMT architecture, or must emulate a
+   non-SMT architecture. If the host does not have an SMT architecture, each
+   vCPU will simply be placed on a different core as expected. If the host
+   does have an SMT architecture (i.e. one or more cores have "thread
+   siblings") then each vCPU will be placed on a different physical core
+   and no vCPUs from other guests will be placed on the same core. As such,
+   one thread sibling is always guaranteed to always be unused.
+ - require: The host must have an SMT architecture. Each vCPU will be
+   allocated on thread siblings. If the host does not have an SMT architecture
+   then it will not be used. If the host has an SMT architecture, but not
+   enough cores with free thread siblings are available, then scheduling
+   will fail.
 
-The image metadata properties will also allow specification of the
-threads policy:
+The image metadata properties will also allow specification of the threads
+policy:
 
-* hw_cpu_threads_policy=avoid|separate|isolate|require
+* hw_cpu_thread_policy=prefer|isolate|require
 
-This will only be honored if the flavor does not already have a threads
-policy set. This ensures the cloud administrator can have absolute control
-over threads policy if desired.
+This will only be honored if the flavor specifies the 'prefer' policy, either
+explicitly or implicitly as the defalt option. This ensures that the cloud
+administrator can have absolute control over threads policy if desired.
 
 Alternatives
 ------------
@@ -204,3 +209,6 @@ History
      - Description
    * - Liberty
      - Introduced
+   * - Mitaka
+     - Revised to include rework policies, removing two, adding one and
+       clarifying the remainder
