@@ -36,11 +36,6 @@ will be limited in this network plane and will have no impact for management
 network. The end user will not notice this change.
 
 
-Project Priority
-----------------
-
-None
-
 Proposed change
 ===============
 
