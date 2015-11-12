@@ -121,10 +121,11 @@ Support for flavor extra specs is already available in the Python clients.
 Performance Impact
 ------------------
 
-None.
-
-Support for CPU policies already exists and this is merely an extension of
-that functionality.
+The scheduler will incur small further overhead if a threads policy is set
+on the image or flavor. This overhead will be negligible compared to that
+implied by the enhancements to support NUMA policy and huge pages. It is
+anticipated that dedicated CPU guests will typically be used in conjunction
+with huge pages.
 
 Other deployer impact
 ---------------------

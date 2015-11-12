@@ -23,17 +23,12 @@ competing for the CPU time. This means that workloads executing in a guest can
 have unpredictable latency, which may be unacceptable for the type of
 application being run.
 
-
 Use Cases
 ---------
 
-Depending on the workload being executed the end user or cloud admin may
-wish to have control over how the guest used hyperthreads. To maximise cache
-efficiency, the guest may wish to be pinned to thread siblings. Conversely
-the guest may wish to avoid thread siblings (ie only pin to 1 sibling)
-or even avoid hosts with threads entirely. This level of control is of
-particular importance to Network Function Virtualization (NFV) deployments
-which care about maximising cache efficiency of vCPUs.
+Depending on the workload being executed, the end user or cloud admin may
+wish to have control over which physical CPUs (pCPUs) are utilized by the
+virtual CPUs (vCPUs) of any given instance.
 
 Project Priority
 ----------------
@@ -43,10 +38,9 @@ None
 Proposed change
 ===============
 
-The flavor extra specs will be enhanced to support two new parameters
+The flavor extra specs will be enhanced to support one new parameter:
 
 * hw:cpu_policy=shared|dedicated
-* hw:cpu_threads_policy=avoid|separate|isolate|prefer
 
 If the policy is set to 'shared' no change will be made compared to the current
 default guest CPU placement policy. The guest vCPUs will be allowed to freely
@@ -55,45 +49,27 @@ policy is set to 'dedicated' then the guest vCPUs will be strictly pinned to a
 set of host pCPUs. In the absence of an explicit vCPU topology request, the
 virt drivers typically expose all vCPUs as sockets with 1 core and 1 thread.
 When strict CPU pinning is in effect the guest CPU topology will be setup to
-match the topology of the CPUs to which it is pinned. ie if a 2 vCPU guest is
+match the topology of the CPUs to which it is pinned, i.e. if a 2 vCPU guest is
 pinned to a single host core with 2 threads, then the guest will get a topology
 of 1 socket, 1 core, 2 threads.
 
-The threads policy will control how the scheduler / virt driver places guests
-with resepct to CPU threads. It will only apply if the scheduler policy is
-'dedicated'
+The image metadata properties will also allow specification of the pinning
+policy:
 
- - avoid: the scheduler will not place the guest on a host which has
-   hyperthreads.
- - separate: if the host has threads, each vCPU will be placed on a
-   different core. ie no two vCPUs will be placed on thread siblings
- - isolate: if the host has threads, each vCPU will be placed on a
-   different core and no vCPUs from other guests will be able to be
-   placed on the same core. ie one thread sibling is guaranteed to
-   always be unused,
- - prefer: if the host has threads, vCPU will be placed on the same
-   core, so they are thread siblings.
-
-The image metadata properties will also allow specification of the
-threads policy
-
-* hw_cpu_threads_policy=avoid|separate|isolate|prefer
-
-This will only be honoured if the flavor does not already have a threads
-policy set. This ensures the cloud administrator can have absolute control
-over threads policy if desired.
+* hw_cpu_policy=shared|dedicated
 
 .. NOTE::
-   Configurable CPU thread policies as outlined above were not implemented in
-   OpenStack "Kilo". This feature has since been separated out into a
+   The original definition of this specification included support for
+   configurable CPU thread policies. However, this part of the spec was not
+   implemented in OpenStack "Kilo" and has since been extracted into a
    separate proposal attached to
    https://blueprints.launchpad.net/nova/+spec/virt-driver-cpu-thread-pinning.
 
 The scheduler will have to be enhanced so that it considers the usage of CPUs
 by existing guests. Use of a dedicated CPU policy will have to be accompanied
 by the setup of aggregates to split the hosts into two groups, one allowing
-overcommit of shared pCPUs and the other only allowing dedicated CPU guests.
-ie we do not want a situation with dedicated CPU and shared CPU guests on the
+overcommit of shared pCPUs and the other only allowing dedicated CPU guests,
+i.e. we do not want a situation with dedicated CPU and shared CPU guests on the
 same host. It is likely that the administrator will already need to setup host
 aggregates for the purpose of using huge pages for guest RAM. The same grouping
 will be usable for both dedicated RAM (via huge pages) and dedicated CPUs (via
@@ -101,7 +77,7 @@ pinning).
 
 The compute host already has a notion of CPU sockets which are reserved for
 execution of base operating system services. This facility will be preserved
-unchanged. ie dedicated CPU guests will only be placed on CPUs which are not
+unchanged, i.e. dedicated CPU guests will only be placed on CPUs which are not
 marked as reserved for the base OS.
 
 Alternatives
@@ -112,10 +88,10 @@ latency free of cache effects from other guests working on the host, that does
 not involve CPU pinning.
 
 The proposed solution is to use host aggregates for grouping compute hosts into
-those for dedicated vs overcommit CPU policy. An alternative would be to allow
+those for dedicated vs. overcommit CPU policy. An alternative would be to allow
 compute hosts to have both dedicated and overcommit guests, splitting them onto
-separate sockets. ie if there were for sockets, two sockets could be used for
-dedicated CPU guests while two sockets could be used for overcommit guests,
+separate sockets, i.e. if there were four sockets, two sockets could be used
+for dedicated CPU guests while two sockets could be used for overcommit guests,
 with usage determined on a first-come, first-served basis. A problem with this
 approach is that there is not strict workload isolation even if separate
 sockets are used. Cached effects can be observed, and they will also contend
@@ -203,11 +179,7 @@ that their guest should have more predictable CPU execution latency.
 Performance Impact
 ------------------
 
-The scheduler will incur small further overhead if a threads policy is set
-on the image or flavor. This overhead will be negligible compared to that
-implied by the enhancements to support NUMA policy and huge pages. It is
-anticipated that dedicated CPU guests will typically be used in conjunction
-with huge pages.
+No impact.
 
 Other deployer impact
 ---------------------
@@ -246,9 +218,6 @@ Work Items
 
 * Enhance libvirt to support setup of strict CPU pinning for guests when the
   appropriate policy is set in the flavor
-
-* Enhance the scheduler to take account of threads policy when choosing
-  which host to place the guest on.
 
 Dependencies
 ============
