@@ -18,6 +18,7 @@ approved/mark-host-down.rst ../implemented/mark-host-down.rst
 approved/metadata-service-network-info.rst ../implemented/metadata-service-network-info.rst
 approved/nova-api-policy.rst ../implemented/nova-api-policy.rst
 approved/nova-rootwrap-daemon-mode.rst ../implemented/nova-rootwrap-daemon-mode.rst
+approved/novaclient-api-microversions.rst ../implemented/novaclient-api-microversions.rst
 approved/online-schema-changes.rst ../implemented/online-schema-changes.rst
 approved/rename-parallels-to-virtuozzo.rst ../implemented/rename-parallels-to-virtuozzo.rst
 approved/request-spec-object.rst ../implemented/request-spec-object.rst
