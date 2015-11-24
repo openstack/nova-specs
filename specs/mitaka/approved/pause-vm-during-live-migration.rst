@@ -98,7 +98,7 @@ To be added in a new microversion.
 Body::
 
   {
-    "live-migrate-force-end": null
+    "live_migrate_force_end": null
   }
 
   Normal http response code: `202 Accepted`
