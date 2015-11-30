@@ -8,7 +8,7 @@
 Adding new nova-manage cmd to list compute node metrics
 ========================================================================
 
-https://blueprints.launchpad.net/nova/+spec/compute-node-metrics-api
+https://blueprints.launchpad.net/nova/+spec/compute-node-metrics-list
 
 We need a way to list the available metrics stored in the DB
 which is reported by the compute monitor plugins, so the administrator
@@ -39,10 +39,6 @@ Use Cases
 The Administrator will use this way to list all the available metric names,
 in order to configure the MetricsWeigher to work as expected.
 
-Project Priority
------------------
-
-None
 
 Proposed change
 ===============
