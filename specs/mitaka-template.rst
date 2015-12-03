@@ -156,11 +156,19 @@ Each API method which is either added or changed should have the following
 
   * URL for the resource
 
+    * URL should not include underscores, and use hyphens instead.
+
   * Parameters which can be passed via the url
 
-  * JSON schema definition for the body data if allowed
+  * JSON schema definition for the request body data if allowed
 
-  * JSON schema definition for the response data if any
+    * Field names should use snake_case style, not CamelCase or MixedCase
+      style.
+
+  * JSON schema definition for the response body data if any
+
+    * Field names should use snake_case style, not CamelCase or MixedCase
+      style.
 
 * Example use case including typical API samples for both data supplied
   by the caller and the response
