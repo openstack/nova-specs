@@ -91,31 +91,31 @@ REST API impact
 
 To be added in a new microversion.
 
-* Pause VM during live migration
+* Force live migration to complete by pausing VM
 
-  `POST /servers/{server_id}/{action}`
+  `POST /servers/{id}/migrations/{id}/action`
 
 Body::
 
   {
-    "live_migrate_force_end": null
+    "force_complete": null
   }
 
   Normal http response code: `202 Accepted`
   No response body is needed
 
+  Expected error http response code: `400 Bad Request`
+  - the instance state is invalid for forcing live migration to complete,
+  i.e., the task state is not 'migrating' or the migration is not in a
+  'running' state and the type is 'live-migration'. Also when live
+  migration cancel action is undergoing.
+
   Expected error http response code: `403 Forbidden`
-  - the migration exists but the user is not authorized to pause VM during
-  live migration. For instance, non admin user has management authority over
-  the instance, but has not been granted the authority to pause their
-  instances during live migrations.
+  - Policy violation if the caller is not granted access to
+  'os_compute_api:servers:migrations:force_complete' in policy.json
 
   Expected error http response code: `404 Not Found`
   - the instance does not exist
-
-  Expected error http response code: `409 Conflict`
-  - the instance state is invalid for pausing vm, e.g., instance is
-  not currently being live migrated.
 
 Because this is async call there might be an error that will not be exposed
 through API. For instance, hypervisor does not support pausing VM during live
@@ -135,8 +135,8 @@ during ongoing live migration.
 Other end user impact
 ---------------------
 
-python-novaclient will be extended by new operation to pause a VM during live
-migration.
+python-novaclient will be extended by new operation to force ongoing live
+migration to complete by pausing VM during transition to destination host.
 
 Performance Impact
 ------------------
@@ -166,7 +166,7 @@ Work Items
 ----------
 
 * Pausing VM during live migration through libvirt
-* python-novaclient 'nova live-migration-force-end'
+* python-novaclient 'nova live-migration-force-complete'
 
 Dependencies
 ============
