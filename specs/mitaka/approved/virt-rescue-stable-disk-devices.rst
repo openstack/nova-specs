@@ -175,7 +175,7 @@ Assignee(s)
 -----------
 
 Primary assignee:
-  berrange (libvirt impl)
+  lyarwood (libvirt impl)
 
 Other contributors:
   None
