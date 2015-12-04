@@ -190,7 +190,7 @@ Body::
         "created_at": "2013-10-29T13:42:02.000000",
         "dest_compute": "compute3",
         "id": 6789,
-        "instance_uuid": "instance_id_123",
+        "server_uuid": "6ff1c9bf-09f7-4ce3-a56f-fb46745f3770",
         "new_flavor_id": 2,
         "old_flavor_id": 1,
         "source_compute": "compute2",
