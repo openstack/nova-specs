@@ -65,9 +65,10 @@ attachment of the guest disk.
 Restrictions on when to use native AIO mode
 -------------------------------------------
 
-* native AIO mode is a bad idea if the storage is not fully pre-allocated,
-  e.g. for qcow2 images that grow on demand or sparse LVM storage (source:
-  danpb / KVM maintainers)
+* Native AIO mode will not be enabled for sparse images as it can cause
+  Qemu threads to be blocked when filesystem metadata need to be updated.
+  This issue is much more unlikely to appear when using preallocated
+  images. For the full discussion, see the IRC log in `[4]`_.
 * AIO mode has no effect if using the in-qemu network clients (any disks
   that use <disk type='network'>). It is only relevant if using the
   in-kernel network drivers (source: danpb)
@@ -182,14 +183,17 @@ should be updated.
 References
 ==========
 
-* General overview on AIO:
+* _`[1]` General overview on AIO:
   http://www.ibm.com/developerworks/library/l-async/
 
-* Best practices: Asynchronous I/O model for KVM guests
+* _`[2]` Best practices: Asynchronous I/O model for KVM guests
   https://www-01.ibm.com/support/knowledgecenter/linuxonibm/liaat/liaatbpkvmasynchio.htm
 
-* Libvirt and QEMU Performance Tweaks for KVM Guests
+* _`[3]` Libvirt and QEMU Performance Tweaks for KVM Guests
   "http://wiki.mikejung.biz/KVM/_Xen#AIO_Modes"
+
+* _`[4]` qemu irc log
+  http://paste.openstack.org/show/480498/
 
 
 History
