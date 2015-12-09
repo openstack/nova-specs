@@ -114,23 +114,108 @@ For the database schema, the following table constructs would suffice ::
 REST API impact
 ---------------
 
-Extend os-migrations to get migrations statistics in a new microversion.
-Response Body::
+* Extend migrations resource to get migrations statistics in a new
+  microversion. Then user can get the progress details of live-migration.
 
-  {
-    "migrations": [
+  * GET `GET /servers/{id}/migrations`
+
+  * JSON schema definition for new fields::
+
+      non_negative_integer_with_null = {
+        'type': ['integer', 'null'],
+        'minimum': 0
+      }
+
       {
+        'type': 'object',
+        'properties': {
+          'migrations': {
+            'type': 'array',
+            'items': {
+              'type': 'object',
+              'properties': {
+                'memory_total': non_negative_integer_with_null,
+                'memory_remaining': non_negative_integer_with_null,
+                'disk_total': non_negative_integer_with_null,
+                'disk_processed': non_negative_integer_with_null,
+                'disk_remainning': non_negative_integer_with_null,
+                 ..{all existing fields}...
+              }
+              'additionalProperties': False,
+              'required': ['memory_total', 'memory_remaining', 'disk_total',
+                           'disk_processed', 'disk_remainning',
+                           ..{all existing fields}...]
+            }
+          }
+        },
+        'additionalProperties': False,
+        'required': ['migrations']
+      }
+
+  * The example of response body::
+
+      {
+        "migrations": [
+          {
+            "created_at": "2012-10-29T13:42:02.000000",
+            "dest_compute": "compute2",
+            "id": 1234,
+            "server_uuid": "6ff1c9bf-09f7-4ce3-a56f-fb46745f3770",
+            "new_flavor_id": 2,
+            "old_flavor_id": 1,
+            "source_compute": "compute1",
+            "status": "running",
+            "updated_at": "2012-10-29T13:42:02.000000",
+            "memory_total": 1057024,
+            "memory_processed": 3720,
+            "memory_remaining": 1053304,
+            "disk_total": 20971520,
+            "disk_processed": 20880384,
+            "disk_remaining": 91136,
+          },
+        ]
+      }
+
+
+The old top-level resource `/os-migrations` won't be extended anymore, any
+new features will be go to the `/servers/{id}/migrations`. The old top-level
+resource `/os-migrations` just keeps for admin query, may replaced by
+`/servers/{id}/migrations` totally in the future. So we should add
+link in the old top-level resource `/os-migrations` for guiding people to
+get the new details of migration resource.
+
+* Proposes adding new method to get each migration resource
+
+  * GET /servers/{id}/migrations/{id}
+
+  * Normal http response code: 200
+
+  * Expected error http response code
+
+    * 404: the specific in-progress  migration can not found.
+
+  * JSON schema definition for the response body::
+
+      {
+        'type': object,
+        'properties': {
+            ...{all existing fields}...
+        }
+        'additionalProperties': False,
+        'required': [...{all existing fields}...]
+      }
+
+   * The example of response body::
+
+       {
         "created_at": "2012-10-29T13:42:02.000000",
         "dest_compute": "compute2",
-        "dest_host": "1.2.3.4",
-        "dest_node": "node2",
         "id": 1234,
-        "instance_uuid": "instance_id_123",
-        "new_instance_type_id": 2,
-        "old_instance_type_id": 1,
+        "server_uuid": "6ff1c9bf-09f7-4ce3-a56f-fb46745f3770",
+        "new_flavor_id": 2,
+        "old_flavor_id": 1,
         "source_compute": "compute1",
-        "source_node": "node1",
-        "status": "Done",
+        "status": "running",
         "updated_at": "2012-10-29T13:42:02.000000",
         "memory_total": 1057024,
         "memory_processed": 3720,
@@ -138,10 +223,110 @@ Response Body::
         "disk_total": 20971520,
         "disk_processed": 20880384,
         "disk_remaining": 91136,
-      },
-    ]
-  }
+       }
 
+   * There is new policy will be added
+     'os_compute_api:servers:migrations:show', and the default permission is
+     admin only.
+
+* Proposes adding ref link to the `/servers/{id}/migrations/{id}` for
+  `/os-migrations`
+
+  * GET /os-migrations
+
+  * JSON schema definition for the response body::
+
+      {
+        'type': 'object',
+        'properties': {
+            'migrations': {
+                'type': 'array',
+                'items': {
+                    'type': 'object',
+                    'properties': {
+                       'links': {
+                            'type': 'array',
+                            'items': {
+                                'type': 'object',
+                                'properties': {
+                                    'href': {
+                                        'type': 'string',
+                                        'format': 'uri'
+                                    },
+                                    'rel': {
+                                        'type': 'string',
+                                        'enum': ['self', 'bookmark'],
+                                    }
+                                }
+                                'additionalProperties': False,
+                                'required': ['href', 'ref']
+                            }
+                        },
+                        ...
+                    },
+                    'additionalProperties': False,
+                    'required': ['links', ...]
+                }
+            }
+        },
+        'additionalProperties': False,
+        'required': ['migrations']
+      }
+
+  * The example of response body::
+
+      {
+        "migrations": [
+          {
+              "created_at": "2012-10-29T13:42:02.000000",
+              "dest_compute": "compute2",
+              "dest_host": "1.2.3.4",
+              "dest_node": "node2",
+              "id": 1234,
+              "instance_uuid": "instance_id_123",
+              "new_instance_type_id": 2,
+              "old_instance_type_id": 1,
+              "source_compute": "compute1",
+              "source_node": "node1",
+              "status": "done",
+              "updated_at": "2012-10-29T13:42:02.000000",
+              "links": [
+                  {
+                    'href': "http://openstack.example.com/v2.1/openstack/servers/0e44cc9c-e052-415d-afbf-469b0d384170/migrations/1234",
+                    'ref': 'self'
+                },
+                {
+                    'href': "http://openstack.example.com/openstack/servers/0e44cc9c-e052-415d-afbf-469b0d384170/migrations/1234"
+                    'ref': 'bookmark'
+                }
+              ]
+          },
+          {
+              "created_at": "2013-10-22T13:42:02.000000",
+              "dest_compute": "compute20",
+              "dest_host": "5.6.7.8",
+              "dest_node": "node20",
+              "id": 5678,
+              "instance_uuid": "instance_id_456",
+              "new_instance_type_id": 6,
+              "old_instance_type_id": 5,
+              "source_compute": "compute10",
+              "source_node": "node10",
+              "status": "done",
+              "updated_at": "2013-10-22T13:42:02.000000"
+              "links": [
+                {
+                    'href': "http://openstack.example.com/v2.1/openstack/servers/0e44cc9c-e052-415d-afbf-469b0d384170/migrations/5678",
+                    'ref': 'self'
+                },
+                {
+                    'href': "http://openstack.example.com/openstack/servers/0e44cc9c-e052-415d-afbf-469b0d384170/migrations/5678"
+                    'ref': 'bookmark'
+                }
+              ]
+          },
+        ]
+      }
 
 Security impact
 ---------------
@@ -156,7 +341,10 @@ None
 Other end user impact
 ---------------------
 
-User can easily get the live migration progress.
+New python-novaclient command will be available, e.g.
+
+nova server-migration-list <instance>
+nova server-migration-show <instance> <migration_id>
 
 Performance Impact
 ------------------
@@ -193,6 +381,8 @@ Work Items
   driver.
 * The API call to list os-migrations simply return data about the migration
   objects, i.e. what is in DB.
+* Implement new commands 'server-migration-list' and 'server-migration-show' to
+  python-novaclient.
 
 Dependencies
 ============
