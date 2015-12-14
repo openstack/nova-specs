@@ -1,1 +1,1 @@
-liberty-template.rst
+mitaka-template.rst
