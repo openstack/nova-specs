@@ -41,12 +41,8 @@ be able to scale to 10^5 nodes.
 Proposed change
 ===============
 
-In general, a nova-compute running the Ironic virt driver should expose
-(total resources)/(number of compute services). This allows for resources to be
-sharded across multiple compute services without over-reporting resources.
-This compute daemon should only register as a single row in the
-compute_nodes table, rather than many rows, accomplishing the goal of the
-next paragraph.
+In general, a nova-compute running the Ironic virt driver should only
+register as a single row in the compute_nodes table, rather than many rows.
 
 Nova's scheduler should schedule only to a nova-compute host; the host will
 choose an Ironic node itself, from the nodes that match the request (explained
