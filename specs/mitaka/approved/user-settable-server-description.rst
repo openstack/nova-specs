@@ -12,14 +12,14 @@ The launchpad blueprint is located at:
 
 https://blueprints.launchpad.net/nova/+spec/user-settable-server-description
 
-Allow users to set the description of a server when it is created
+Allow users to set the description of a server when it is created, rebuilt,
 or updated. Allow users to get the server description.
 
 Problem description
 ===================
 
 Currently, when a server is created, the description is hardcoded to be the
-server display name.
+server display name. The description cannot be set on a server rebuild.
 
 Users cannot set the description on the server or retrieve the description.
 Currently, they need to use other fields, such as the server name or meta-data,
@@ -32,6 +32,9 @@ Use Cases
 ----------
 
 * The End User wishes to provide a description when creating a server.
+* The End User wishes to provide a description when rebuilding a server.
+  If the user chooses to change the name, a new description may be needed
+  to match the new name.
 * The End User wishes to get the server's description.
 * The End User wishes to change the server's description.
 
@@ -40,14 +43,15 @@ Proposed change
 
 * Nova REST API
 
-  * Add an optional description parameter to the Create Server and Update
-    Server APIs.
+  * Add an optional description parameter to the Create Server, Rebuild Server,
+    and Update Server APIs.
 
-    * No default description for new servers (set to NULL in the database).
-    * If a null description string is specified on the server update, then
-      the description is set to NULL in the database (description is removed)
-    * If the description parameter is not specified on the server update,
-      then the description is not changed.
+    * No default description on Create Server (set to NULL in the database).
+    * If a null description string is specified on the server update or
+      rebuild, then the description is set to NULL in the database
+      (description is removed)
+    * If the description parameter is not specified on the server update
+      or rebuild, then the description is not changed.
     * An empty description string is allowed.
 
   * The Get Server Details API returns the description in the JSON response.
@@ -58,6 +62,7 @@ Proposed change
 * Nova V2 client
 
   * Add an optional description parameter to the server create method.
+  * Add an optional description parameter to the server rebuild method.
   * Add new methods for server set and clear the description. These will
     implement a new CLI command "nova describe" with the following
     positional parameters:
@@ -74,6 +79,7 @@ Proposed change
   * NOTE:  Changes to the Openstack V2 compute client will be
     implemented under a bug report, and not under this spec.
   * Add an optional description parameter to CreateServer.
+  * Add an optional description parameter to RebuildServer.
   * Add an optional description parameter to SetServer and
     UnsetServer.
   * Return the description on ShowServer.  This can be null.
@@ -176,6 +182,49 @@ Error http response codes:
   or longer than 255 characters.
 
 
+`Rebuild Server <http://developer.openstack.org/api-ref-compute-v2.1.html#rebuildServer>`_
+..........................................................................................
+
+New request parameter:
+
++---------------------+------+-------------+-----------------------+
+|Parameter            |Style |Type         | Description           |
++=====================+======+=============+=======================+
+|description(optional)|plain | csapi:string|The server description |
++---------------------+------+-------------+-----------------------+
+
+Add the description to the json request schema definition:
+
+::
+
+    base_rebuild = {
+        'type': 'object',
+        'properties': {
+            'rebuild': {
+                'type': 'object',
+                'properties': {
+                    'name': parameter_types.name,
+                    'description': parameter_types.description,
+                    'imageRef': parameter_types.image_ref,
+                    'adminPass': parameter_types.admin_password,
+                    'metadata': parameter_types.metadata,
+                    'preserve_ephemeral': parameter_types.boolean,
+                },
+                'required': ['imageRef'],
+                'additionalProperties': False,
+            },
+        },
+        'required': ['rebuild'],
+        'additionalProperties': False,
+    }
+
+
+Error http response codes:
+
+* 400 (BadRequest) if the description is invalid unicode,
+  or longer than 255 characters.
+
+
 `Update Server <http://developer.openstack.org/api-ref-compute-v2.1.html#updateServer>`_
 ........................................................................................
 
@@ -200,6 +249,12 @@ Add the description to the json request schema definition:
                     'name': parameter_types.name,
                     'description': parameter_types.description,
                 },
+
+Response:
+
+* The update API currently returns the details of the updated server.  As part
+  of this, the description will now be returned in the json response.
+
 
 Error http response codes:
 
@@ -252,6 +307,9 @@ https://review.openstack.org/#/c/224755/
   the description.
 * The new versioned notification on instance create will include
   the description.
+* The new versioned notification on instance rebuild will include
+  the description.
+
 
 Other end user impact
 ---------------------
@@ -308,6 +366,11 @@ Testing
 
     * Check that the default description is NULL.
 
+  * Add a description to the tests that use the API to rebuild a server.
+
+    * Check that the description can be changed or removed.
+    * Check that the description is unchanged if not specified on the API.
+
   * Add a description to the tests that use the API to update a server.
 
     * Check that the description can be changed or removed.
@@ -320,6 +383,7 @@ Testing
   the CLI tests:
 
   * Add a description to the tests that create a server.
+  * Add a description to the tests that rebuild a server.
   * Set and remove the description on an existing server.
   * Check that the description is returned as part of server details for
     an individual server or a server list.
@@ -359,3 +423,6 @@ History
      - Description
    * - Mitaka
      - Introduced
+   * - Mitaka
+     - Re-submitted to add support for description on Rebuild.
+
