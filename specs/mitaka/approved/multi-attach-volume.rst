@@ -66,7 +66,9 @@ lock on the disk, that all I/O caching is disabled, and any SELinux labeling
 allows use by all domains.
 
 Nova needs to set this sharable flag for the multi-attach disks of the
-instances.
+instances. Only the libvirt driver is modified to support multi-attach, for
+all other virt drivers this capability is disabled, the information is stored
+among the virt driver capabilities dict in the base ComputeDriver.
 
 
 Alternatives
@@ -92,7 +94,40 @@ None
 REST API impact
 ---------------
 
-API impacts are described in a follow up spec.
+There are features of the Nova API that has to be handled by care or disabled
+completely for now for volumes that support multi-attach. In this sense
+'create_volume_snapshot' is disabled as we cannot identify the BDM without
+the instance_uuid. The API format for this request is not changed, it is only
+a protection until the required API changes to support this request with
+multi-attach.
+
+Another feature that needs limitations is the 'boot from volume' (BFV). In case
+of this feature two aspects need further investigation. The first is the
+'delete_on_termination' flag, which if set to True is intended to remove the
+volume that is attached to the instance when it is deleted. This option does
+not cause problem as Cinder takes care of not deleting a volume if it still
+has active attachments. Nova will receive an error from Cinder that the volume
+deletion failed, which will then be logged [#]_, but will not affect the
+instance termination process. According to this this flag will be allowed to
+use along with multi-attach, no changes are necessary when the volume provided
+has multiattach=True and the delete_on_termination=True flag is passed in for
+BFV.
+
+The second aspect of BFV is the boot process. In this case the only issue
+comes with the bootable volumes, which are specified in the boot request as
+boot device. For this the 'block_device_mapping' list has to be checked to
+filter out the cases when we have a multiattachable volume specified as boot
+device. It can be done by checking the 'source_type' and 'destination_type'
+of a BDM and also search for 'boot_index': 0 item in the BDM dict. Based on
+the volume_id stored within the BDM information the volume can be retrieved
+from Cinder to check whether the 'multiattach' flag is set to True in which
+case the request will return an error that this operation is not supported
+for multi-attach volumes.
+
+For cases, where Nova creates the volume itself, i.e. source_type is
+blank/image/snapshot, it should not enable multi-attach for the volume for now.
+
+More desired REST API changes are listed in a follow up spec.
 
 
 Security impact
@@ -104,7 +139,8 @@ and so that disk has no longer strong sVirt SELinux isolation.
 The OpenStack volume encryption capability is supposed to work out of the
 box with this use case also, it should not break how the encryptor works
 below the clustered file system, by using the same key for all connections.
-The issues, if there will be any will be handled on the run.
+The attachment of an encrypted volume to multiple instances should be
+tested in Tempest to see if there is any unexpected issue with it.
 
 Notifications impact
 --------------------
@@ -172,20 +208,28 @@ Dependencies
 Testing
 =======
 
-We'll have to add new Tempest tests to support the new Cinder volume sharable
-flag. The new cinder sharable flag is what allows a volume to be attached
-more than once or not. Have to look into a tempest test for attaching the
-same volume to multiple instances.
+We'll have to add new Tempest tests to support the new Cinder volume
+multiattach flag. The new cinder multiattach flag is what allows a volume to be
+attached more than once. For instance the following scenarios will need to be
+tested:
+
+* Attach the same volume to two instances.
+* Boot from volume with multiattach
+* Encrypted volume with multiattach
+* Negative testing:
+
+ * Boot from multi-attachable volume with boot_index=0
+ * Tying to attach a non-multiattach volume to multiple instances
 
 
 Documentation Impact
 ====================
 
 We will have to update the documentations to discuss the new ability to
-attach a volume to multiple instances if the cinder sharable flag is set on a
-volume. It is also need to be added to the documentation that the volume
-creation for these types of volumes will not be supported by Nova due to
-the deprecation of the volume creation API. If a volume needs to allow
+attach a volume to multiple instances if the cinder multiattach flag is set
+on a volume. It is also need to be added to the documentation that the volume
+creation for these types of volumes will not be supported by the API due to
+the deprecation of the volume creation Nova API. If a volume needs to allow
 multiple volume attachments it has to be created on the Cinder side with
 the needed properties specified.
 
@@ -193,7 +237,8 @@ It also needs to be outlined in the documentation that attaching a volume
 multiple times in read-write mode can cause data corruption, if not handled
 correctly. It is the users' responsibility to add some type of exclusion
 (at the file system or network file system layer) to prevent multiple writers
-from corrupting the data.
+from corrupting the data. Examples should be provided if available to guide
+users on how to do this.
 
 
 References
@@ -201,3 +246,22 @@ References
 
 * This is the cinder wiki page that discusses the approach to multi-attach
   https://wiki.openstack.org/wiki/Cinder/blueprints/multi-attach-volume
+
+.. [#] https://github.com/openstack/nova/blob/295224c41e7da07c5ddbdafc72ac5abf2d708c69/nova/compute/manager.py#L2369
+
+History
+=======
+
+.. list-table:: Revisions
+   :header-rows: 1
+
+   * - Release Name
+     - Description
+   * - Kilo
+     - Introduced
+   * - Liberty
+     - Re-approved
+   * - Mitaka-1
+     - Re-approved
+   * - Mitaka-2
+     - Updated with API limitations and testing scenarios
