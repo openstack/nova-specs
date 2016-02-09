@@ -60,8 +60,8 @@ steps are as followed:
 
 #. There will be a new package called ``nova/conf``.
 
-#. This package contains a module for each section in the ``nova.conf`` file.
-   For example:
+#. This package contains a module for each natural grouping (mostly the
+   section name) in the ``nova.conf`` file. For example:
 
    * ``nova/conf/default.py``
    * ``nova/conf/ssl.py``
@@ -69,11 +69,16 @@ steps are as followed:
    * ``nova/conf/libvirt.py``
    * [...]
 
-#. All ``CONF.import_opt(...)`` calls get moved to the new section
-   modules from the previous step.
+#. All ``CONF.import_opt(...)`` calls get removed from the functional modules
+   as they don't serve their purpose anymore. That's because after the import
+   of ``nova.conf``, all config options will be available.
 
-#. All ``CONF.register_opts(...)`` calls get moved to the module
-   ``nova/conf/__init__.py``. This allows the usage of::
+#. All ``CONF.register_opts(...)`` calls get moved to the modules
+   ``nova/conf/<module-name>.py``. By that these modules can control
+   themselves under which group name the options get registered. The module
+   ``nova/conf/__init__.py`` imports those modules and triggers the
+   registration with ``<module-name>.register_opts(CONF)``. This allows the
+   usage of::
 
        import nova.conf
 
@@ -85,17 +90,10 @@ steps are as followed:
    Which means that the normal functional code, which uses the config options
    doesn't need to get changed for this.
 
-#. The ``opts.py`` modules which are necessary to build the configuration
-   reference guide need to change their pointer to the new modules. For
-   example the ``nova/virt/opts.py``::
-
-       import nova.conf.default
-
-       def list_opts():
-           return [
-               ('DEFAULT',
-                itertools.chain(
-                    nova.conf.default.imagecache_opts,
+#. There will only be one ``nova/conf/opts.py`` module which is necessary to
+   build the ``nova.conf.sample`` file. This ``opts.py`` module is the single
+   point of entry for that. All other ``opts.py`` will be removed at the end,
+   for example the ``nova/virt/opts.py`` file.
 
 
 Quality View
@@ -152,7 +150,7 @@ Here is an example how this could look like for a config option of the
 
     * A string which is a URL
 
-    Interdependencies to other options:
+    Related options:
 
     * The IP address must be identical to the address to which the
       ``nova-serialproxy`` service is listening (see option
@@ -199,7 +197,7 @@ Another example can be made for the *image cache* feature::
     * Other values greater than ``0`` describes the number of seconds
       between two cleanups
 
-    Interdependencies to other options:
+    Related options:
 
     * None
     """),
@@ -227,7 +225,7 @@ should fulfill to be descriptive to the operators would be::
     # with numeric values (int, float), describe the edge cases (like the
     # min value, max value, 0, -1).
 
-    Interdependencies to other options:
+    Related options:
 
     # Which other config options have to be considered when I change this
     # one? If it stand solely on its own, use "None"
