@@ -15,7 +15,7 @@ prioritizing in Mitaka (in no particular order).
 | `V2.1 API`_             | `Alex Xu`_,           |
 |                         | `Sean Dague`_         |
 +-------------------------+-----------------------+
-| `Scheduler`_            | `Sylvain Bauza`,      |
+| `Scheduler`_            | `Sylvain Bauza`_,     |
 |                         | `Jay Pipes`_          |
 +-------------------------+-----------------------+
 | `OS VIF Lib`_           | `Daniel Berrange`_,   |
