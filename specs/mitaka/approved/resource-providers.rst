@@ -61,9 +61,17 @@ providers in the system, too. We'll call this lookup table
 
     CREATE TABLE resource_providers (
         id INT UNSIGNED NOT NULL AUTOINCREMENT PRIMARY KEY,
-        uuid VARCHAR (64) NOT NULL,
+        uuid CHAR (36) NOT NULL,
+        name VARCHAR(200) NOT NULL CHARACTER SET utf8,
+        generation INT NOT NULL,
+        can_host INT NOT NULL,
         UNIQUE INDEX (uuid)
     );
+
+The `generation` and `can_host` fields are internal implementation fields that
+respectively allow for atomic allocation operations and tell the scheduler
+whether the resource provider can be a destination for an instance to land on
+(hint: a resource pool never can be the target for an instance).
 
 An `inventories` table records the amount of a particular resource that is
 provided by a particular resource provider::
@@ -143,7 +151,7 @@ given consumer of that resource from a particular resource provider::
         consumer_id VARCHAR(64) NOT NULL,
         resource_class_id INT UNSIGNED NOT NULL,
         used INT UNSIGNED NOT NULL,
-        INDEX (resource_provider_id, resource_class_id),
+        INDEX (resource_provider_id, resource_class_id, used),
         INDEX (consumer_id),
         INDEX (resource_class_id)
     );
@@ -158,6 +166,80 @@ a record is inserted into to the `allocations` table.
     point when the Nova scheduler may be broken out to support more than just
     compute resources. The `allocations` table is populated by logic outlined
     in the `compute-node-allocations` specification.
+
+The process of claiming a set of resources in the `allocations` table will look
+something like this::
+
+    BEGIN TRANSACTION;
+    FOR $RESOURCE_CLASS, $REQUESTED_AMOUNT IN requested_resources:
+        INSERT INTO allocations (
+            resource_provider_id,
+            resource_class_id,
+            consumer_id,
+            used
+        ) VALUES (
+            $RESOURCE_PROVIDER_ID,
+            $RESOURCE_CLASS,
+            $INSTANCE_UUID,
+            $REQUESTED_AMOUNT
+        );
+    COMMIT TRANSACTION;
+
+The problem with the above is that if two threads run a query and select the
+same resource provider to place an instance on, they will have selected the
+resource provider after making a point-in-time view of the available inventory
+on that resource provider. By the time the `COMMIT_TRANSACTION` occurs, one
+thread may have claimed resources on that resource provider and changed that
+point-in-time view in the other thread. If the other thread just proceeds and
+adds records to the `allocations` table, we could end up with more resources
+consumed on the host than can actually fit on the host. The traditional way of
+solving this problem was to use a `SELECT FOR UPDATE` query when retrieving the
+point-in-time view of the resource provider's inventory. However, the `SELECT
+FOR UPDATE` statement is not supported properly when running MySQL Galera
+Cluster in a multi-writer mode. In addition, it uses a heavy pessimistic
+locking algorithm which locks the selected records for a (relatively) long
+period of time.
+
+To solve this particular problem, applications can use a "compare and update"
+strategy. In this approach, reader threads save some information about the
+point-in-time view and when sending writes to the database, include a `WHERE`
+condition containing the piece of data from the point-in-time view. The write
+will only succeed (return >0 rows affected) if the original condition holds and
+another thread hasn't updated the viewed rows in between the time of the
+initial point-in-time read and the attempt to write to the same rows in the
+table.
+
+The `resource_providers.generation` field enables atomic writes to the
+`allocations` table using this "compare and update" strategy.
+
+Essentially, in pseudo-code, this is how the `generation` field is used in a
+"compare and update" approach to claiming resources on a provider::
+
+    deadlock_retry:
+
+        $ID, $GENERATION = SELECT id, generation FROM resource_providers
+                           WHERE ( <QUERY_TO_IDENTIFY_AVAILABLE_INVENTORY> );
+
+        BEGIN TRANSACTION;
+        FOR $RESOURCE_CLASS, $REQUESTED_AMOUNT IN requested_resources:
+            INSERT INTO allocations (
+                resource_provider_id,
+                resource_class_id,
+                consumer_id,
+                used
+            ) VALUES (
+                $RESOURCE_PROVIDER_ID,
+                $RESOURCE_CLASS,
+                $INSTANCE_UUID,
+                $REQUESTED_AMOUNT
+            );
+        $ROWS_AFFECTED = UPDATE resource_providers
+                         SET generation = $GENERATION + 1
+                         WHERE generation = $GENERATION;
+        IF $ROWS_AFFECTED == 0:
+            ROLLBACK TRANSACTION;
+            GO TO deadlock_retry;
+        COMMIT TRANSACTION;
 
 Alternatives
 ------------
@@ -291,3 +373,6 @@ History
      - Description
    * - Mitaka
      - Introduced
+   * - Mitaka (M3)
+     - Added name, generation and can_host fields to the `resource_providers`
+       table
