@@ -116,11 +116,6 @@ Use Cases
 
 None
 
-Project Priority
------------------
-
-None
-
 Proposed change
 ===============
 

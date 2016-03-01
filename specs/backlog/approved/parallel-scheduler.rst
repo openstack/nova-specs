@@ -119,11 +119,6 @@ with build request bursts of at least 1k within a 15 min period.
 This is particularly relevant to cells v1 users that are going to be
 migrate to cells v2.
 
-Project Priority
------------------
-
-None
-
 Proposed change
 ===============
 

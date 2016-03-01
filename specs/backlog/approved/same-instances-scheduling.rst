@@ -37,11 +37,6 @@ this new Windows instance on a compute where other Windows are running, do
 it. If not, spawn it where you want or on a empty compute to identify it
 as `preferred widows compute` for future windows spawn.
 
-Project Priority
------------------
-
-None
-
 Proposed change
 ===============
 
