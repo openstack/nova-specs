@@ -14,10 +14,10 @@ on for the upcoming release. This is the output of those discussions:
    :glob:
    :maxdepth: 1
 
-   priorities/newton-priorities.rst
-   priorities/mitaka-priorities.rst
-   priorities/liberty-priorities.rst
-   priorities/kilo-priorities.rst
+   priorities/newton-priorities
+   priorities/mitaka-priorities
+   priorities/liberty-priorities
+   priorities/kilo-priorities
 
 Specifications
 ==============
