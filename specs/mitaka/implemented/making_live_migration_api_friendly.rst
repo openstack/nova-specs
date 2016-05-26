@@ -56,14 +56,10 @@ Use Cases
 Proposed change
 ===============
 
-Make the `block_migration` flag optional, with a default value of None. When
-the value is None, Nova will detect whether source and destination hosts on
-shared storage. If they are on shared storage, the live-migration won't do
-block migration. If they aren't on shared storage, the block migration will be
-executed.
-
-Make the `host` flag optional, and the default value is None. The behaviour
-won't change.
+Make the `block_migration` flag to support `auto`, when the value is `auto`,
+Nova will detect whether source and destination hosts on shared storage.
+If they are on shared storage, the live-migration won't do block migration.
+If they aren't on shared storage, the block migration will be executed.
 
 Remove the `disk_over_commit` flag and remove the disk usage check from libvirt
 virt driver.
@@ -98,16 +94,16 @@ None
 REST API impact
 ---------------
 
-
-The block_migration and host flag will be optional, disk_over_commit flag will
+The block_migration will support `auto`, disk_over_commit flag will
 be removed, the json-schema as below::
 
-  boolean = {
+  block_migration = {
     'type': ['boolean', 'string', 'null'],
     'enum': [True, 'True', 'TRUE', 'true', '1', 'ON', 'On', 'on',
              'YES', 'Yes', 'yes',
              False, 'False', 'FALSE', 'false', '0', 'OFF', 'Off', 'off',
-             'NO', 'No', 'no'],
+             'NO', 'No', 'no',
+             'auto'],
   }
 
   {
@@ -116,9 +112,10 @@ be removed, the json-schema as below::
         'os-migrateLive': {
             'type': 'object',
             'properties': {
-                'block_migration': boolean,
+                'block_migration': block_migration,
                 'host': host,
             },
+            'required': ['block_migration', 'host'],
             'additionalProperties': False,
         },
     },
@@ -131,23 +128,16 @@ same behaviour as before.
 
 For upgrades, if the user specifies a host which is using an old version node
 with new API version, the API will return `HTTP BadRequest 400` when
-`block_migration` or `disk_over_commit` is None. If user didn't specify host
-and the old version node selected by host, the scheduler will retry to find
-another host until there is new compute node found or reach the max number of
-reties.
+`block_migration` is `auto` or `disk_over_commit` is not provided. If user
+didn't specify host and the old version node selected by host, the scheduler
+will retry to find another host until there is new compute node found or reach
+the max number of reties.
 
-Currently the response body is empty. But user needs to know whether nova
-decided to do block migration. The response body was proposed::
+Currently the response body is empty, but the user needs migration details.
+This can be obtained by adding a reference URL to the response header,
+which allows the user to query for these details.
 
-  {
-    'type': 'object',
-    'properties': {
-      'block_migration': parameter_types.boolean,
-      'host': host
-    }
-    'required': ['block_migration', 'host'],
-    'additionalProperties': False
-  }
+The reference URL will be like `/servers/{uuid}/migrations/{id}`
 
 Security impact
 ---------------
@@ -178,9 +168,9 @@ Other deployer impact
 ---------------------
 
 The new REST API version won't work for old compute nodes when doing a rolling
-upgrade. This is because `disk_over_commit` was removed, there isn't valid
-value provided from API anymore. User only can use old version live-migration
-API with old compute node.
+upgrade. This is because `disk_over_commit` was removed, and block_migration
+could be `auto`, these aren't valid value provided from API anymore.
+User only can use old version live-migration API with old compute node.
 
 Developer impact
 ----------------
@@ -236,7 +226,7 @@ before.
 The upgrade concern
 -------------------
 
-This propose will add  new value of `None` for `block_migration` and
+This propose will add new value of `auto` for `block_migration` and remove
 `disk_over_commit`. When openstack cluster is in the progress of rolling
 upgrade, the old version compute nodes don't know this new value. So
 there is a check added in the Compute RPC API. If client can't send the new
@@ -255,7 +245,7 @@ Work Items
   driver.
 * Implement skip the check of disk usage when the `disk_over_commit` value is
   None
-* Make `block_migration`, `host` flags optional, and remove `disk_over_commit`
+* Make `block_migration` support `auto`, and remove `disk_over_commit`
   flag in the API.
 
 Dependencies
