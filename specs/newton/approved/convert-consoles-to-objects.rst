@@ -43,11 +43,24 @@ database after to have returned the clean one to the users. Then when
 users will request to connect a console the token passed will be
 hashed and compared to the one stored in the database for validation.
 
-A new option will be introduced "console_tokens_backend" wich will
+A new option will be introduced "console_tokens_backend" which will
 allow operator to switch between different backends. The scope of this
-spec will allow 2 backends (memcached, database) The memcached backend
-will be implemented for legacy compatibility but in a deprecated
-status, supported for one release.
+spec will allow 2 backends: consoleauth (using memcached) or database.
+The consoleauth service will be retained for legacy compatibility but
+in a deprecated status, supported for one release. After the
+period the consoleauth service can be removed.
+
+Because the new tokens will go in the database we need to consider
+cells v2. The child cell database is the appropriate place for console
+connection info because it relates directly to instances. Currently
+the console connection URLs returned to the user only contain a token.
+This is not sufficient to determine which cell holds the console
+connection. This can be resolved by adding the instance uuid to
+the query string in the URL. This approach is backward compatible
+with the existing console proxies. Ultimately it is still the
+token that determines authority to connect to the console, but
+we will add verification that the instance uuid in the URL matches the
+instance uuid in the connection info retrieved for the token.
 
 Use Cases
 ----------
@@ -55,20 +68,19 @@ Use Cases
 Developer can take advantage of using the framework objects when
 adding a new console or features.
 
-Project Priority
------------------
-
-None
-
 Proposed change
 ===============
 
-* Define a new ConsoleConnection object
-* Convert drivers to return ConsoleConnection
-* Remove using of the connect_info's dict
-* Define schema and API to store ConsoleConnection object in database
+* Define a new ConsoleConnection object.
+* Convert drivers to generate ConsoleConnection object.
+* Define schema and API to store ConsoleConnection object in child cell
+  database.
 * Update code to store ConsoleConnection with valid token in database
-  instead of a cache.
+  or consoleauth dependant on the switch until consoleauth is removed.
+* Add the instance uuid to the console proxy URLs to allow proxies to
+  locate the child cell database containing the connection info.
+* Update proxies to use the database or consoleauth dependant on the
+  switch until consoleauth is removed.
 * Define a periodic task to clean expired object stored in database;
   To balance the load and avoid blocking the database during too much
   time each compute nodes will be responsible to clean connection_info
@@ -161,9 +173,12 @@ Other deployer impact
 
 The consoleauth service must be restarted before proxy services. When
 proxy will be restarted clients will be disconnected from consoles.
-Memcached will continue to work as backend until a deprecated period
+consoleauth will continue to work as backend until a deprecated period
 of one release operator are encouraged to switch on the database
 backend (see option: console_tokens_backend).
+
+If the deployer choses to use the database to store console connection
+information the consoleauth service will not be required.
 
 Developer impact
 ----------------
