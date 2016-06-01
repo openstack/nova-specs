@@ -54,7 +54,7 @@ if log doesn't contain this offset response should be empty.
 Request:
 
    URL:
-      /v2.1/​{tenant_id}​/servers/​{server_id}​/action
+      /v2.1/{tenant_id}/servers/{server_id}/action
 
    Method:
 

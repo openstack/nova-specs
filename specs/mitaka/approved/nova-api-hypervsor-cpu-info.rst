@@ -99,7 +99,7 @@ REST API impact
 
 Change in should be added in a new API microversion:
 
-`GET /v2.1/os-hypervisors/​{hypervisor_id}​`
+`GET /v2.1/os-hypervisors/{hypervisor_id}`
 
 Show hypervisor details
 Shows details for a specified hypervisor.

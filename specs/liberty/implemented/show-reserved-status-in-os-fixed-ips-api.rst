@@ -75,7 +75,7 @@ minimum supported version.
     * 404: If the address on the request does not match a FixedIP entry in the
       database.
 
-  * ``/v2.1/​{tenant_id}​/os-fixed-ips/​{fixed_ip}​``
+  * ``/v2.1/{tenant_id}/os-fixed-ips/{fixed_ip}``
 
   * Parameters which can be passed via the url: The fixed IP address
 

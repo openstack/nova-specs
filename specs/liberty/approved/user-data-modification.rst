@@ -51,7 +51,7 @@ REST API impact
 
 The method:
 
-"/v2/​{tenant_id}​/servers/​{server_id}"​
+"/v2/{tenant_id}/servers/{server_id}"
 
 With the method type PUT.
 

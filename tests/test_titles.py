@@ -96,6 +96,13 @@ class TestTitles(testtools.TestCase):
             "Found %s literal carriage returns in file %s" %
             (len(matches), tpl))
 
+    def _check_no_zwsp(self, tpl, raw):
+        matches = raw.decode('utf-8').find(u"\u200B")
+        self.assertEqual(
+            matches, -1,
+            "Found zero width space characters in file %s" %
+            (tpl))
+
     def _check_trailing_spaces(self, tpl, raw):
         for i, line in enumerate(raw.split("\n")):
             trailing_spaces = re.findall(" +$", line)
@@ -124,4 +131,5 @@ class TestTitles(testtools.TestCase):
                 self._check_titles(filename, template_titles, titles)
                 self._check_lines_wrapping(filename, data)
                 self._check_no_cr(filename, data)
+                self._check_no_zwsp(filename, data)
                 self._check_trailing_spaces(filename, data)
