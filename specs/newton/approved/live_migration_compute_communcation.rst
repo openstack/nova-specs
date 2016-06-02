@@ -29,27 +29,38 @@ migration phase(post/rollback) methods could never be executed and it will be
 impossible to say whether all steps were passed or not. This problem is also
 result of mixing process orchestration and real logic. When request reaches
 conductor following workflow is happened:
+
 * check_can_live_migrate_destination - blocking rpc call from conductor to
-destination compute to check possibility of schedulled migration. Before
-sending response to conductor, destination node sends following request to the
-source compute node.
+  destination compute to check possibility of schedulled migration. Before
+  sending response to conductor, destination node sends following request to
+  the source compute node.
+
 * check_can_live_migrate_source - blocking rpc call from destination compute to
-source compute to check possibility of schedulled migration.
+  source compute to check possibility of schedulled migration.
+
 * live_migration - non-blocking rpc cast from conductor to source compute that
-actually triggers live-migration. After request is received by source compute
-node and before live migration actually starts, following request is sended to
-destination node.
+  actually triggers live-migration. After request is received by source compute
+  node and before live migration actually starts, following request is sended
+  to destination node.
+
 * pre_live_migration - blocking rpc call from source compute to destination to
-prepare destination host for ongoing migration.
+  prepare destination host for ongoing migration.
+
 After steps described above 2 scenarios could happen:
-- live-migration succeeded
-- live-migration failed
+
+* live-migration succeeded
+
+* live-migration failed
+
 In case of success following workflow will happen:
+
 * post_live_migration_at_destination - non-blocking rpc cast from source
-compute to destination, to finish process
+  compute to destination, to finish process
+
 In case of failure:
-* rollback_live_migration_at_destination - non-blcoking rpc cast from source to
-destination compute to clean up resources after failed attempt
+
+* rollback_live_migration_at_destination - non-blocking rpc cast from source to
+  destination compute to clean up resources after failed attempt
 
 
 Use Cases
@@ -66,48 +77,67 @@ compute to compute rpc requests. Instead of it make process to be operated by
 conductor.
 
 To implement this create new rpc methods:
+
 * post_live_migration_at_source finishes process on destination node in case
-of success
+  of success
+
 * rollback_live_migration_at_source - cleans up node in case of live-migration
-failure.
+  failure.
 
 All rpc methods above should implement following pattern a.k.a. lightweight
-rpc-calls: once request received by service  it spawns new thread to make
-process async. This mechanics allows sender to be confient that receiver
-received and start to work on current request.
+rpc-calls: client sends blocking rpc call to service, once request is received
+service spawns new greenlet to process it and responds to caller immediately.
+This approach assures caller that request was delivered to service, and doesn't
+block caller exucution flow.
+
 Conductor in this case will be responsible for all preparations and checks to
 be done before live migration, and rollback/post live-migration operations.
 Proposed workflow:
+
 * check_can_live_migrate_destination - blocking rpc call from conductor to
-destination compute to check possibility of schedulled migration.
+  destination compute to check possibility of schedulled migration.
+
 * check_can_live_migrate_source - blocking rpc call from conductor to source
-compute to check possibility of schedulled migration.
+  compute to check possibility of schedulled migration.
+
 * pre_live_migration - blocking rpc call from conductor to destination
-compute to prepare destination host for ongoing migration.
+  compute to prepare destination host for ongoing migration.
+
 * live_migration - non-blocking rpc cast from conductor to source compute that
-actually triggers live-migration
+  actually triggers live-migration
+
 After steps described above 2 scenarios could happen:
-- live-migration succeeded
-- live-migration failed
+
+* live-migration succeeded
+
+* live-migration failed
+
 In case of success following workflow will happen:
+
 * post_live_migration_at_source - non-blocking rpc cast from conductor to
-source compute after migration finished
+  source compute after migration finished
+
 * post_live_migration_at_destination - non-blocking rpc cast from conductor to
-destination compute
+  destination compute
 In case of failure:
-* rollback_live_migration_at_source - non-blcoking rpc cast from conductor to
-source compute to clean up resources after failed attempt
-* rollback_live_migration_at_destination - non-blcoking rpc cast from conductor
-to destination compute to clean up resources after failed attempt.
+
+* rollback_live_migration_at_source - non-blocking rpc cast from conductor to
+  source compute to clean up resources after failed attempt
+
+* rollback_live_migration_at_destination - non-blocking rpc cast from conductor
+  to destination compute to clean up resources after failed attempt.
 
 The main difference between proposed change and existing workflow are:
+
 * instead of sequential blocking rpc calls from conductor to destination
-compute and then from it to source compute during checks before live-migration,
-spec proposes to do request from conductor to destination compute and from
-conductor to source compute in independent manner. So the possibility of
-timeout will be reduced. Also this change sets conductor as owner of
-live-migration process.
+  compute and then from it to source compute during checks before
+  live-migration, spec proposes to do request from conductor to destination
+  compute and from conductor to source compute in independent manner.
+  So the possibility of timeout will be reduced. Also this change sets
+  conductor as owner of live-migration process.
+
 * pre_live_migration is done first before live_migration rpc cast is called
+
 * conductor manages post/rollback for live-migration.
 
 Alternatives
@@ -120,7 +150,7 @@ for switching between steps during live-migration.
 Data model impact
 -----------------
 
- None
+None
 
 REST API impact
 ---------------
