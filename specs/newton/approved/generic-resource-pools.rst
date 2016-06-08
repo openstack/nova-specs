@@ -12,7 +12,7 @@ https://blueprints.launchpad.net/nova/+spec/generic-resource-pools
 
 This blueprint aims to address the problem of incorrect resource usage
 reporting by introducing the concept of a generic resource pool that manages a
-particular amount of some resource.
+particular amount of some resources.
 
 Problem description
 ===================
@@ -51,20 +51,20 @@ Cinder storage pool that contains the requested volume.
 Proposed change
 ===============
 
-We propose to introduce the concept of a `resource pool` in Nova, and to create
-a new RESTful scheduler API that allows the querying and management of these
-resource pools.
+We propose a new RESTful placement API that allows the querying and management
+of resource providers, their inventory and allocation records, and their
+association to aggregates.
 
-A resource pool is simply a resource provider for one or more resource types to
-multiple consumers of those resources. Resource pools are not specific to
-shared storage, even though the impetus for their design is to solve the
-problem of shared storage accounting in Nova.
+A resource provider exposes amounts of one or more resource types to multiple
+consumers of those resources. Resource providers are not specific to shared
+storage, even though the impetus for their design is to solve the problem of
+shared storage accounting in Nova.
 
 A RESTful API is proposed (see below for details) that will allow
-administrative (or service) users to create resource pools, to update the
-capacity and usage information for those pools, and to indicate which compute
-nodes can use the pool's resources by associating the pool with one or more
-aggregates.
+administrative (or service) users to create resource providers, to update the
+capacity and usage information for those providers, and to indicate which
+compute nodes can use the provider's resources by associating the pool with one
+or more aggregates.
 
 Scenario 1: Shared disk storage used for VM disk images
 -------------------------------------------------------
@@ -85,16 +85,16 @@ All compute nodes in row 1, racks 6 through 10, are connected to this share.
 
 2) The cloud deployer creates a resource pool representing the NFS share::
 
-    $RP_UUID=`openstack resource-pool create "/mnt/nfs/row1racks0610/" \
+    $RP_UUID=`openstack resource-provider create "/mnt/nfs/row1racks0610/" \
         --aggregate-uuid=$AGG_UUID`
 
    Under the covers this command line does two REST API requests.
-   One to create the resource-pool, another to associate the
+   One to create the resource provider, another to associate the
    aggregate.
 
 3) The cloud deployer updates the resource pool's capacity of shared disk::
 
-    openstack resource-pool set inventory $RP_UUID \
+    openstack resource-provider set inventory $RP_UUID \
         --resource-class=DISK_GB \
         --total=100000 --reserved=1000 \
         --min-unit=50 --max-unit=10000 --step-size=10 \
@@ -137,22 +137,22 @@ the subnet.
 3) The cloud deployer creates a resource pool representing the routed network's
    pool of IPs::
 
-    openstack resource-pool create "routed network rack 1 row 3" \
+    openstack resource-provider create "routed network rack 1 row 3" \
         --uuid=$SUBNET_UUID \
         --aggregate-uuid=$AGG_UUID
 
 .. note::
 
-    Please note that the `--uuid` field in the `openstack resource-pool create`
-    call above is an optional argument to `openstack resource-pool create`. You
-    may have noticed that in the first use case, we do not provide a UUID when
-    creating the resource pool.
+    Please note that the `--uuid` field in the `openstack resource-provider
+    create` call above is an optional argument to `openstack resource-provider
+    create`. You may have noticed that in the first use case, we do not provide
+    a UUID when creating the resource provider.
 
     The `--uuid` parameter allows passing in a UUID identifier so that external
     systems can supply an already-known external global identifier for the
     resource pool.  If the `--uuid` parameter is not provided in the call to
-    `openstack resource-pool create`, a new UUID will automatically be assigned
-    and displayed to the user.
+    `openstack resource-provider create`, a new UUID will automatically be
+    assigned and displayed to the user.
 
     In the case above, we are assuming that the call to the `openstack
     subnet create` returns some value containing a UUID for the subnet IP
@@ -160,7 +160,7 @@ the subnet.
 
 4) The cloud deployer updates the resource pool's capacity of IPv4 addresses::
 
-    openstack resource-pool set inventory $RP_UUID \
+    openstack resource-provider set inventory $RP_UUID \
         --resource-class=IPV4_ADDRESS \
         --total=254 --reserved=5 \
         --min-unit=1 --max-unit=1 --step-size=1 \
@@ -246,10 +246,9 @@ an aggregate to be associated with one or more resource pools::
             REFERENCES resource_providers (id)
     );
 
-A new nova object model for resource pools will be introduced. This object
-model will be a thin facade over the `resource_providers` table and allow
-querying for the aggregates associated with the resource pool along with the
-inventory and allocation records for the pool.
+A new nova object model for resource providers will be introduced. This object
+model will allow querying for the aggregates associated with the resource
+provider along with the inventory and allocation records for the pool.
 
 REST API impact
 ---------------
@@ -273,20 +272,20 @@ the resource.
 
 The API changes add resource endpoints to:
 
-* `GET` a list of resource pools
-* `POST` a new resource pool
-* `GET` a single resource pool with links to its sub-resources
-* `PUT` a single resource pool to change its name
-* `DELETE` a single resource pool and its associated inventories (if
+* `GET` a list of resource providers
+* `POST` a new resource provider
+* `GET` a single resource provider with links to its sub-resources
+* `PUT` a single resource provider to change its name
+* `DELETE` a single resource provider and its associated inventories (if
   no allocations are present) and aggregates (the association is
   removed, not the aggregates themselves)
 * `GET` a list of the inventories associated with a single resource
-  pool
+  provider
 * `POST` a new inventory of a particular resource class
 * `GET` a single inventory of a given resource class
 * `PUT` an update to an inventory
 * `DELETE` an inventory (if no allocations are present)
-* `PUT` a list of aggregates to associate with this resource
+* `PUT` a list of aggregates to associate with this resource provider
 * `GET` that list of aggregates
 * `GET` a list, by resource class, of usages
 
@@ -297,10 +296,10 @@ Details follow.
 
 The following new REST API calls will be added:
 
-`GET /resource_pools`
-**********************
+`GET /resource_providers`
+*************************
 
-Return a list of all resource pools in this Nova deployment.
+Return a list of all resource providers in this Nova deployment.
 
 Example::
 
@@ -308,58 +307,67 @@ Example::
     Content-Type: application/json
 
     {
-      "resource_pools": [
+      "resource_providers": [
         {
           "uuid": "b6b065cc-fcd9-4342-a7b0-2aed2d146518",
           "name": "RBD volume group",
+          "generation": 12,
           "links": [
              {
                "rel": "self",
-               "href": "/resource_pools/b6b065cc-fcd9-4342-a7b0-2aed2d146518"
+               "href": "/resource_providers/b6b065cc-fcd9-4342-a7b0-2aed2d146518"
              },
              {
                "rel": "inventories",
-               "href": "/resource_pools/b6b065cc-fcd9-4342-a7b0-2aed2d146518/inventories"
+               "href": "/resource_providers/b6b065cc-fcd9-4342-a7b0-2aed2d146518/inventories"
              },
              {
                "rel": "aggregates",
-               "href": "resource_pools/b6b065cc-fcd9-4342-a7b0-2aed2d146518/aggregates"
+               "href": "resource_providers/b6b065cc-fcd9-4342-a7b0-2aed2d146518/aggregates"
              },
              {
                "rel": "usages",
-               "href": "resource-pools/b6b065cc-fcd9-4342-a7b0-2aed2d146518/usages"
+               "href": "resource_providers/b6b065cc-fcd9-4342-a7b0-2aed2d146518/usages"
              }
           ]
         },
         {
           "uuid": "eaaf1c04-ced2-40e4-89a2-87edded06d64",
           "name": "Global NFS share",
+          "generation": 4,
           "links": [
              {
                "rel": "self",
-               "href": "/resource_pools/eaaf1c04-ced2-40e4-89a2-87edded06d64"
+               "href": "/resource_providers/eaaf1c04-ced2-40e4-89a2-87edded06d64"
              },
              {
                "rel": "inventories",
-               "href": "/resource_pools/eaaf1c04-ced2-40e4-89a2-87edded06d64/inventories"
+               "href": "/resource_providers/eaaf1c04-ced2-40e4-89a2-87edded06d64/inventories"
              },
              {
                "rel": "aggregates",
-               "href": "resource_pools/eaaf1c04-ced2-40e4-89a2-87edded06d64/aggregates"
+               "href": "resource_providers/eaaf1c04-ced2-40e4-89a2-87edded06d64/aggregates"
              },
              {
                "rel": "usages",
-               "href": "resource-pools/eaaf1c04-ced2-40e4-89a2-87edded06d64/usages"
+               "href": "resource_providers/eaaf1c04-ced2-40e4-89a2-87edded06d64/usages"
              }
           ]
         }
       ]
     }
 
-`POST /resource_pools`
-**********************
+.. note::
 
-Create one new resource pool.
+    The `generation` field in the above output is a consistent view marker. We
+    need to include this field in order for updaters of the inventory and
+    allocation information for a resource provider to indicate the state of the
+    resource provider when they initially read their information.
+
+`POST /resource_providers`
+**************************
+
+Create one new resource provider.
 
 An example POST request::
 
@@ -389,23 +397,23 @@ The body of the request must match the following JSONSchema document::
     }
 
 The response body is empty. The headers include a location header
-pointing to the created resource pool::
+pointing to the created resource provider::
 
     201 Created
-    Location: /resource_pools/eaaf1c04-ced2-40e4-89a2-87edded06d64
+    Location: /resource_providers/eaaf1c04-ced2-40e4-89a2-87edded06d64
 
-A `409 Conflict` response code will be returned if another resource pool
+A `409 Conflict` response code will be returned if another resource provider
 exists with the provided name.
 
-`GET /resource_pools/{uuid}`
-****************************
+`GET /resource_providers/{uuid}`
+********************************
 
-Retrieve a representation of the resource pool identified by `{uuid}`.
+Retrieve a representation of the resource provider identified by `{uuid}`.
 
 Example::
 
 
-    GET /resource_pools/eaaf1c04-ced2-40e4-89a2-87edded06d64
+    GET /resource_providers/eaaf1c04-ced2-40e4-89a2-87edded06d64
 
     200 OK
     Content-Type: application/json
@@ -413,37 +421,38 @@ Example::
     {
       "uuid": "eaaf1c04-ced2-40e4-89a2-87edded06d64",
       "name": "Global NFS share",
+      "generation": 4,
       "links": [
          {
            "rel": "self",
-           "href": "/resource_pools/eaaf1c04-ced2-40e4-89a2-87edded06d64"
+           "href": "/resource_providers/eaaf1c04-ced2-40e4-89a2-87edded06d64"
          },
          {
            "rel": "inventories",
-           "href": "/resource_pools/eaaf1c04-ced2-40e4-89a2-87edded06d64/inventories"
+           "href": "/resource_providers/eaaf1c04-ced2-40e4-89a2-87edded06d64/inventories"
          },
          {
            "rel": "aggregates",
-           "href": "resource_pools/eaaf1c04-ced2-40e4-89a2-87edded06d64/aggregates"
+           "href": "resource_providers/eaaf1c04-ced2-40e4-89a2-87edded06d64/aggregates"
          },
          {
            "rel": "usages",
-           "href": "resource-pools/eaaf1c04-ced2-40e4-89a2-87edded06d64/usages"
+           "href": "resource_providers/eaaf1c04-ced2-40e4-89a2-87edded06d64/usages"
          }
       ]
     }
 
-If the resource pool does not exist a `404 Not Found` must be
+If the resource provider does not exist a `404 Not Found` must be
 returned.
 
-`PUT /resource_pools/{uuid}`
-*****************************
+`PUT /resource_providers/{uuid}`
+********************************
 
-Update the name of resource pool identified by `{uuid}`.
+Update the name of the resource provider identified by `{uuid}`.
 
 Example::
 
-    PUT /resource_pools/eaaf1c04-ced2-40e4-89a2-87edded06d64
+    PUT /resource_providers/eaaf1c04-ced2-40e4-89a2-87edded06d64
 
     Content-type: application/json
 
@@ -460,10 +469,10 @@ The returned HTTP response code will be one of the following:
 * `409 Conflict` if another resource pool exists with the provided
   name.
 
-`DELETE /resource_pools/{uuid}`
-********************************
+`DELETE /resource_providers/{uuid}`
+***********************************
 
-Delete the resource pool identified by `{uuid}`.
+Delete the resource provider identified by `{uuid}`.
 
 This will also disassociate aggregates and delete inventories.
 
@@ -473,26 +482,27 @@ The returned HTTP response code will be one of the following:
 
 * `204 No Content` if the request was successful and the resource
   pool was removed.
-* `404 Not Found` if the resource pool identified by `{uuid}` was
+* `404 Not Found` if the resource provider identified by `{uuid}` was
   not found.
 * `409 Conflict` if there exist allocations records for any of the
   inventories that would be deleted as a result of removing the
-  resource pool.
+  resource provider.
 
-`GET /resource_pools/{uuid}/inventories`
-*****************************************
+`GET /resource_providers/{uuid}/inventories`
+********************************************
 
 Retrieve a list of inventories that are associated with the resource
-pool identified by `{uuid}`.
+provider identified by `{uuid}`.
 
 Example::
 
-    GET /resource_pools/eaaf1c04-ced2-40e4-89a2-87edded06d64/inventories
+    GET /resource_providers/eaaf1c04-ced2-40e4-89a2-87edded06d64/inventories
 
     200 OK
     Content-Type: application/json
 
     {
+      "resource_provider_generation": 4,
       "inventories": {
         'DISK_GB': {
           "total": 2048,
@@ -513,20 +523,31 @@ Example::
       }
     }
 
+.. note::
+
+    The `resource_provider_generation` field in the output provides the caller
+    with a consistent view marker. If the caller wishes to update the
+    inventory, they return this generation field value in a call to `PUT
+    /resource_providers/{uuid}/inventories/{resource_class}` and the server
+    will ensure that if another process has updated the state of the resource
+    provider's inventory or allocations in between the initial read of the
+    generation and the update of inventory, that a `409 Conflict` is returned,
+    allowing the caller to retry an operation.
+
 The returned HTTP response code will be one of the following:
 
 * `200 OK` if the resource pools exists.
-* `404 Not Found` if the resource pool identified by `{uuid}` was
+* `404 Not Found` if the resource provider identified by `{uuid}` was
   not found.
 
-`POST /resource_pools/{uuid}/inventories`
-*****************************************
+`POST /resource_providers/{uuid}/inventories`
+********************************************
 
-Create a new inventory for the resource pool identified by `{uuid}`.
+Create a new inventory for the resource provider identified by `{uuid}`.
 
 Example::
 
-    POST /resource_pools/eaaf1c04-ced2-40e4-89a2-87edded06d64/inventories
+    POST /resource_providers/eaaf1c04-ced2-40e4-89a2-87edded06d64/inventories
     Content-Type: application/json
 
     {
@@ -575,38 +596,39 @@ The body of the request must match the following JSONSchema document::
     }
 
 The response body is empty. The headers include a location header
-pointing to the created resource pool::
+pointing to the created resource provider::
 
     201 Created
-    Location: /resource_pools/eaaf1c04-ced2-40e4-89a2-87edded06d64/inventories/DISK_GB
+    Location: /resource_providers/eaaf1c04-ced2-40e4-89a2-87edded06d64/inventories/DISK_GB
 
 .. note::
 
-    If some non-Nova things have consumed some amount of resources in the pool,
-    the "reserved" field should be used to adjust the total capacity of the
-    inventory.
+    If some non-Nova things have consumed some amount of resources in the
+    provider, the "reserved" field should be used to adjust the total capacity
+    of the inventory.
 
 The returned HTTP response code will be one of the following:
 
 * `201 Created` if the inventory is successfully created
-* `404 Not Found` if the resource pool identified by `{uuid}` was
+* `404 Not Found` if the resource provider identified by `{uuid}` was
   not found
 * `400 Bad Request` for bad or invalid syntax (for example an
   invalid resource class)
 * `409 Conflict` if an inventory for the proposed resource class
   already exists
 
-`GET /resource_pools/{uuid}/inventories/{resource_class}`
-**********************************************************
+`GET /resource_providers/{uuid}/inventories/{resource_class}`
+*************************************************************
 
 Retrieve a single inventory of class `{resource_class}` associated
-with the resource pool identified by `{uuid}`.
+with the resource provider identified by `{uuid}`.
 
 Example::
 
-    GET /resource_pools/eaaf1c04-ced2-40e4-89a2-87edded06d64/inventories/DISK_GB
+    GET /resource_providers/eaaf1c04-ced2-40e4-89a2-87edded06d64/inventories/DISK_GB
     200 OK
     {
+      "resource_provider_generation": 4,
       "resource_class": "DISK_GB",
       "total": 2048,
       "reserved": 512,
@@ -620,19 +642,20 @@ Example::
 The returned HTTP response code will be one of the following:
 
 * `200 OK` if the inventory exists
-* `404 Not Found` if the resource pool identified by `{uuid}` was
+* `404 Not Found` if the resource provider identified by `{uuid}` was
   not found or an inventory of `{resource_class}` is not associated
-  with the resource pool
+  with the resource provider
 
-`PUT /resource_pools/{uuid}/inventories/{resource_class}`
-**********************************************************
+`PUT /resource_providers/{uuid}/inventories/{resource_class}`
+*************************************************************
 
 Update an existing inventory.
 
 Example::
 
-    PUT /resource_pools/eaaf1c04-ced2-40e4-89a2-87edded06d64/inventories/DISK_GB
+    PUT /resource_providers/eaaf1c04-ced2-40e4-89a2-87edded06d64/inventories/DISK_GB
     {
+      "resource_provider_generation": 4,
       "total": 1024,
       "reserved": 512,
       "min_unit": 10,
@@ -648,44 +671,47 @@ required and if present is ignored.
 The returned HTTP response code will be one of the following:
 
 * `204 No Content` if the inventory is successfully created
-* `404 Not Found` if the resource pool identified by `{uuid}` was
+* `404 Not Found` if the resource provider identified by `{uuid}` was
   not found
 * `400 Bad Request` for bad or invalid syntax
 * `409 Conflict` if the changes `total`, `reserved` or
   `allocation_ratio` would causes existing allocations to be in
   conflict with proposed capacity
+* `409 Conflict` if another process updated the same inventory record since the
+  `resource_provider_generation` view marker was returned.
 
-`DELETE /resource_pools/{uuid}/inventories/{resource_class}`
-*************************************************************
+`DELETE /resource_providers/{uuid}/inventories/{resource_class}`
+****************************************************************
 
 Delete an existing inventory.
 
 Example::
 
-    DELETE /resource_pools/eaaf1c04-ced2-40e4-89a2-87edded06d64/inventories/DISK_GB
+    DELETE /resource_providers/eaaf1c04-ced2-40e4-89a2-87edded06d64/inventories/DISK_GB
 
 The body is empty.
 
 The returned HTTP response code will be one of the following:
 
 * `204 No Content` if the inventory is successfully removed
-* `404 Not Found` if the resource pool identified by `{uuid}` was
-  not found or if there is no associated inventory of
+* `404 Not Found` if the resource provider identified by `{uuid}` was not found
+  or if there is no associated inventory of
   `{resource_class}`
 * `400 Bad Request` for bad or invalid syntax
 * `409 Conflict` if there are existing allocations for this
   inventory
 
-`GET /resource_pools/{uuid}/aggregates`
-***************************************
+`GET /resource_providers/{uuid}/aggregates`
+*******************************************
 
-Get a list of aggregates associated with this resource pool.
+Get a list of aggregates associated with this resource provider.
 
 Example::
 
-    GET /resource_pools/eaaf1c04-ced2-40e4-89a2-87edded06d64/aggregates
+    GET /resource_providers/eaaf1c04-ced2-40e4-89a2-87edded06d64/aggregates
 
-    {"aggregates":
+    {
+      "aggregates":
       [
         "21d7c4aa-d0b6-41b1-8513-12a1eac17c0c",
         "7a2e7fd2-d1ec-4989-b530-5508c3582025"
@@ -698,18 +724,18 @@ Example::
 
 The returned HTTP response code will be one of the following:
 
-* `200 OK` if the resource pool exists
-* `404 Not Found` if the resource pool identified by `{uuid}` was
+* `200 OK` if the resource provider exists
+* `404 Not Found` if the resource provider identified by `{uuid}` was
   not found
 
-`PUT /resource_pools/{uuid}/aggregates`
-**************************************
+`PUT /resource_providers/{uuid}/aggregates`
+*******************************************
 
-Associate a list of aggregates with this resource pool.
+Associate a list of aggregates with this resource provider.
 
 Example::
 
-    PUT /resource_pools/eaaf1c04-ced2-40e4-89a2-87edded06d64/aggregates
+    PUT /resource_providers/eaaf1c04-ced2-40e4-89a2-87edded06d64/aggregates
 
     [
         "21d7c4aa-d0b6-41b1-8513-12a1eac17c0c",
@@ -719,22 +745,23 @@ Example::
 The returned HTTP response code will be one of the following:
 
 * `204 No content` if the aggregates are successfully updated
-* `404 Not Found` if the resource pool does not exist
+* `404 Not Found` if the resource provider does not exist
 * `400 Bad Request` for bad or invalid syntax.
 
-`GET /resource_pools/{uuid}/usages`
-***********************************
+`GET /resource_providers/{uuid}/usages`
+***************************************
 
 Retrieve a report of usage information for resources associated with
-the resource pool identified by `{uuid}`. The value is a dictionary
+the resource provider identified by `{uuid}`. The value is a dictionary
 of resource classes paired with the sum of the allocations of that
-resource class for this resource pool.
+resource class for this resource provider.
 
 Example::
 
-    GET /resource_pools/eaaf1c04-ced2-40e4-89a2-87edded06d64/usages
+    GET /resource_providers/eaaf1c04-ced2-40e4-89a2-87edded06d64/usages
 
     {
+      "resource_provider_generation": 4,
       "usages": {
         "DISK_GB": 480,
         "IPV4_ADDRESS": 2
@@ -743,9 +770,9 @@ Example::
 
 The returned HTTP response code will be one of the following:
 
-* `200 OK` if the resource pool exists. If there are no associated
+* `200 OK` if the resource provider exists. If there are no associated
   inventories the `usages` dictionary should be empty.
-* `404 Not Found` if the resource pool does not exist.
+* `404 Not Found` if the resource provider does not exist.
 
 .. note:: Usages are read only.
 
@@ -758,9 +785,9 @@ None.
 Notifications impact
 --------------------
 
-We should create new notification messages for when resource pools are created,
-destroyed, updated, associated with an aggregate and disassociated from an
-aggregate.
+We should create new notification messages for when resource providers are
+created, destroyed, updated, associated with an aggregate and disassociated
+from an aggregate.
 
 Other end user impact
 ---------------------
@@ -768,15 +795,15 @@ Other end user impact
 New openstackclient CLI commands should be created for the corresponding
 functionality:
 
-* `openstack resource-pool list`
-* `openstack resource-pool show $UUID`
-* `openstack resource-pool create "Global NFS share" \
+* `openstack resource-provider list`
+* `openstack resource-provider show $UUID`
+* `openstack resource-provider create "Global NFS share" \
   --aggregate-uuid=$AGG_UUID \
   [--uuid=$UUID]`
-* `openstack resource-pool delete $UUID`
-* `openstack resource-pool update $UUID --name="New name"`
-* `openstack resource-pool list inventory $UUID`
-* `openstack resource-pool set inventory $UUID \
+* `openstack resource-provider delete $UUID`
+* `openstack resource-provider update $UUID --name="New name"`
+* `openstack resource-provider list inventory $UUID`
+* `openstack resource-provider set inventory $UUID \
    --resource-class=DISK_GB \
    --total=1024 \
    --reserved=450 \
@@ -784,10 +811,10 @@ functionality:
    --max-unit=1 \
    --step-size=1 \
    --allocation-ratio=1.0`
-* `openstack resource-pool delete inventory $UUID \
+* `openstack resource-provider delete inventory $UUID \
   --resource-class=DISK_GB`
-* `openstack resource-pool add aggregate $UUID $AGG_UUID`
-* `openstack resource-pool delete aggregate $UUID $AGG_UUID`
+* `openstack resource-provider add aggregate $UUID $AGG_UUID`
+* `openstack resource-provider delete aggregate $UUID $AGG_UUID`
 
 Performance Impact
 ------------------
@@ -801,7 +828,7 @@ Deployers who are using shared storage will need to create a resource pool for
 their shared disk storage, create any host aggregates that may need to be
 created for any compute nodes that utilize that shared storage, associate the
 resource pool with those aggregates, and schedule (cronjob or the like) some
-script to periodically run `openstack resource-pool set inventory $UUID
+script to periodically run `openstack resource-provider set inventory $UUID
 --resource-class=DISK_GB --total=X --reserved=Y`.
 
 We should include a sample script along with the documentation for this.
