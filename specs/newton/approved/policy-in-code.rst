@@ -189,7 +189,9 @@ Work Items
 ----------
 
 * Define and register all policies.
-** This can happen gradually
+
+  * This can happen gradually
+
 * Add context.can() which proxies to oslo_policy.policy.Enforcer.authorize().
 * Update all policy checks to use the new context.can() method.
 * Add hacking check to disallow oslo_policy.policy.Enforcer.enforce().
