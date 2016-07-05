@@ -103,7 +103,7 @@ JSON Response::
             "id": "interface2", // Generic, generated ID
             "type": "vif", // Can be 'vif', 'phy' or (future) 'bond'
             "ethernet_mac_address": "a0:36:9f:2c:e8:70", // MAC from Neutron
-            "vif_id": "E1C90E9F-EAFC-4E2D-8EC9-58B91CEBB53D",
+            "vif_id": "e1c90e9f-eafc-4e2d-8ec9-58b91cebb53d",
             "mtu": 1500 // MTU for links
         },
         { // Example of physical NICs
@@ -137,7 +137,7 @@ JSON Response::
             "vlan_link": "bond0",
             "vlan_id": 101,
             "vlan_mac_address": "a0:36:9f:2c:e8:80",
-            "neutron_port_id": "E1C90E9F-EAFC-4E2D-8EC9-58B91CEBB53F"
+            "vif_id": "e1c90e9f-eafc-4e2d-8ec9-58b91cebb53f"
         },
     ],
     "networks": [
@@ -159,7 +159,7 @@ JSON Response::
                     "gateway": "23.253.157.1"
                 }
             ],
-            "neutron_network_id": "DA5BB487-5193-4A65-A3DF-4A0055A8C0D7"
+            "network_id": "da5bb487-5193-4a65-a3df-4a0055a8c0d7"
         },
         { // IPv6
             "id": "private-ipv4",
@@ -179,7 +179,7 @@ JSON Response::
                     "gateway": "fd00::1:1"
                 },
             ],
-            "neutron_network_id": "DA5BB487-5193-4A65-A3DF-4A0055A8C0D8"
+            "network_id": "da5bb487-5193-4a65-a3df-4a0055a8c0d8"
         },
         { // One IP on a VLAN over a bond of two physical NICs (future support)
             "id": "publicnet-ipv4",
@@ -198,7 +198,7 @@ JSON Response::
                     "gateway": "23.253.157.1"
                 }
             ],
-            "neutron_network_id": "62611D6F-66CB-4270-8B1F-503EF0DD4736"
+            "network_id": "62611d6f-66cb-4270-8b1f-503ef0dd4736"
         }
     ],
     "services": [
