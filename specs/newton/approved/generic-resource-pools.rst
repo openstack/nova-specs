@@ -283,7 +283,9 @@ The API changes add resource endpoints to:
   provider
 * `POST` a new inventory of a particular resource class
 * `GET` a single inventory of a given resource class
-* `PUT` an update to an inventory
+* `PUT` an update to a single inventory
+* `PUT` a list of inventories to set all the inventories on a single
+  resource provider
 * `DELETE` an inventory (if no allocations are present)
 * `PUT` a list of aggregates to associate with this resource provider
 * `GET` that list of aggregates
@@ -596,7 +598,7 @@ The body of the request must match the following JSONSchema document::
     }
 
 The response body is empty. The headers include a location header
-pointing to the created resource provider::
+pointing to the created inventory::
 
     201 Created
     Location: /resource_providers/eaaf1c04-ced2-40e4-89a2-87edded06d64/inventories/DISK_GB
@@ -616,6 +618,71 @@ The returned HTTP response code will be one of the following:
   invalid resource class)
 * `409 Conflict` if an inventory for the proposed resource class
   already exists
+
+`PUT /resource_providers/{uuid}/inventories`
+********************************************
+
+Set all inventories for the resource provider identified by `{uuid}`.
+
+Example::
+
+    PUT /resource_providers/eaaf1c04-ced2-40e4-89a2-87edded06d64/inventories
+    Content-Type: application/json
+
+    {
+      "resource_provider_generation": 1
+      "inventories": [
+          {
+              "resource_class": "DISK_GB",
+              "total": 2048,
+          },
+          {
+              "resource_class": "IPV4_ADDRESS",
+              "total": 255,
+              "reserved": 2
+          }
+      ]
+    }
+
+The body of the request must match the following abridged JSONSchema document::
+
+    {
+      "type": "object",
+      "properties": {
+      "resource_provider_generation": {
+        "type": "integer"
+      },
+      "inventories": {
+        "type": {
+          "array", 72,
+          "items": # the scheme for POST of on inventory above
+        }
+      },
+      "required": [
+        "resource_provider_generation",
+        "inventories"
+      ],
+      "additionalProperties": False
+    }
+
+The response body is empty. The headers include a location header
+pointing to the inventories of the related resource provider::
+
+    204 No Content
+    Location: /resource_providers/eaaf1c04-ced2-40e4-89a2-87edded06d64/inventories
+
+The returned HTTP response code will be one of the following:
+
+* `204 No Content` if the inventores are successfully set
+* `404 Not Found` if the resource provider identified by `{uuid}` was
+  not found
+* `400 Bad Request` for bad or invalid syntax (for example an
+  invalid resource class)
+* `409 Conflict` if the changes `total`, `reserved` or
+  `allocation_ratio` in any existing inventory would cause existing
+  allocations to be in conflict with proposed capacity
+* `409 Conflict` if another process updated any existing inventory record
+  since the `resource_provider_generation` view marker was returned.
 
 `GET /resource_providers/{uuid}/inventories/{resource_class}`
 *************************************************************
