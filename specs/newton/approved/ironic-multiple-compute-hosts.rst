@@ -41,71 +41,71 @@ be able to scale to 10^5 nodes.
 Proposed change
 ===============
 
-In general, a nova-compute running the Ironic virt driver should only
-register as a single row in the compute_nodes table, rather than many rows.
+We'll lift some hash ring code from ironic (to be put into oslo
+soon), to be used to do consistent hashing of ironic nodes among
+multiple nova-compute services. The hash ring is used within the
+driver itself, and is refreshed at each resource tracker run.
 
-Nova's scheduler should schedule only to a nova-compute host; the host will
-choose an Ironic node itself, from the nodes that match the request (explained
-further below).  Once an instance is placed on a given nova-compute service
-host, that host will always manage other requests for that instance (delete,
-etc). So the instance count scheduler filter can just be used here to equally
-distribute instances between compute hosts. This reduces the failure domain to
-failing actions for existing instances on a compute host, if a compute host
-happens to fail.
+get_available_nodes() will now return a subset of nodes,
+determined by the following rules:
 
-The Ironic virt driver should be modified to call an Ironic endpoint with
-the request spec for the instance. This endpoint will reserve a node, and
-return that node. The virt driver will then deploy the instance to this node.
-When the instance is destroyed, the reservation should also be destroyed.
+* any node with an instance managed by the compute service
+* any node that is mapped to the compute service on the hash ring
+* no nodes with instances managed by another compute service
 
-This endpoint will take parameters related to the request spec, and is being
-worked on the Ironic side here.[0] This has not yet been solidified, but it
-will have, at a minimum, all fields in the flavor object. This might look
-something like::
+The virt driver finds all compute services that are running the
+ironic driver by joining the services table and the compute_nodes
+table. Since there won't be any records in the compute_nodes table
+for a service that is starting for the first time, the virt driver
+also adds its own compute service into this list. The list of all
+hostnames in this list is what is used to instantiate the hash ring.
 
-    {
-        "memory_mb": 1024,
-        "vcpus": 8,
-        "vcpu_weight": null,
-        "root_gb": 20,
-        "ephemeral_gb": 10,
-        "swap": 2,
-        "rxtx_factor": 1.0,
-        "extra_specs": {
-            "capabilities": "supports_uefi,has_gpu",
-        },
-        "image": {
-            "id": "some-uuid",
-            "properties": {...},
-        },
-    }
+As nova-compute services are brought up or down, the ring will
+re-balance. It's important to note that this re-balance does not
+occur at the same time on all compute services, so for some amount
+of time, an ironic node may be managed by more than one compute
+service. In other words, there may be two compute_nodes records
+for a single ironic node, with a different host value. For
+scheduling purposes, this is okay, because either compute service
+is capable of actually spawning an instance on the node (because the
+ironic service doesn't know about this hashing). This will cause
+capacity reporting (e.g. nova hypervisor-stats) to over-report
+capacity for this time. Once all compute services in the cluster
+have done a resource tracker run and re-balanced the hash ring,
+this will be back to normal.
 
+It's also important to note that, due to the way nodes with instances
+are handled, if an instance is deleted while the compute service is
+down, that node will be removed from the compute_nodes table when
+the service comes back up (as each service will see an instance on
+the node object, and assume another compute service manages that
+instance). The ironic node will remain active and orphaned. Once
+the periodic task to reap deleted instances runs, the ironic node
+will be torn down and the node will again be reported in the
+compute_nodes table.
 
-We will report (total ironic capacity) into the resource tracker for each
-compute host. This will end up over-reporting total available capacity to Nova,
-however is the least wrong option here. Other (worse) options are:
+It's all very eventually consistent, with a potentially long time
+to eventual.
 
-* Report (total ironic capacity)/(number of compute hosts) from each compute
-  host. This is more "right", but has the possibility of a compute host
-  reporting (usage) > (max capacity), and therefore becoming unable to perform
-  new build actions.
-
-* Report some arbitrary incorrect number for total capacity, and try to make
-  the scheduler ignore it. This reports numbers more incorrectly, and also
-  takes more code and has more room for error.
+There's no configuration to enable this mode; it's always running. For
+deployments that continue to use only one compute service, this has the
+same behavior as today.
 
 Alternatives
 ------------
 
-Do what we do today, with active/passive failover.
+Do what we do today, with active/passive failover. Doing active/passive
+failover well is not an easy task, and doesn't account for all possible
+failures. This also does not follow Nova's prescribed model for compute
+failure. Furthermore, the resource tracker initialization is slow with many
+Ironic nodes, and so a cold failover could take minutes.
 
-Doing active/passive failover well is not an easy task, and doesn't account for
-all possible failures. This also does not follow Nova's prescribed model for
-compute failure. Furthermore, the resource tracker initialization is slow
-with many Ironic nodes, and so a cold failover could take minutes.
-
-Resource providers[1] may be another viable alternative, but we shouldn't
-have a hard dependency on that.
+Another alternative is to make nova's scheduler only choose a compute service
+running the ironic driver (essentially at random) and let the scheduling to
+a given node be determined between the virt driver and ironic. The downsides
+here are that operators no longer have a pluggable scheduler (unless we build
+one in ironic), and we'll have to do lots of work to ensure there aren't
+scheduling races between the compute services.
 
 Data model impact
 -----------------
@@ -142,13 +142,7 @@ smaller and improve the performance of the resource tracker loop.
 Other deployer impact
 ---------------------
 
-A version of Ironic that supports the reservation endpoint must be deployed
-before a version of Nova with this change is deployed. If this is not the
-case, the previous behavior should be used. We'll need to properly deprecate
-the old behavior behind a config option, as deployers will need to configure
-different scheduler filters and host managers than the current recommendation
-for this to work correctly. We should investigate if this can be done
-gracefully without a new config option, however I'm not sure it's possible.
+None.
 
 Developer impact
 ----------------
@@ -166,42 +160,41 @@ Primary assignee:
   jim-rollenhagen (jroll)
 
 Other contributors:
-  devananda
+  dansmith
   jaypipes
 
 Work Items
 ----------
 
-* Change the Ironic driver to be a 1:1 host:node mapping.
+* Import the hash ring code into Nova.
 
-* Change the Ironic driver to get reservations from Ironic.
+* Use the hash ring in the virt driver to shard nodes among compute daemons.
 
 
 Dependencies
 ============
 
-This depends on a new endpoint in Ironic.[0]
+None.
 
 
 Testing
 =======
 
-This should be tested by being the default configuration.
+This code will run in the default devstack configuration.
+
+We also plan to add a CI job that runs the ironic driver with multiple
+compute hosts, but this likely won't happen until Ocata.
 
 
 Documentation Impact
 ====================
 
-Deployer documentation will need updates to specify how this works, since it
-is different than most drivers.
+Maybe an ops guide update, however I'd like to leave that for next cycle until
+we're pretty sure this is stable.
 
 
 References
 ==========
-
-[0] https://review.openstack.org/#/c/204641/
-
-[1] https://review.openstack.org/#/c/225546/
 
 
 History
@@ -216,3 +209,4 @@ History
      - Introduced but no changes merged.
    * - Newton
      - Re-proposed.
+     - Completely re-written to use a hash ring.
