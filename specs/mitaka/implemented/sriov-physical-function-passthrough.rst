@@ -165,7 +165,7 @@ better suited for the actual code proposal review.
 It will also be necessary to be able to know relations between individual PFs
 and VFs in the aggregate view of the PCI device data used in scheduling, so
 changes to the way PciDeviceStats holds aggregate
-data. This will also result in changes to the filtering/cliaming logic, the
+data. This will also result in changes to the filtering/claiming logic, the
 extent of which may impact decisions about the data model so this is
 best discussed on actual implementation changes.
 
