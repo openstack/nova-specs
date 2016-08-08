@@ -290,6 +290,9 @@ The API changes add resource endpoints to:
 * `PUT` a list of aggregates to associate with this resource provider
 * `GET` that list of aggregates
 * `GET` a list, by resource class, of usages
+* `PUT` a set of allocation records for one consumer and one or more resource
+  providers
+* `DELETE` a set of allocation records for a consumer
 
 This provides granular access to the resources that matter while
 providing straightfoward access to usage information.
@@ -841,8 +844,120 @@ The returned HTTP response code will be one of the following:
   inventories the `usages` dictionary should be empty.
 * `404 Not Found` if the resource provider does not exist.
 
-.. note:: Usages are read only.
+.. note:: Usages are read only. They represent the sum of allocated amounts of
+          a resource class from a resource provider.
 
+`PUT /allocations/{consumer_uuid}`
+**********************************
+
+Creates one or more allocation records representing the consumption of
+one or more classes of resources from one or more resource providers by
+the designated consumer.
+
+Example::
+
+    PUT /allocations/9a82ff67-26e2-4d0a-a7e1-746788a85646
+    {
+      "allocations": [
+        {
+          "resource_provider": {
+            "uuid": "fa84d9e3-ab3b-4240-8eee-e8f1138b3423"
+          },
+          "resources": {
+            "DISK_GB": 10
+          },
+        },
+        {
+          "resource_provider": {
+            "uuid": "7dd1cd8a-4058-4f58-a24a-e38a5f4d563e"
+          },
+          "resources": {
+            "VCPU": 2,
+            "MEMORY_MB": 1024
+          }
+        }
+      }
+    }
+
+.. note::
+
+    Allocations for one consumer are set against multiple resource providers in
+    one request to allow the request to be serviced in a single transaction.
+
+The body of the request must match the following JSONSchema document::
+
+    {
+      "type": "object",
+      "properties": {
+        "allocations": {
+          "type": "array",
+          "items": {
+              "type": "object",
+              "properties": {
+                "resource_provider": {
+                  "type": "object",
+                  "properties": {
+                    "uuid": {
+                      "type": "uuid"
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": ["uuid"]
+                },
+                "resources": {
+                  "type": "object",
+                  "patternProperties": {
+                    "^[0-9a-fA-F-]+$": {
+                      "type": "object",
+                      "patternProperties": {
+                        "^[A-Z_]+$": {"type": "integer"}
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "resource_providers",
+                "resources"
+              ]
+            }
+          }
+        },
+        "required": ["allocations"],
+        "additionalProperties": false
+      }
+
+The returned HTTP response code will be one of the following:
+
+* `204 No Content` if the allocation record is successfully created
+* `400 Bad Request` for bad or invalid syntax
+* `409 Conflict` if there is already an allocation record for the specified
+  consumer against a specified resource provider. We don't support updating a
+  set of allocation records for a consumer. The allocation records for a
+  consumer must be deleted and a new set added.
+
+  A `409 Conflict` will also be returned if there is no available inventory in
+  any of the resource providers for any specified resource classes.
+
+`DELETE /allocations/{consumer_uuid}`
+***************************************************************
+
+Delete all allocation records for a consumer on all resource
+providers it is consuming.
+
+Example::
+
+    DELETE /allocations/9a82ff67-26e2-4d0a-a7e1-746788a85646
+
+The body is empty.
+
+The returned HTTP response code will be one of the following:
+
+* `204 No Content` if the allocation record is successfully removed
+* `404 Not Found` if there are no associated allocation records for
+   `{consumer_uuid}`
 
 Security impact
 ---------------
@@ -854,7 +969,8 @@ Notifications impact
 
 We should create new notification messages for when resource providers are
 created, destroyed, updated, associated with an aggregate and disassociated
-from an aggregate.
+from an aggregate, and when inventory and allocation records are created and
+destroyed.
 
 Other end user impact
 ---------------------
@@ -922,17 +1038,18 @@ Work Items
 
 * Create database models and migrations for new `resource_provider_aggregates`
   table.
-* Create `nova.objects` models for `ResourcePool`
-* Create REST API controllers for resource pool querying and handling
+* Create `nova.objects` models for `ResourceProvider`
+* Create REST API controllers for resource provider querying and handling
 * Modify resource tracker to pull information on aggregates the compute node is
-  associated with and the resource pools available for those aggregates. If the
-  instance is requesting some amount of DISK_GB resources and the compute node
-  is associated with a resource pool that contains available DISK_GB inventory,
-  then the resource tracker shall claim the resources (write an allocation
-  record) against the resource pool, not the compute node itself.
-* Modify the scheduler to look at resource pool information for aggregates
-  associated with compute nodes to determine if request can be fulfilled by the
-  resource pool
+  associated with and the resource providers available for those aggregates. If
+  the instance is requesting some amount of DISK_GB resources and the compute
+  node is associated with a resource provider that contains available DISK_GB
+  inventory, then the resource tracker shall claim the resources (write an
+  allocation record) against that resource provider, not the compute node
+  itself.
+* Modify the scheduler to look at resource provider information for aggregates
+  associated with compute nodes to determine if request can be fulfilled by
+  those associated resource providers
 
   For this particular step, the changes to the existing filter scheduler
   should be minimal. Right now, the host manager queries the list of all
@@ -981,9 +1098,9 @@ resource pool.
 Documentation Impact
 ====================
 
-Developer docs should be added that detail the new resource pool functionality,
-how external scripts can keep capacity and usage information updated for a
-resource pool.
+Developer docs should be added that detail the new resource providers
+functionality, how external scripts can keep capacity and usage information
+updated for a resource provider that provides a shared pool of resources.
 
 References
 ==========
