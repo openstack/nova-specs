@@ -26,18 +26,12 @@ environments, or by users that wish to have an isolated network.
 
 * Deployments that wish to secure the control plane from tenants
 
-* Deployments that wish to use "advanced" network configurations such as LAG,
-  MLAG, bonding, VLAN/VXLAN
-
 Use Cases
 ----------
 
 * Deployers that wish to deploy a multitenant environment.
 
 * Deployers that wish to isolate the control plane from tenants.
-
-* Deployers that wish to deploy baremetal hosts using "advanced" network
-  configurations such as LAG, MLAG, bonding, VLAN/VXLAN.
 
 * Users that wish to use isolated networks with Ironic instances.
 
@@ -67,29 +61,16 @@ Proposed change
   (done in Mitaka, but a string change will require a small update. This
   code also depends on an ironicclient release to have an effect)
 
-* Ironic now has a concept of "port groups"[1], which is a single logical
-  connection comprised of multiple physical NICs; used in LAG and MLAG
-  configurations.  These are a first-class citizen in the API. The
-  `macs_for_instance` method in the ironic driver needs to be changed to report
-  MACs for both port groups and ungrouped ports. For example::
-
-    # the old method
-    [port.address for port in get_ports_for_node()]
-
-    # the new method
-    ([port.address for port in get_ungrouped_ports_for_node()] +
-     [portgroup.address for portgroup in get_portgroups_for_node()])
-
 * A BAREMETAL vnic type will be added to the network model to support the
   BAREMETAL vnic type that was previously added in Neutron.[3]
 
   (done in Mitaka)
 
 This will support the basic tenant networking support we are building out in
-Ironic. In the future, we'll want to support multiple networks via VLAN or
-VXLAN over a pair of bonded NICs (currently Nova enforces a 1:1 mapping of NICs
-to networks, as in the virtual world NICs can be created on the fly), but these
-items are outside the scope of this spec.
+Ironic. In the future, we'll want to support LAG/MLAG/bonds, and multiple
+networks via VLAN or VXLAN over a pair of bonded NICs (currently Nova enforces
+a 1:1 mapping of NICs to networks, as in the virtual world NICs can be created
+on the fly), but these items are outside the scope of this spec.
 
 Alternatives
 ------------
@@ -165,9 +146,6 @@ Work Items
 
 * Add the BAREMETAL vnic type.
 
-* Make changes to the Ironic driver to handle Ironic "port groups" in addition
-  to Ironic "ports".
-
 
 Dependencies
 ============
@@ -214,3 +192,4 @@ History
      - Introduced
    * - Newton
      - Re-proposed
+     - Removed portgroups support
