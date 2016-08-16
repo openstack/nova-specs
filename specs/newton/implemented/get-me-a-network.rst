@@ -80,8 +80,8 @@ since you can later attach a network with the os-attach-interfaces API.
 How create server requests will work with auto-allocation
 ---------------------------------------------------------
 
-There will be three possible values for the network uuid part of the create
-server request:
+The **networks** object in the create server request will now be either a list
+or an enum with the following values:
 
 1. auto:
 
@@ -104,10 +104,8 @@ server request:
     will avoid network API calls when creating the server instance. Any
     networking needed for the instance will have to be attached later.
 
-3. uuid:
-
-  * This is requesting a specific network to boot into, which is supported
-    today.
+Internally the 'auto' or 'none' value will be stored in the
+nova.objects.network_request.NetworkRequest.network_id field.
 
 **Error Conditions**
 
@@ -281,8 +279,9 @@ REST API impact
 
   * JSON schema definition for the request body data if allowed
 
-    * The server create API schema will be more restrictive with the network
-      uuid field which must be one of 'none', 'auto' or a specific uuid.
+    * The server create API schema will be more restrictive with the
+      **networks** object which must be a list or enum with value 'auto' or
+      'none'.
 
     ::
 
@@ -297,26 +296,23 @@ REST API impact
                     'adminPass': parameter_types.admin_password,
                     'metadata': parameter_types.metadata,
                     'networks': {
-                        'type': 'array',
-                        'items': {
-                            'type': 'object',
-                            'properties': {
-                                'fixed_ip': parameter_types.ip_address,
-                                'port': {
-                                    'oneOf': [{'type': 'string',
-                                               'format': 'uuid'},
-                                              {'type': 'null'}]
+                        'oneOf': [
+                            {'type': 'array',
+                             'items': {
+                                'type': 'object',
+                                 'properties': {
+                                    'fixed_ip': parameter_types.ip_address,
+                                    'port': {
+                                        'oneOf': [{'type': 'string', 'format': 'uuid'},
+                                                  {'type': 'null'}]
+                                    },
+                                    'uuid': {'type': 'string', 'format': 'uuid'},
                                 },
-                                'uuid': {
-                                    'oneOf': [{'type': 'string',
-                                               'format': 'uuid'},
-                                              {'type': 'string',
-                                               'enum': ['none', 'auto']},
-                                              {'type': 'null'}]
-                                },
+                                'additionalProperties': False,
                             },
-                            'additionalProperties': False,
-                        }
+                           },
+                           {'type': 'string', 'enum': ['none', 'auto']},
+                        ]
                     }
                 },
                 'required': ['name', 'flavorRef', 'networks'],
@@ -364,7 +360,7 @@ REST API impact
     -H "X-Auth-Token: {SHA1}0ecb2c6e137a5bd778b5561fd9dc48a0919f85a5" \
     -d '{"server": {"name": "net-auto-test", \
     "imageRef": "883db132-0312-411c-b546-5cad477864c6", "flavorRef": "1", \
-    "max_count": 1, "min_count": 1, "networks": [{"uuid": "auto"}]}}'
+    "max_count": 1, "min_count": 1, "networks": "auto"}}'
 
 * Booting a server with the 'none' network.
 
@@ -377,7 +373,7 @@ REST API impact
     -H "X-Auth-Token: {SHA1}0ecb2c6e137a5bd778b5561fd9dc48a0919f85a5" \
     -d '{"server": {"name": "net-none-test", \
     "imageRef": "883db132-0312-411c-b546-5cad477864c6", "flavorRef": "1", \
-    "max_count": 1, "min_count": 1, "networks": [{"uuid": "none"}]}}'
+    "max_count": 1, "min_count": 1, "networks": "none"}}'
 
 
 Security impact
@@ -396,8 +392,7 @@ None
 Other end user impact
 ---------------------
 
-The Nova REST API will require that a network uuid value is specified when not
-requesting ports (auto, none, uuid).
+The Nova REST API will require that a **networks** value is specified.
 
 However, the CLI will default to 'auto' if no nics are requested in the
 ``boot`` command and the server can support the new microversion (and the user
@@ -589,3 +584,7 @@ History
      - Description
    * - Newton
      - Introduced
+   * - Newton
+     - Amended for auto/none as enum `design change`_.
+
+.. _design change: http://lists.openstack.org/pipermail/openstack-dev/2016-August/101499.html
