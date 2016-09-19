@@ -8,7 +8,7 @@
 User_id based policy enforcement
 ================================
 
-https://blueprints.launchpad.net/nova/+spec/user_id_based_policy_enforcement
+https://blueprints.launchpad.net/nova/+spec/user-id-based-policy-enforcement
 
 Policy.json is a turing complete ball of confusion. Only the brave
 dare to wander through it's halls. Only the fortunate come out
