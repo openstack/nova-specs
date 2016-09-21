@@ -4,11 +4,11 @@
 
  http://creativecommons.org/licenses/by/3.0/legalcode
 
-============================================================
+===================================
+Live Migration of Rescued Instances
+===================================
 
-============================================================
-
-Blueprint:https://blueprints.launchpad.net/nova/+spec/live-migrate-rescued-instances
+https://blueprints.launchpad.net/nova/+spec/live-migrate-rescued-instances
 
 When an instance is rescued the libvirt driver creates a file in the
 instance directory that contains the original instance xml. This file
