@@ -45,6 +45,12 @@ existing links to the approved specification are not broken. Redirects aren't
 symbolic links, they are defined in a file which sphinx consumes. An example
 is at ``specs/kilo/redirects``.
 
+.. note:: Use the ``tox -e move-implemented-specs`` target at the end of each
+          release to automatically move completed specs and populate the
+          redirects file for that release. For example::
+
+            tox -r -e move-implemented-specs -- --dry-run --verbose newton
+
 This directory structure allows you to see what we thought about doing,
 decided to do, and actually got done. Users interested in functionality in a
 given release should only refer to the ``implemented`` directory.
