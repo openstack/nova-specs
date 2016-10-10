@@ -27,7 +27,6 @@ Some notes about the nova-spec and blueprint process:
 
 * This is not intended to be extensive documentation for a new feature.
   For example, there is no need to specify the exact configuration changes,
-
   nor the exact details of any DB model changes. But you should still define
   that such changes are required, and be clear on how that will affect
   upgrades.
