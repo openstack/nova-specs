@@ -237,7 +237,7 @@ and `NUMA_MEMORY`), create an inventory record for each compute node that
 exposes NUMA topology resources.
 
 For example, let us assume we have a compute node that exposes 2 NUMA nodes
-(cells), each with 4 cores and 8 threads. We would set the the min_unit and
+(cells), each with 4 cores and 8 threads. We would set the min_unit and
 max_unit values of the inventory records to the single-NUMA-cell
 constraints and the total value to the combined number of the resource. So,
 for instance, for the `NUMA_CORES`, we'd set total to 8 (2 sockets having 4

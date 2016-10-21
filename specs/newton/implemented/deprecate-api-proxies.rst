@@ -113,7 +113,7 @@ Networking API
 Nova Network is deprecated, as such the APIs around that networking
 will also be marked as deprecated, as is their use in talking to the
 proxy. A preamble will be written for this section to clarify the
-deprecation of the network API as well as the the proxy to Neutron
+deprecation of the network API as well as the proxy to Neutron
 functionality.
 
 Users who wish to continue to use the Network API in Nova must just
