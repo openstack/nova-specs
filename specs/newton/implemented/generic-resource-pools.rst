@@ -509,7 +509,7 @@ Example::
     {
       "resource_provider_generation": 4,
       "inventories": {
-        'DISK_GB': {
+        "DISK_GB": {
           "total": 2048,
           "reserved": 512,
           "min_unit": 10,
@@ -517,7 +517,7 @@ Example::
           "step_size": 10,
           "allocation_ratio": 1.0
         },
-        'IPV4_ADDRESS': {
+        "IPV4_ADDRESS": {
           "total": 256,
           "reserved": 2,
           "min_unit": 1,
@@ -525,7 +525,7 @@ Example::
           "step_size": 1,
           "allocation_ratio": 1.0
         }
-      }
+      ]
     }
 
 .. note::
@@ -634,17 +634,15 @@ Example::
 
     {
       "resource_provider_generation": 1
-      "inventories": [
-          {
-              "resource_class": "DISK_GB",
-              "total": 2048,
-          },
-          {
-              "resource_class": "IPV4_ADDRESS",
-              "total": 255,
-              "reserved": 2
-          }
-      ]
+      "inventories": {
+        "DISK_GB": {
+            "total": 2048,
+        },
+        "IPV4_ADDRESS": {
+            "total": 255,
+            "reserved": 2
+        }
+      }
     }
 
 The body of the request must match the following abridged JSONSchema document::
@@ -656,9 +654,13 @@ The body of the request must match the following abridged JSONSchema document::
         "type": "integer"
       },
       "inventories": {
-        "type": {
-          "array", 72,
-          "items": # the scheme for POST of on inventory above
+        "type": "object",
+        "patternProperties": {
+          "^[A-Z0-9_]+$": {
+            "type": "object",
+            # the scheme for POST of on inventory above except for the
+            # resource_class element, which is represented as the
+            # patternProperty key.
         }
       },
       "required": [
