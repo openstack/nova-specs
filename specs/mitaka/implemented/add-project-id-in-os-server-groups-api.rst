@@ -173,7 +173,7 @@ Other end user impact
 * The python-novaclient server-group-list, server-group-show
   server-group-create command will be updated to handle microversions
   to show the 'project_id' and 'user_id' information in it's output
-  if the requested microversion provides that infomation.
+  if the requested microversion provides that information.
 
 Performance Impact
 ------------------
