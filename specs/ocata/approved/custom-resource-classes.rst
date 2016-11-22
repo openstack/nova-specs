@@ -182,9 +182,9 @@ pointing to the created resource class::
     Location: /resource_classes/CUSTOM_BAREMETAL_GOLD
 
 * A `400 Bad Request` response code will be returned if name is for a standard
-resource class -- i.e. VCPU or MEMORY_MB.
+  resource class -- i.e. VCPU or MEMORY_MB.
 * A `409 Conflict` response code will be returned if another resource class
-exists with the provided name.
+  exists with the provided name.
 
 `PUT /resource_classes/{name}`
 ******************************
@@ -218,11 +218,11 @@ The response body is empty and the response code will be a `204 No Content`
 upon successful name change.
 
 * A `404 Not Found` response code will be returned if no such resource class
-matching the name is found.
+  matching the name is found.
 * A `400 Bad Request` response code will be returned if name is for a standard
-resource class -- i.e. VCPU or MEMORY_MB.
+  resource class -- i.e. VCPU or MEMORY_MB.
 * A `409 Conflict` response code will be returned if there is an existing
-resource class with the same name.
+  resource class with the same name.
 
 `DELETE /resource_classes/{name}`
 *********************************
@@ -237,11 +237,11 @@ The response body is empty and the response code will be a `204 No Content`
 upon successful deletion.
 
 * A `404 Not Found` response code will be returned if no such resource class
-matching the name is found.
+  matching the name is found.
 * A `400 Bad Request` response code will be returned if name is for a standard
-resource class -- i.e. VCPU or MEMORY_MB.
+  resource class -- i.e. VCPU or MEMORY_MB.
 * A `409 Conflict` response code will be returned if there are existing
-inventories or allocations for the resource class.
+  inventories or allocations for the resource class.
 
 Security impact
 ---------------
