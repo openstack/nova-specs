@@ -1,1 +1,1 @@
-mitaka-template.rst
+pike-template.rst

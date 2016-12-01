@@ -1,1 +1,0 @@
-../../liberty-template.rst
