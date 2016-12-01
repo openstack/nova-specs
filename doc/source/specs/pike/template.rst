@@ -1,0 +1,1 @@
+../../../../specs/pike-template.rst
