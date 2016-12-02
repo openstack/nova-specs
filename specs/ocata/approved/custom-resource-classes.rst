@@ -214,8 +214,22 @@ The body of the request must match the following JSONSchema document::
       "additionalProperties": False
     }
 
-The response body is empty and the response code will be a `204 No Content`
-upon successful name change.
+The response body will contain the resource class details and the response code
+will be a `200 OK` upon successful name change.
+
+Example::
+
+    200 OK
+    Content-Type: application/json
+    {
+      "name": "CUSTOM_BAREMETAL_SILVER",
+      "links": [
+        {
+          "rel": "self",
+          "href": "/resource_classes/CUSTOM_BAREMETAL_SILVER"
+        }
+      ]
+    }
 
 * A `404 Not Found` response code will be returned if no such resource class
   matching the name is found.
