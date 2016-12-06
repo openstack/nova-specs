@@ -55,7 +55,7 @@ Methods related to keypairs that are currently in the database API will be
 moved to the ``KeyPair`` object.
 
 Migration to the API database will follow the existing pattern established
-by the merged flavor migration series. [1]_
+by the merged flavor migration series.
 
 The metadata service currently reads the ``key_pairs`` table directly. We
 would like to prevent this once the table has been moved to the API database.

@@ -300,5 +300,7 @@ History
 .. list-table:: Revisions
    :header-rows: 1
 
+   * - Release Name
+     - Description
    * - Newton
      - Introduced

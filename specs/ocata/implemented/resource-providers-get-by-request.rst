@@ -69,7 +69,7 @@ REST API impact
 The following new REST API call will be modified:
 
 `POST /resource_providers`
-*************************
+**************************
 
 The POST method for that /resource_providers REST resource will now accept
 a new query string in the URI called 'request' that will return a list of

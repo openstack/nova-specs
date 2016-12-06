@@ -84,14 +84,15 @@ for cases which fail for trivial reasons like lack of CPU/RAM/disk.  We propose
 that this option default to ['CoreFilter', 'RamFilter', 'DiskFilter',
 'ComputeFilter'].  This option would apply regardless of which way the
 "log only on failure" config option is set, for several reasons:
- * When logging only on NoValidHost we would still need to do work to store
-   the logs for the success path, so this would give a way to reduce the
-   overhead and also reduce the amount of logging on a scheduler failure.
- * If the operator decides they don't need logging from particular filters
-   then it likely doesn't matter whether we only log on failure.
- * If an operator does want to change the suppressed filters when changing
-   the  "sched_detailed_log_only_on_failure" config option, then they have
-   the option of doing so.
+
+* When logging only on NoValidHost we would still need to do work to store
+  the logs for the success path, so this would give a way to reduce the
+  overhead and also reduce the amount of logging on a scheduler failure.
+* If the operator decides they don't need logging from particular filters
+  then it likely doesn't matter whether we only log on failure.
+* If an operator does want to change the suppressed filters when changing
+  the  "sched_detailed_log_only_on_failure" config option, then they have
+  the option of doing so.
 
 
 Alternatives

@@ -119,6 +119,7 @@ In case of success following workflow will happen:
 
 * post_live_migration_at_destination - non-blocking rpc cast from conductor to
   destination compute
+
 In case of failure:
 
 * rollback_live_migration_at_source - non-blocking rpc cast from conductor to

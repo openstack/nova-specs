@@ -209,4 +209,4 @@ History
      - Introduced but no changes merged.
    * - Newton
      - Re-proposed.
-     - Completely re-written to use a hash ring.
+       Completely re-written to use a hash ring.

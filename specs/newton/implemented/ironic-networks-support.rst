@@ -191,5 +191,5 @@ History
    * - Mitaka
      - Introduced
    * - Newton
-     - Re-proposed
-     - Removed portgroups support
+     - Re-proposed.
+       Removed portgroups support.

@@ -60,20 +60,20 @@ Request:
 
       POST
 
-   JSON format:
+   JSON format::
 
-      {
+     {
          "os-getConsoleOutput": {
-            "lines": 2,
-            "offset": 10
-          }
-      }
+             "lines": 2,
+             "offset": 10
+         }
+     }
 
-   Response:
+   Response::
 
-      {
+     {
          "output": "ANOTHER\nLAST LINE"
-      }
+     }
 
 
 Security impact

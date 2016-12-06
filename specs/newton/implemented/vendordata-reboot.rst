@@ -121,7 +121,7 @@ file called vendor_data.json.
 
 For DynamicJSON, the results of calls to the microservice will be placed into
 a new JSON file in the metadata, called vendor_data2.json. This file contains
-a a dictionary which is a series of dictionaries. For example:
+a dictionary which is a series of dictionaries. For example::
 
  {
      "static": {
@@ -139,7 +139,7 @@ flag. This flag is composed of entries of the form:
  name@http://example.com/foo
 
 The name element for this microservice becomes the a new key for the
-vendor_data2.json file, like this:
+vendor_data2.json file, like this::
 
  {
      "name": {

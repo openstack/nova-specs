@@ -49,6 +49,7 @@ Proposed change
 ===============
 
 The primary changes that needs to be done on nova are as follows:
+
 * Copy the classes from nova/virt/xenapi/client/ to os-xenapi.
 * Copy the plugins from ``plugins/xenserver/xenapi/etc/xapi.d/plugins``
   to os-xenapi.
@@ -170,5 +171,7 @@ History
 .. list-table:: Revisions
    :header-rows: 1
 
+   * - Release Name
+     - Description
    * - Ocata
      - Introduced

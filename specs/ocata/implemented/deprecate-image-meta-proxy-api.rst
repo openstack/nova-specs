@@ -138,7 +138,7 @@ image metadata doesn't enforce at Nova side anymore.
 References
 ==========
 
-.. _Deprecate API Proxies: ../../newton/approved/deprecate-api-proxies.html
+.. _deprecated api proxies: ../../newton/approved/deprecate-api-proxies.html
 .. _ongoing discussions: http://lists.openstack.org/pipermail/openstack-dev/2016-July/100085.html
 .. _api-ref: http://developer.openstack.org/api-ref/compute/#create-image-metadata
 

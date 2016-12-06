@@ -197,4 +197,4 @@ History
      - Re-proposed.
    * - Pike
      - Re-proposed.
-     - Updated without use of ``quota_usages`` and ``reservations``.
+       Updated without use of ``quota_usages`` and ``reservations``.

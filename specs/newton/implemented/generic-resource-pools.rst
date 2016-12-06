@@ -552,7 +552,7 @@ The returned HTTP response code will be one of the following:
   will succeed but the `inventories` key will have an empty dict as its value.
 
 `POST /resource_providers/{uuid}/inventories`
-********************************************
+*********************************************
 
 Create a new inventory for the resource provider identified by `{uuid}`.
 
@@ -1067,13 +1067,13 @@ functionality:
 * `openstack resource-provider update $UUID --name="New name"`
 * `openstack resource-provider list inventory $UUID`
 * `openstack resource-provider set inventory $UUID \
-   --resource-class=DISK_GB \
-   --total=1024 \
-   --reserved=450 \
-   --min-unit=1 \
-   --max-unit=1 \
-   --step-size=1 \
-   --allocation-ratio=1.0`
+  --resource-class=DISK_GB \
+  --total=1024 \
+  --reserved=450 \
+  --min-unit=1 \
+  --max-unit=1 \
+  --step-size=1 \
+  --allocation-ratio=1.0`
 * `openstack resource-provider delete inventory $UUID \
   --resource-class=DISK_GB`
 * `openstack resource-provider add aggregate $UUID $AGG_UUID`

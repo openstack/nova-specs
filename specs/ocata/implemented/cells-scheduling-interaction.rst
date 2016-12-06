@@ -62,17 +62,18 @@ within the cell indicated by the scheduler.
 
 The new boot workflow would look like the following:
 
- - nova-api creates and persists a BuildRequest object, not an Instance.
- - Cast to the api level conductor to execute the new method proposed here. The
-   api level conductor is whatever is configured in DEFAULT/transport_url.
-   - Conductor will call the scheduler once.
-   - Conductor will create the instance in the proper cell
-   - Conductor will cast to the proper nova-compute to continue the build
-     process. This cast will be the same as what is currently done in the
-     conductor build_instances method.
-   - In the event of a reschedulable build failure nova-compute will cast to a
-     cell conductor to execute the current build_instances method just as it's
-     currently done.
+* nova-api creates and persists a BuildRequest object, not an Instance.
+* Cast to the api level conductor to execute the new method proposed here. The
+  api level conductor is whatever is configured in DEFAULT/transport_url.
+
+  - Conductor will call the scheduler once.
+  - Conductor will create the instance in the proper cell
+  - Conductor will cast to the proper nova-compute to continue the build
+    process. This cast will be the same as what is currently done in the
+    conductor build_instances method.
+  - In the event of a reschedulable build failure nova-compute will cast to a
+    cell conductor to execute the current build_instances method just as it's
+    currently done.
 
 Rescheduling will still take place within a cell via the normal
 compute->conductor loop, using the conductors within the cell. Adding

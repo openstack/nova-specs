@@ -44,9 +44,9 @@ bridge qbr for each VIF and make qbr be connected to integration bridge
 (e.g. br-int) in compute node. So the connection in compute node will looks
 like:
 
-    VIF-1 -> LinuxBridge(qbr-1) ->
-VM                                OvsBridge(br-int) -> OvsBridge(br-eth)
-    VIF-2 -> LinuxBridge(qbr-2) ->
+|     VIF-1 -> LinuxBridge(qbr-1) ->
+| VM                                OvsBridge(br-int) -> OvsBridge(br-eth)
+|     VIF-2 -> LinuxBridge(qbr-2) ->
 
 So, with the new added Linux bridge qbr, at neutron side, it can detect these
 bridges qbr-XXX automatically and apply security group rules on each of the
@@ -98,12 +98,16 @@ Other deployer impact
 This implementation is to support neutron security group function with XenSerer
 just like other hypervisor does. The main deployment changes if you want to use
 this function are:
+
 1. Deploy neutron in OpenStack environment
-2. Change nova.conf, below configuration items should be specified
+2. Change nova.conf, below configuration items should be specified::
+
     [DEFAULT]
     use_neutron = True
     firewall_driver = nova.virt.firewall.NoopFirewallDriver
-3. Change neutron config file ml2_conf.ini
+
+3. Change neutron config file ml2_conf.ini::
+
     [securitygroup]
     firewall_driver = \
         neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver
@@ -142,15 +146,15 @@ Testing
 =======
 
 * Scenario test will be done manually or automatically with tempest.
-When it is implemented, we can deploy an environment using neutron VLAN
-network, enable neutron security group and set the correct firewall_driver
-in neutron's ml2_conf.ini file in compute node.
+  When it is implemented, we can deploy an environment using neutron VLAN
+  network, enable neutron security group and set the correct firewall_driver
+  in neutron's ml2_conf.ini file in compute node.
 
 * XenServer Neutron CI will also be updated to test security groups though
-existing tempest tests. When the code patchset is ready, we will change some
-configurations as mentioned above and start full tempest to check the function
-and make sure there is no negative impact. The test report will be accessible
-publicly.
+  existing tempest tests. When the code patchset is ready, we will change some
+  configurations as mentioned above and start full tempest to check the
+  function and make sure there is no negative impact. The test report will be
+  accessible publicly.
 
 Documentation Impact
 ====================
