@@ -17,7 +17,7 @@ Problem description
 ===================
 
 As an operator, when you manage hundred or thousand nodes, instances will be
-automaticly balanced though all nodes. There is no possibility to ask the
+automatically balanced though all nodes. There is no possibility to ask the
 infrastructure to group a kind of instances on the same hosts if possible.
 
 A kind of instance could be based on a specific image, a specific flavor.
