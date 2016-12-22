@@ -122,7 +122,7 @@ into a static utility method so that the new count API extension can utilize
 it; this is critical so that the filtering support for the count API matches
 the filtering support for the /servers API.
 
-For the v3 API, a new count function (similiar to 'index' and 'detail') needs
+For the v3 API, a new count function (similar to 'index' and 'detail') needs
 to be added to nova.api.openstack.compute.plugins.v3.servers directly. Common
 filter processing needs to broken out into utility functions (same idea as the
 v2 API). For v3, the 'count' GET API can be registered with the Servers
