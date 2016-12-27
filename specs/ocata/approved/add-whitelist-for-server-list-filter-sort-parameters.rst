@@ -57,7 +57,7 @@ The whitelist for REST API filters are ['user_id', 'project_id', 'tenant_id',
 'availability_zone', 'name', 'display_name', 'description',
 'display_description', 'locked_by',
 'uuid', 'root_device_name', 'config_drive', 'access_ip_v4', 'access_ip_v6',
-'auto_disk_config', 'progress', 'sort_key', 'sort_dir', 'all_tenant',
+'auto_disk_config', 'progress', 'sort_key', 'sort_dir', 'all_tenants',
 'deleted', 'limit', 'marker', 'status', 'ip', 'ip6', 'tag', 'not-tag',
 'tag-any', 'not-tag-any']
 
@@ -76,11 +76,11 @@ default rule is `rule:admin_api`.
 
 The whitelist for sorts are pretty similar with filters.
 ['user_id', 'project_id', 'launch_index', 'image_ref', 'kernel_id',
-'ramdisk_id', 'hostname', key_name', 'power_state', 'vm_state', 'task_state',
+'ramdisk_id', 'hostname', 'key_name', 'power_state', 'vm_state', 'task_state',
 'host', 'node', 'instance_type_id', 'launched_at',
 'terminated_at', 'availability_zone', 'display_name', 'display_description',
 'locked_by', 'uuid', 'root_device_name', 'config_drive', 'access_ip_v4',
-'access_ip_v6', 'auto_disk_config', 'progress')
+'access_ip_v6', 'auto_disk_config', 'progress']
 
 The sorts whitelist compare to the filters, some parameters which aren't
 mapping to the API representation are removed, and tags filters, pagination
@@ -110,7 +110,7 @@ REST API impact
 * Few filters and sorts which aren't mapping to the REST API representaion
   will be ignored in all microversions.
 * The default behaviour of `all_tenants` changed. The new soft enforcement rule
-  is instead of the hard enforcement rule. The API behavours is as below for
+  is instead of the hard enforcement rule. The API behavior is as below for
   a fresh install of Nova:
 
   * For non-admin user, list servers with `all_tenants=True`, it will pass the
@@ -137,8 +137,8 @@ None
 Other end user impact
 ---------------------
 
-Few filters and sorts which aren't mapping to the API REST representaion will
-be ingored.
+Few filters and sorts which aren't mapping to the API REST representation will
+be ignored.
 
 Performance Impact
 ------------------
