@@ -14,6 +14,12 @@ This blueprint aims to address the problem of incorrect resource usage
 reporting by introducing the concept of a generic resource pool that manages a
 particular amount of some resources.
 
+.. note:: During the implementation of this spec developers realized
+          that using two terms, `resource provider` and `resource
+          pool`, was redundant. The term `resource provider` covers
+          all cases and is now the preferred term. In this document
+          the original 'resource pool' term is still used.
+
 Problem description
 ===================
 
@@ -79,13 +85,13 @@ All compute nodes in row 1, racks 6 through 10, are connected to this share.
 1) The cloud deployer creates an aggregate representing all the compute
    nodes in row 1, racks 6 through 10::
 
-    $AGG_UUID=`openstack aggregate create r1rck0610`
+    AGG_UUID=`openstack aggregate create r1rck0610`
     # for all compute nodes in the system that are in racks 6-10 in row 1...
     openstack aggregate add host $AGG_UUID $HOSTNAME
 
 2) The cloud deployer creates a resource pool representing the NFS share::
 
-    $RP_UUID=`openstack resource-provider create "/mnt/nfs/row1racks0610/" \
+    RP_UUID=`openstack resource-provider create "/mnt/nfs/row1racks0610/" \
         --aggregate-uuid=$AGG_UUID`
 
    Under the covers this command line does two REST API requests.
@@ -123,14 +129,14 @@ the subnet.
 1) The network administrator creates a network and routed network segments
    representing broadcast domains for rack 1 in row 3::
 
-    $NET_UUID=`openstack network create "routed network"`
-    $SEG_UUID=`openstack subnet pool create $NET_UUID`
-    $SUBNET_UUID=`openstack subnet create $SEG_UUID --cidr=192.168.10.1/24`
+    NET_UUID=`openstack network create "routed network"`
+    SEG_UUID=`openstack subnet pool create $NET_UUID`
+    SUBNET_UUID=`openstack subnet create $SEG_UUID --cidr=192.168.10.1/24`
 
 2) The cloud deployer creates an aggregate representing all the compute
    nodes in row 3, racks 1 through 5::
 
-    $AGG_UUID=`openstack aggregate create "row 3, rack 1"`
+    AGG_UUID=`openstack aggregate create "row 3, rack 1"`
     # for all compute nodes in the system that are in racks 1 in row 3...
     openstack aggregate add host $AGG_UUID $HOSTNAME
 
@@ -258,17 +264,11 @@ users.
 
 *Note*: All of the below API calls should be implemented in
 `/nova/api/openstack/placement/`, **not** in `/nova/api/openstack/compute/`
-since these calls will be part of the split-out scheduler REST API.  There
+since these calls will be part of the split-out placement REST API.  There
 should be a wholly separate placement API endpoint, started on a different port
-than the Nova API, and served by a different service daemon defined in
-`/nova/cmd/placement-api.py`.
+than the Nova API, and served by a different service.
 
 Microversion support shall be added to the new placement API from the start.
-
-ETags will be used to protect against the lost update problem. This
-means that when doing a `PUT` the request must include an `If-Match`
-header containing an ETag that matches the server's current ETag for
-the resource.
 
 The API changes add resource endpoints to:
 
@@ -293,6 +293,8 @@ The API changes add resource endpoints to:
 * `PUT` a set of allocation records for one consumer and one or more resource
   providers
 * `DELETE` a set of allocation records for a consumer
+* `GET` a set of allocations by consumer
+* `GET` a set of allocations by resource provider
 
 This provides granular access to the resources that matter while
 providing straightfoward access to usage information.
@@ -328,11 +330,11 @@ Example::
              },
              {
                "rel": "aggregates",
-               "href": "resource_providers/b6b065cc-fcd9-4342-a7b0-2aed2d146518/aggregates"
+               "href": "/resource_providers/b6b065cc-fcd9-4342-a7b0-2aed2d146518/aggregates"
              },
              {
                "rel": "usages",
-               "href": "resource_providers/b6b065cc-fcd9-4342-a7b0-2aed2d146518/usages"
+               "href": "/resource_providers/b6b065cc-fcd9-4342-a7b0-2aed2d146518/usages"
              }
           ]
         },
@@ -351,11 +353,11 @@ Example::
              },
              {
                "rel": "aggregates",
-               "href": "resource_providers/eaaf1c04-ced2-40e4-89a2-87edded06d64/aggregates"
+               "href": "/resource_providers/eaaf1c04-ced2-40e4-89a2-87edded06d64/aggregates"
              },
              {
                "rel": "usages",
-               "href": "resource_providers/eaaf1c04-ced2-40e4-89a2-87edded06d64/usages"
+               "href": "/resource_providers/eaaf1c04-ced2-40e4-89a2-87edded06d64/usages"
              }
           ]
         }
@@ -392,7 +394,8 @@ The body of the request must match the following JSONSchema document::
                 "type": "string"
             },
             "uuid": {
-                "type": "uuid"
+                "type": "string",
+                "format": "uuid"
             }
         },
         "required": [
@@ -438,11 +441,11 @@ Example::
          },
          {
            "rel": "aggregates",
-           "href": "resource_providers/eaaf1c04-ced2-40e4-89a2-87edded06d64/aggregates"
+           "href": "/resource_providers/eaaf1c04-ced2-40e4-89a2-87edded06d64/aggregates"
          },
          {
            "rel": "usages",
-           "href": "resource_providers/eaaf1c04-ced2-40e4-89a2-87edded06d64/usages"
+           "href": "/resource_providers/eaaf1c04-ced2-40e4-89a2-87edded06d64/usages"
          }
       ]
     }
@@ -465,10 +468,12 @@ Example::
         "name": "Global NFS share"
     }
 
-The returned HTTP response code will be one of the following:
+On success a `200 OK` response will be returned with an
+`application/json` body in the same form as a response to a `GET` on
+the same URI.
 
-* `204 No Content` if the request was successful and the resource
-  pool was updated.
+If there is an error the HTTP response code will be one of the following:
+
 * `400 Bad Request` for bad or invalid syntax.
 * `404 Not Found` if a resource pool with `{uuid}` does not exist.
 * `409 Conflict` if another resource pool exists with the provided
@@ -543,7 +548,8 @@ The returned HTTP response code will be one of the following:
 
 * `200 OK` if the resource pools exists.
 * `404 Not Found` if the resource provider identified by `{uuid}` was
-  not found.
+  not found. If the resource provider exists but has no inventory, the request
+  will succeed but the `inventories` key will have an empty dict as its value.
 
 `POST /resource_providers/{uuid}/inventories`
 ********************************************
@@ -600,8 +606,10 @@ The body of the request must match the following JSONSchema document::
         "additionalProperties": False
     }
 
-The response body is empty. The headers include a location header
-pointing to the created inventory::
+The response body is an `application/json` representation of the inventory,
+the same as returned for a
+`GET /resource_providers/{uuid}/inventories/{resource_class}` request. The
+headers include a location header pointing to the created inventory::
 
     201 Created
     Location: /resource_providers/eaaf1c04-ced2-40e4-89a2-87edded06d64/inventories/DISK_GB
@@ -658,7 +666,7 @@ The body of the request must match the following abridged JSONSchema document::
         "patternProperties": {
           "^[A-Z0-9_]+$": {
             "type": "object",
-            # the scheme for POST of on inventory above except for the
+            # the scheme for POST of one inventory above except for the
             # resource_class element, which is represented as the
             # patternProperty key.
         }
@@ -670,15 +678,13 @@ The body of the request must match the following abridged JSONSchema document::
       "additionalProperties": False
     }
 
-The response body is empty. The headers include a location header
-pointing to the inventories of the related resource provider::
-
-    204 No Content
-    Location: /resource_providers/eaaf1c04-ced2-40e4-89a2-87edded06d64/inventories
+The response body is an `application/json` representation of all the
+inventories for the resource provider, in the same form as
+`GET /resource_providers/{uuid}/inventories`.
 
 The returned HTTP response code will be one of the following:
 
-* `204 No Content` if the inventores are successfully set
+* `200 OK` if the inventories are successfully set
 * `404 Not Found` if the resource provider identified by `{uuid}` was
   not found
 * `400 Bad Request` for bad or invalid syntax (for example an
@@ -701,7 +707,6 @@ Example::
     200 OK
     {
       "resource_provider_generation": 4,
-      "resource_class": "DISK_GB",
       "total": 2048,
       "reserved": 512,
       "min_unit": 10,
@@ -740,9 +745,12 @@ The body of the request must match the JSONSchema document described
 in the inventory POST above, except that `resource_class` is not
 required and if present is ignored.
 
+If the request is successful the response body will be the same as that in
+`GET /resource_providers/{uuid}/inventories/{resource_class}`.
+
 The returned HTTP response code will be one of the following:
 
-* `204 No Content` if the inventory is successfully created
+* `200 OK` if the inventory is successfully created
 * `404 Not Found` if the resource provider identified by `{uuid}` was
   not found
 * `400 Bad Request` for bad or invalid syntax
@@ -776,6 +784,8 @@ The returned HTTP response code will be one of the following:
 `GET /resource_providers/{uuid}/aggregates`
 *******************************************
 
+.. note:: Aggregates support was implemented in microversion `1.1`.
+
 Get a list of aggregates associated with this resource provider.
 
 Example::
@@ -803,6 +813,8 @@ The returned HTTP response code will be one of the following:
 `PUT /resource_providers/{uuid}/aggregates`
 *******************************************
 
+.. note:: Aggregates support was implemented in microversion `1.1`.
+
 Associate a list of aggregates with this resource provider.
 
 Example::
@@ -814,9 +826,13 @@ Example::
         "b455ae1f-5f4e-4b19-9384-4989aff5fee9"
     ]
 
+On success, the response body will be an `application/json` representation of
+the associated aggregates in the same form as
+`GET /resource_providers/{uuid}/aggregates` above.
+
 The returned HTTP response code will be one of the following:
 
-* `204 No content` if the aggregates are successfully updated
+* `200 OK` if the aggregates are successfully updated
 * `404 Not Found` if the resource provider does not exist
 * `400 Bad Request` for bad or invalid syntax.
 
@@ -900,7 +916,8 @@ The body of the request must match the following JSONSchema document::
                   "type": "object",
                   "properties": {
                     "uuid": {
-                      "type": "uuid"
+                      "type": "string",
+                      "format": "uuid"
                     }
                   },
                   "additionalProperties": false,
@@ -909,14 +926,12 @@ The body of the request must match the following JSONSchema document::
                 "resources": {
                   "type": "object",
                   "patternProperties": {
-                    "^[0-9a-fA-F-]+$": {
                       "type": "object",
                       "patternProperties": {
                         "^[A-Z_]+$": {"type": "integer"}
                       }
-                    },
-                    "additionalProperties": false
-                  }
+                  },
+                  "additionalProperties": false
                 }
               },
               "additionalProperties": false,
@@ -924,24 +939,19 @@ The body of the request must match the following JSONSchema document::
                 "resource_providers",
                 "resources"
               ]
-            }
           }
-        },
-        "required": ["allocations"],
-        "additionalProperties": false
-      }
+        }
+      },
+      "required": ["allocations"],
+      "additionalProperties": false
+    }
 
 The returned HTTP response code will be one of the following:
 
 * `204 No Content` if the allocation record is successfully created
 * `400 Bad Request` for bad or invalid syntax
-* `409 Conflict` if there is already an allocation record for the specified
-  consumer against a specified resource provider. We don't support updating a
-  set of allocation records for a consumer. The allocation records for a
-  consumer must be deleted and a new set added.
-
-  A `409 Conflict` will also be returned if there is no available inventory in
-  any of the resource providers for any specified resource classes.
+* `409 Conflict` if there is no available inventory in any of the resource
+  providers for any specified resource classes
 
 `DELETE /allocations/{consumer_uuid}`
 ***************************************************************
@@ -960,6 +970,74 @@ The returned HTTP response code will be one of the following:
 * `204 No Content` if the allocation record is successfully removed
 * `404 Not Found` if there are no associated allocation records for
    `{consumer_uuid}`
+
+`GET /allocations/{consumer_uuid}`
+***************************************************************
+
+List all allocation records for a single consumer on all the resource
+providers it is consuming.
+
+Example::
+
+    GET /allocations/9a82ff67-26e2-4d0a-a7e1-746788a85646
+
+    {
+      "allocations": {
+        "63d56264-1f3f-4495-a8b7-0efa5e6c9670": {
+            "generation": 2,
+            "resources": {
+                "DISK_GB": 4,
+                "VCPU": 2
+            }
+        },
+        "5af2c770-6878-4dc6-b739-1164cf990fc5" {
+            "generation": 99,
+            "resources": {
+                "DISK_GB": 6,
+                "VCPU": 3
+            }
+        }
+      }
+    }
+
+If there are no allocations for the provided consumer identifier, then an empty
+`allocations` dictionary will be returned.
+
+.. note:: At this time there is no validation of the consumer identifier, so no
+          `404` response is possible.
+
+`GET /resource_providers/{uuid}/allocations`
+***************************************************************
+
+List all allocations against the resource provider identified by `uuid`.
+
+Example::
+
+    GET /resource_providers/5af2c770-6878-4dc6-b739-1164cf990fc5/allocations
+
+    {
+      "resource_provider_generation": 99,
+      "allocations": {
+        "9a82ff67-26e2-4d0a-a7e1-746788a85646": {
+            "resources": {
+                "DISK_GB": 6,
+                "VCPU": 3
+            }
+        },
+        "aeaf9aa1-8d4a-46e6-8dec-cf2c704b5976": {
+            "resource": {
+                "DISK_GB": 2,
+                "VCPU": 1
+            }
+        }
+      }
+    }
+
+If the resource provider exists, the response will be `200 OK`. If there are no
+allocations, the `allocations` object will be empty.
+
+If the resource provider does not exist, the response will be `404 Not Found`.
+
 
 Security impact
 ---------------
