@@ -86,8 +86,8 @@ def move_implemented_specs(release, verbose=False, dry_run=False):
 
                 if not dry_run:
                     # move the file from approved to implemented
-                    os.rename(approved_dir + spec_fname,
-                              implemented_dir + spec_fname)
+                    os.rename(os.path.join(approved_dir, spec_fname),
+                              os.path.join(implemented_dir, spec_fname))
                     # add an entry to the redirects file
                     with open(redirects_file, 'a') as redirects:
                         redirects.write('approved/%s ../implemented/%s\n' %
