@@ -1,1 +1,4 @@
 approved/validate-tenant-user-with-keystone.rst ../approved/validate-project-with-keystone.rst
+approved/powervm-driver.rst ../approved/powervm-nova-compute-driver.rst
+approved/tag-instances-when-boot.rst ../approved/support-tag-instance-when-boot.rst
+approved/virt-device-role-tagging.rst ../approved/virt-device-tagged-attach-detach.rst
