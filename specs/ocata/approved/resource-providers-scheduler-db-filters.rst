@@ -131,29 +131,25 @@ Keystone so that the nova-computes could find the placement API.
 In Ocata, the placement service is required, however we will build a sort of
 self-healing process into the new behaviour of the scheduler calling to the
 placement API to winnow the set of compute hosts that are acted upon. If the
-placement service has been set up and the deployer upgrades her control plane
-to Ocata and restarts her nova-scheduler services, the new Ocata scheduler will
-attempt to contact the placement service to get a list of resource providers
-(compute hosts) that meet a set of requested resource amounts.
+placement service has been set up but all nova-computes have yet to be upgraded
+to Ocata, the scheduler will continue to use its existing behaviour of querying
+the Nova cell database compute_nodes table. Once all nova-compute workers have
+been upgraded to Ocata, the new Ocata scheduler will attempt to contact the
+placement service to get a list of resource providers (compute hosts) that meet
+a set of requested resource amounts.
 
-Initially, since no nova-computes had successfully run through their periodic
-audit interval, the placement database would be empty and thus the request from
-the scheduler to the placement API for resource providers would return an empty
-list. We will place code into the scheduler that, upon seeing an empty list of
-resource providers returned from the placement API, will fall back to the
-legacy behaviour of calling ComputeNodeList.get_all(). This will allow the old
-scheduler behaviour to take over in between the time when the new placement
-service is brought online and when nova-compute nodes are restarted (triggering
-a fresh call out to the placement service, which can now be contacted, and
-populating the placement DB with records).
+In the scenario of a freshly-upgraded Ocata deployment that previously had not
+had the placement service established (and thus no nova-computes had
+successfully written records to the placement database), the scheduler may
+momentarily return a NoValidHosts while the placement database is populated.
 
 As restarts (or upgrades+restarts) of the nova-computes are rolled out, the
 placement database will begin to fill up with allocation and inventory
-information. There may be a short period of time while the scheduler receives a
-smaller-than-accurate set of resource providers that meet the requested
-resource amounts. This may result in a few retry events but under no
-circumstances should there be a NoValidHost returned since the scheduler will
-fall back to its old ComputeNodeList.get_all() behaviour.
+information. Please note that the scheduler will not use the placement API for
+decisions until **all** nova-compute workers have been upgraded to Ocata. There
+is a check for service version in the scheduler that requires all nova-computes
+in the deployment to be upgraded to Ocata before the scheduler will begin using
+the placement API for scheduling decisions.
 
 Developer impact
 ----------------
