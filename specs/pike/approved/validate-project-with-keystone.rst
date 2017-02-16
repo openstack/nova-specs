@@ -66,16 +66,20 @@ Nova will use the requestor's user token to query Keystone. The
 Keystone response will determine access to the project and indicate if
 the project exists.
 
-If the requestor passes the authorization check:
+Keystone will return one of the following results, which will be
+translated into a Nova response:
 
-* if the project exists, they will recieve a 200 response
+* 200 - project exists, Nova proceeds
 
-* if the project does not exist, they will receive a 404 response from
-  Keystone, which becomes a 400 response in Nova.
+* 404 - project does not exist, Nova returns a 400 bad response
+  stating that no such project id has been found
 
-If the requestor does not pass the authorization check, they will
-receive a 403 response indicating they are not authorized to know
-whether or not the project exists.
+* 403 - user does not have permissions to ask the question, we will
+  process as if it succeeds but log that we didn't have permissions to
+  verify.
+
+* Anything else - something is way wrong. Nova will proceed as if it's
+  a success, but we will log the response as a warning.
 
 Because this change is dependent on policy information being set
 correctly between Keystone and Nova, we need to provide guidance for
