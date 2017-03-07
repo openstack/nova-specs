@@ -79,8 +79,11 @@ def move_implemented_specs(release, verbose=False, dry_run=False):
         # get the blueprint object from launchpad
         lp_spec = lp_nova.getSpecification(name=bp_name)
         if lp_spec:
-            # check the status
-            if lp_spec.is_complete:
+            # check the status; it's possible for a blueprint to be marked as
+            # complete but not actually be implemented, e.g. if it's superseded
+            # or obsolete.
+            if (lp_spec.is_complete and
+                    lp_spec.implementation_status == 'Implemented'):
                 if verbose:
                     print('Moving blueprint to implemented: %s' % spec_fname)
 
@@ -95,7 +98,9 @@ def move_implemented_specs(release, verbose=False, dry_run=False):
                 move_count += 1
             else:
                 if verbose:
-                    print('Blueprint is not complete: %s' % bp_name)
+                    print('Blueprint is not complete: %s; '
+                          'implementation status: %s' %
+                          (bp_name, lp_spec.implementation_status))
                 incomplete_count += 1
         else:
             print('WARNING: Spec %s does not exist in launchpad for nova. The '
