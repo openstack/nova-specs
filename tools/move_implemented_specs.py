@@ -107,6 +107,10 @@ def move_implemented_specs(release, verbose=False, dry_run=False):
                   'spec filename should be fixed.' % bp_name)
             warnings.append(spec_fname)
 
+    template_file = os.path.join(implemented_dir, template_file)
+    if not dry_run and move_count and os.path.exists(template_file):
+        os.unlink(template_file)
+
     if verbose:
         print('')
         print('Summary')
