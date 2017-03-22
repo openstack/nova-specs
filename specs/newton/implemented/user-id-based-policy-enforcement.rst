@@ -75,6 +75,7 @@ into account (if configured in policy.json).
 * PUT /servers/{server_id} - lets you change server name
 
 As well as the following server actions:
+
 * changePassword
 * lock
 * pause
