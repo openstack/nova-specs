@@ -60,18 +60,18 @@ is pretty similar with `Tags` which are defined in `Tags API-WG guideline`_.
 There are two kinds of Traits: The standard traits and the custom traits.
 
 The standard traits are interoperable across different Openstack cloud
-deployments. The definition of standard traits comes from the `os-traits`
+deployments. The definitions of standard traits come from the `os-traits`_
 library. The standard traits are read-only in the placement API which means
 that the user can't modify any standard traits through API. All the traits are
-classified into different namespaces. The namespace is defined by `os-traits`
-also. The definition of traits in `os-traits` will be discussed in a separate
+classified into different namespaces. The namespace is defined by `os-traits`_
+also. The definition of traits in `os-traits`_ will be discussed in a separate
 proposal. All the traits used in the examples below are for demonstration
 purposes only.
 
 The custom traits are used by admin users to manage the non-standard
 qualitative information of ResourceProviders. The admin user can define the
 custom traits from the placement API. The custom trait must prefix with
-the namespace `CUSTOM_`. The namespace `CUSTOM_` is defined in `os-traits`.
+the namespace `CUSTOM_`. The namespace `CUSTOM_` is defined in `os-traits`_.
 
 The users can only use valid traits in the request. The valid traits include
 the standard traits and the custom traits.
@@ -121,7 +121,7 @@ The first three steps are the same as in:
         --allocation-ratio=1.0
 
 4) The cloud deployer adds the `STORAGE_SSD` trait, which is a standard trait
-   in `os-traits`, to the compute node resource provider::
+   in `os-traits`_, to the compute node resource provider::
 
     openstack resource-provider trait add $RP_UUD STORAGE_SSD
 
@@ -135,8 +135,8 @@ for upgrading services, but operators have to keep in mind that only Placement
 API os-traits version will be the master in the deployment.
 
 The new command `placement-manage os-traits sync` will be added. It is used to
-sync the standard traits from `os-traits` into the placement DB. The deployer
-should invoke this command after `os-traits` upgrade.
+sync the standard traits from `os-traits`_ into the placement DB. The deployer
+should invoke this command after `os-traits`_ upgrade.
 
 Traits API vs. Aggregate metadata API
 -------------------------------------
@@ -166,7 +166,7 @@ Alternatives
 
 An alternative for naming this new REST resource as Tags in previous proposal.
 But currently, there is a validation for the standard traits from the
-'os-traits' library. The API needs to distinguish the standard traits and
+`os-traits`_ library. The API needs to distinguish the standard traits and
 custom traits, they won't be some generic tags anymore. So 'Traits' is
 the correct term.
 
@@ -528,13 +528,13 @@ Other deployer impact
 * Deployers will need to start using traits instead of aggregate metadata for
   managing qualitative information in anticipation of aggregate metadata being
   deprecated.
-* The `os-traits` library in the placement service needs to be the latest
+* The `os-traits`_ library in the placement service needs to be the latest
   version in the cloud, otherwise the new traits reported from other OpenStack
   services won't be recognized by Placement service. So when upgrade the cloud
-  to involve the new traits, the `os-traits` library in the placement service
+  to involve the new traits, the `os-traits`_ library in the placement service
   need to be upgraded first.
 * The deployer needs to run command `placement-manage os-trait sync` before
-  starting the placement or new `os-traits` released to ensure the new traits
+  starting the placement or new `os-traits`_ released to ensure the new traits
   are imported into the placement DB.
 
 Developer impact
@@ -572,8 +572,9 @@ Work Items
 Dependencies
 ============
 
-This proposal also depends on the `os-traits` library. This proposal uses
-`os-traits` to query standard traits.
+This proposal also depends on the `os-traits`_ library. This proposal uses
+the `os-traits`_ library to determine which traits are standard and which
+traits are not..
 
 Testing
 =======
@@ -589,6 +590,8 @@ to manage capabilities.
 
 References
 ==========
+
+.. _os-traits: https://github.com/openstack/os-traits
 
 Maillist discussion:
 http://lists.openstack.org/pipermail/openstack-dev/2016-July/099032.html
