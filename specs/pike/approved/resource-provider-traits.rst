@@ -24,7 +24,7 @@ manage the *quantitative* aspects of a boot request: When an instance uses
 resources from a ResourceProvider, the corresponding resource amounts of
 Inventories are subtracted by its Allocations. Despite the quantitative
 aspects, the ResourceProvider also needs non-consumable *qualitative* aspects
-to differenitiate their characteristics from each other.
+to differentiate their characteristics from each other.
 
 The classic example is requesting disk from different providers: a user may
 request 80GB of disk space for an instance (quantitative), but may also expect
@@ -89,9 +89,9 @@ a resource provider's qualitative information to change very often.
 Scenario 2: Shared Storage Resource Provider
 --------------------------------------------
 
-Using shared storage in this example, the cloud admin can then tag certain
-provider as having SSD trait so that they are only used by flavors that specify
-SSD trait.
+Using shared storage in this example, the cloud admin can then tag a certain
+provider as having an SSD trait so that they are only used by flavors that
+specify SSD trait.
 
 The first three steps are the same as in:
 `http://specs.openstack.org/openstack/nova-specs/specs/newton/approved/generic-resource-pools.html#scenario-1-shared-disk-storage-used-for-vm-disk-images`
@@ -153,8 +153,8 @@ determine which traits a particular host may have.  Finally, this approach only
 works for compute nodes, not all potential resource providers.
 
 The proposed `traits` REST API endpoint will replace the use of aggregates to
-track and manage qualitative information. The traits for a given host will be
-a flat list, and is straightforward to manage through the API.
+track and manage qualitative information. The traits for a given resource
+provider will be a flat list, and is straightforward to manage through the API.
 
 Once the use of Traits API is in place, the use of aggregate metadata will
 be deprecated. Of course, aggregates themselves will remain, as they are used
@@ -309,7 +309,7 @@ request.
 `GET` /traits?name=starts_with:{prefix}
 ***************************************
 
-To query the traits whose name begines with a specific prefix, use
+To query the traits whose name begins with a specific prefix, use
 `starts_with` operator with the query parameter `name`. For example, you can
 query all the custom traits by filtering the traits with `CUSTOM` prefix.
 
@@ -391,7 +391,7 @@ The returned response will be one of the following:
 
 * `201 Created` if the insertion is successful.
 * `204 No Content` if the trait already exists.
-* `400 BadRequest` if trait name sn't prefixed with `CUSTOM_` prefix.
+* `400 BadRequest` if trait name isn't prefixed with `CUSTOM_` prefix.
 * `409 Conflict` if trait name conflicts with standard trait name.
 
 `DELETE` /traits/{trait_name}
