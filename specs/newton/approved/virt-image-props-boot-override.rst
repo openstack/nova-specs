@@ -62,7 +62,7 @@ a dict of parameters. The keys in this dict will match those permitted by
 the nova.objects.ImageMetaProps object fields.
 
 In the Nova compute manager, the metadata properties from the image will be
-augmented / overriden with the properties provided via the boot API. This
+augmented / overridden with the properties provided via the boot API. This
 merged set of properties will be recorded as the image system metadata for
 the instance. In this way no changes will be required to downstream code
 in the virt drivers. The virt drivers will automatically see the per-instance
