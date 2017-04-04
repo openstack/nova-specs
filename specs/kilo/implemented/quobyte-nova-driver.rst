@@ -41,7 +41,7 @@ Proposed change
 Add support for the `Quobyte Unified Storage Plane <http://quobyte.com/>`_
 to nova.virt.libvirt.volume.py by adding a new class
 LibvirtQuobyteVolumeDriver based on the LibvirtBaseVolumeDriver. Code
-structure will be similiar to the GlusterFS class
+structure will be similar to the GlusterFS class
 LibvirtGlusterfsVolumeDriver. The Driver will check mountpoint availability,
 run mountpoint preparations if required and mount the given Quobyte USP volume
 based on the configuration data (connection_info, etc.). Based on the local

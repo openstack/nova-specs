@@ -34,7 +34,7 @@ Proposed change
 ===============
 
 A new volume driver is added in order to support attaching volumes resided on
-Virtuozzo Storage. This volume driver has a similiar workflow to what NFS
+Virtuozzo Storage. This volume driver has a similar workflow to what NFS
 and SMBFS volume drivers have.
 
 The CI system [3]_ runs on Nova tree and checks each Nova patch with

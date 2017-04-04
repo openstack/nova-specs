@@ -42,7 +42,7 @@ Proposed change
 ===============
 
 A new volume driver will be added in order to support attaching volumes
-hosted on SMB shares. The volume driver will have a similiar worflow with
+hosted on SMB shares. The volume driver will have a similar worflow with
 the NFS volume driver.
 
 The SMB volume driver will mount the SMB share on which a volume is hosted
