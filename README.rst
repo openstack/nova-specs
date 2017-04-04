@@ -17,8 +17,11 @@ The layout of this repository is::
 
 Where there are two sub-directories:
 
-  specs/<release>/approved: specifications approved but not yet implemented
-  specs/<release>/implemented: implemented specifications
+specs/<release>/approved
+  specifications approved but not yet implemented
+
+specs/<release>/implemented
+  implemented specifications
 
 The lifecycle of a specification
 --------------------------------
