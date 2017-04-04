@@ -102,7 +102,7 @@ The cpu details is an array of dictionaries per each virtual CPU.
 +------------------------+---------------------------------------------------+
 | Key                    | Description                                       |
 +========================+===================================================+
-| id                     | CPU ID (String)                                   |
+| id                     | CPU ID (Integer)                                  |
 +------------------------+---------------------------------------------------+
 | time                   | CPU Time in nano seconds (Integer)                |
 +------------------------+---------------------------------------------------+
@@ -176,7 +176,7 @@ Below is an example of the dictionary data returned by the libvirt driver::
             'num_cpus': 1,
             'num_vnics': 1,
             'num_disks': 1,
-            'cpu_details': [{'id': '0',
+            'cpu_details': [{'id': 0,
                              'time': 1024,
                              'utilisation': None}],
             'nic_details': [{'mac_address': '00:00:00:00:00:00',
