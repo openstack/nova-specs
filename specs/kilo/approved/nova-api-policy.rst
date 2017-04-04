@@ -133,7 +133,7 @@ REST API layer is the place to enforce policy consistently.
 
   * We won't use 'compute' and 'compute_extension' to distingish the core and
     extension API. Because the core API may be changed in the future.
-  * We also remove the API verison from the policy rule. Because after we have
+  * We also remove the API version from the policy rule. Because after we have
     Micro-version, the version will be changed often.
 
 * For volume related extensions, there isn't any thing can do, there already

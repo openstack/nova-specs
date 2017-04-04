@@ -79,7 +79,7 @@ Proposed change
 ===============
 
 The compute manager code will be changed such that when rescue is performed
-the full block device mapping will be present. This will allow instnaces to
+the full block device mapping will be present. This will allow instances to
 be configured with the full set of cinder volumes that would appear during
 normal boot.
 
