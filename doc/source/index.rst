@@ -14,6 +14,7 @@ on for the upcoming release. This is the output of those discussions:
    :glob:
    :maxdepth: 1
 
+   priorities/queens-priorities
    priorities/pike-priorities
    priorities/ocata-priorities
    priorities/newton-priorities
@@ -30,6 +31,7 @@ Here you can find the specs, and spec template, for each release:
    :glob:
    :maxdepth: 1
 
+   specs/queens/index
    specs/pike/index
    specs/ocata/index
    specs/newton/index
