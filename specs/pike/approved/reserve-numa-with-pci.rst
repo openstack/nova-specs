@@ -79,7 +79,29 @@ Alternatives
   it will fail in the scenario where a host does not have uniform PCI
   availability across all nodes or where instances consume all PCI devices on a
   host but not all CPUs. In both cases, a given amount of resources on said
-  hosts will go to waste
+  hosts will go to waste.
+
+* Use host aggregates instead. This doesn't require any new functionality but
+  it would necessitate restricting the capacity of a deployment in a very
+  static fashion for the sake of maximizing the chance that PCI instances will
+  schedule successfully.
+
+  Host aggregates make sense for something like separating pinned instances
+  from unpinned, because scheduling a non-pinned instance would effectively
+  defeat the whole purpose of using pinning in the first place (the unpinned
+  instance would float across all available host cores, including pinned cores,
+  negating the performance improvements that pinning provides). This is a
+  strict requirement.  For the PCI case, on the other hand, nothing bad will
+  happen if we schedule a non-PCI instance on a PCI-capable host: we'll just
+  have less capacity on PCI hosts for instances that need them. That doesn't
+  mean trying to restrict non-PCI devices from using PCI-capable hosts is a bad
+  thing to do: making the scheduler "smarter" and maximizing the chance that an
+  instance will be scheduled successfully is always going to be a win. However,
+  artificially limiting the amount of resources available to you _is_ a very
+  bad thing.  Regardless of whether you have uniform hardware or not, it is
+  unlikely that you will uniform workloads, and it is very likely that the
+  amount of PCI vs. non-PCI workloads you have will vary with time. This makes
+  host aggregates a poor solution to this problem.
 
 Data model impact
 -----------------
@@ -110,11 +132,11 @@ Performance Impact
 ------------------
 
 An additional weigher will be added, which will assess the number of PCI
-devices on each node of a host. This will result in an slight increase in
-latency during filtering. However, this impact will be negligible compared to
-the performance enhancement that of using correctly-affinitized PCI devices
-brings, nor the cost saving incurred from fully utilizing all available
-hardware.
+devices on each node of a host. As all weighers are enabled by default, this
+will result in an slight increase in latency during filtering. However, this
+impact will be negligible compared to the performance enhancement that of using
+correctly-affinitized PCI devices brings, nor the cost saving incurred from
+fully utilizing all available hardware.
 
 Other deployer impact
 ---------------------
@@ -162,14 +184,11 @@ Testing
 Documentation Impact
 ====================
 
-A new weigher will be added. This should be documented.
+A new weigher will be added. This should be `documented
+<https://docs.openstack.org/developer/nova/filter_scheduler.html>`_.
 
 References
 ==========
-
-The 'I/O (PCIe) Based NUMA Scheduling' blueprint
-
-* https://blueprints.launchpad.net/nova/+spec/input-output-based-numa-scheduling
 
 .. [1] https://specs.openstack.org/openstack/nova-specs/specs/juno/approved/input-output-based-numa-scheduling.html
 
