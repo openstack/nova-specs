@@ -94,7 +94,7 @@ pygments_style = 'sphinx'
 modindex_common_prefix = ['nova-specs.']
 
 # -- Options for man page output ----------------------------------------------
-man_pages = []
+#man_pages = []
 
 # -- Options for HTML output ---------------------------------------------------
 
