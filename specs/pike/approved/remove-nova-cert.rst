@@ -4,9 +4,9 @@
 
  http://creativecommons.org/licenses/by/3.0/legalcode
 
-===================
+================
 Remove nova-cert
-===================
+================
 
 https://blueprints.launchpad.net/nova/+spec/remove-nova-cert
 
@@ -104,7 +104,10 @@ one less service that need to be monitored and have HA explored.
 Developer impact
 ----------------
 
-ec2-api will become broken [2] after we remove ``nova-cert`` service
+* ``ec2-api`` will become broken [2] after we remove ``nova-cert`` service.
+* ``os-cloudpipe`` is already deprecated in the doc. We should delete it
+  in the code as well, as there is no point in having it around with both
+  ``nova-cert`` and ``nova-network`` deprecated and marked for removal.
 
 Implementation
 ==============
