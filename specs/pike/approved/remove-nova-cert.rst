@@ -62,10 +62,16 @@ None
 REST API impact
 ---------------
 
-Return `410 Gone` upon calling
+Return `410 Gone` upon calling:
 
 * ``POST /os-certificates``
 * ``GET /os-certificates/root``
+* ``POST /os-cloudpipe``
+* ``GET /os-cloudpipe``
+* ``PUT /os-cloudpipe/configure-project``
+
+for all versions of ``os-certificates`` and ``os-cloudpipe``. There won't be
+a new microversion to signal this.
 
 Additionally, exception stating that feature is not available anymore should
 be raised and logged.
@@ -124,7 +130,7 @@ Other contributors:
 Work Items
 ----------
 
-
+* change API return codes
 * remove ``nova-cert`` starter script
 * remove tests
 * delete ``nova-cert`` service
