@@ -289,6 +289,34 @@ such as:
 * If the blueprint proposes a change to the driver API, discussion of how
   other hypervisors would implement the feature is required.
 
+Upgrade impact
+--------------
+
+Describe any potential upgrade impact on the system, such as:
+
+* If this change adds a new feature to the compute host that the controller
+  services rely on, the controller services may need to check the minimum
+  compute service version in the deployment before using the new feature. For
+  example, in Ocata, the FilterScheduler did not use the Placement API until
+  all compute services were upgraded to at least Ocata.
+
+* While we strive to have feature parity between all virt drivers, it is not
+  uncommon for one virt driver to implement a new feature exposed out of the
+  API before the others. For example, extending the size of an attached
+  volume. Since Nova does not yet have any type of sophisticated *capabilities*
+  API so a user can know what actions can be performed on a given instance,
+  consider adding a new policy rule to at least let operators that cannot
+  support a virt-specific feature disable it in their cloud which is at least
+  presented to the user in an understandable way by getting a ``403 Forbidden``
+  error.
+
+* Nova supports N-1 version *nova-compute* services for rolling upgrades. Does
+  the proposed change need to consider older code running that may impact how
+  the new change functions, for example, by changing or overwriting global
+  state in the database? This is generally most problematic when making changes
+  that involve multiple compute hosts, like move operations such as migrate,
+  resize, unshelve and evacuate.
+
 
 Implementation
 ==============
