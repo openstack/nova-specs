@@ -60,11 +60,16 @@ like::
 Keystoneauth provides a simple and consistent way to get API endpoints from
 the Keystone service catalog instead of configuring it in a conf file.
 
-For example, the ``catalog_info = volume:cinder:publicURL`` in nova.conf
+For example, the ``catalog_info = volume:cinder:public`` in nova.conf
 is a configuration setting to set the info to match when looking for cinder
 in the service catalog. Format used here is::
 
-   <service_type>:<service_name>:<endpoint_type>
+   <service_type>:<service_name>:<interface>
+
+If should be noted that ``publicURL`` is the form that has been used up until
+now, but ``public`` is the keystone v3 version of interface. The config should
+accept both, but documentation should be updated to show examples using
+``public``.
 
 To make retrieving API endpoint consistent, we can add a new method
 ``get_service_url()`` in Nova. To establish communication with any other
