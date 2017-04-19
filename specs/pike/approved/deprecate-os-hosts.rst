@@ -203,7 +203,7 @@ Documentation Impact
 ====================
 
 The compute API reference documentation for the ``os-hosts`` API will be
-updated to mention that the API is documented at the new microversion. We could
+updated to mention that the API is deprecated at the new microversion. We could
 also mention the limitations with some of the API, like the power actions only
 being implemented by some virt drivers, that they are not tested, and that the
 startup action is not implemented at all. Basically, do not use those ever.
