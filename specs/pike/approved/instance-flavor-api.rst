@@ -60,6 +60,8 @@ The following fields from the flavor response will be removed:
   instance
 * OS-FLV-DISABLED:disabled - irrelevant, this is scope local to the
   instance
+* rxtx_factor - useful only for nova-networks, is being deprecated/removed in
+  the near future
 
 In any cases where flavor information had odd keys because it was considered
 an extension, we will normalize those keys. For instance
@@ -67,11 +69,11 @@ an extension, we will normalize those keys. For instance
 
 Finally, the flavor ``name`` field will be displayed under the
 ``original_name`` key.  There is a (good) chance that it is stale, but it was
-determined to be usefull for end-users.
+determined to be useful for end-users.
 
 The visibility of the flavor data within the server resource will be controlled
-by the same policy rules as are used for displaying the flavor rxtx_factor and
-flavor extra_specs when displaying flavor details.
+by the same policy rules as are used for displaying the flavor extra_specs when
+displaying flavor details.
 
 Alternatives
 ------------
@@ -127,7 +129,6 @@ REST API impact
                 "ram": 512,
                 "swap": "",
                 "vcpus": 1,
-                "rxtx_factor": 1.0,
                 "original_name": "m1.small",
                 "extra_specs": {
                     "hw:cpu_model": "SandyBridge",
@@ -180,7 +181,6 @@ REST API impact
                     "ram": 512,
                     "swap": "",
                     "vcpus": 1,
-                    "rxtx_factor": 1.0,
                     "original_name": "m1.small",
                     "extra_specs": {
                         "hw:cpu_model": "SandyBridge",
@@ -230,7 +230,6 @@ REST API impact
                 "ram": 512,
                 "swap": "",
                 "vcpus": 1,
-                "rxtx_factor": 1.0,
                 "original_name": "m1.small",
                 "extra_specs": {
                     "hw:cpu_model": "SandyBridge",
