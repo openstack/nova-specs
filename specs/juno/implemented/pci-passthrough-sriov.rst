@@ -16,7 +16,7 @@ Problem description
 ===================
 Right now it is possible to boot VM with general purpose PCI device passthrough
 by means of libvirt's managed hostdev device definition in the domain XML. A
-guide to use it can be found in [GPP_WIKI]_. However, it's not possible to
+guide to use it can be found in [GPPWIKI]_. However, it's not possible to
 request access to virtual network via SR-IOV NICs. Nova enhancments are
 required to support SR-IOV networking with Neutron.
 
@@ -35,10 +35,10 @@ VF. Using a macvtap device makes live migration with SR-IOV possible.
 
 In the Icehouse release, a couple of blueprints from neutron side were approved
 and their associated patches were committed that enable the interactions
-between nova and neutron for SR-IOV networking. Refer to [VIF_DETA]_ and
-[BIND_PRF]_ for details about them.
+between nova and neutron for SR-IOV networking. Refer to [VIFDETA]_ and
+[BINDPRF]_ for details about them.
 
-Another blueprint [VNIC_TYP]_ added the support in the neutron port API to
+Another blueprint [VNICTYP]_ added the support in the neutron port API to
 allow users to specify vnic-type when creating a neutron port. The currently
 supported vnic-types are:
 
@@ -78,7 +78,7 @@ virtual port (which is not a SR-IOV port).
 
 This specification will make use of the existing PCI passthrough
 implementation, and make a few enhancements to enable the above use cases.
-Therefore, the existing PCI passthrough support as documented by [GPP_WIKI]_
+Therefore, the existing PCI passthrough support as documented by [GPPWIKI]_
 works as it is for general-purpose PCI passthrough.
 
 Proposed change
@@ -272,7 +272,7 @@ nova neutronv2 and VIF
 Note that Nova network will not be enhanced to support SR-IOV. However, Nova
 modules that are responsible for interacting with neutron need to be enhanced.
 
-Refer to [BIND_PRF]_, [VIF_DETA]_, [VNIC_TYP]_ that has added the
+Refer to [BINDPRF]_, [VIFDETA]_, [VNICTYP]_ that has added the
 functionalities required to support SR-IOV ports in neutron. Accordingly, nova
 neutronv2 will be enhanced to work with them in support of SR-IOV ports.
 Particularly:
@@ -408,7 +408,7 @@ Documentation Impact
 
 References
 ==========
-.. [GPP_WIKI] `Generic PCI Passthrough WIKI <https://wiki.openstack.org/wiki/Pci_passthrough>`_
-.. [VIF_DETA] `Extensible port attribute for plugin to provide details to VIF driver  <https://blueprints.launchpad.net/neutron/+spec/vif-details>`_
-.. [BIND_PRF] `Implement the binding:profile port attribute in ML2 <https://blueprints.launchpad.net/neutron/+spec/ml2-binding-profile>`_
-.. [VNIC_TYP] `Add support for vnic type request to be managed by ML3 mechanism drivers <https://blueprints.launchpad.net/neutron/+spec/ml2-request-vnic-type>`_
+.. [GPPWIKI] `Generic PCI Passthrough WIKI <https://wiki.openstack.org/wiki/Pci_passthrough>`_
+.. [VIFDETA] `Extensible port attribute for plugin to provide details to VIF driver  <https://blueprints.launchpad.net/neutron/+spec/vif-details>`_
+.. [BINDPRF] `Implement the binding:profile port attribute in ML2 <https://blueprints.launchpad.net/neutron/+spec/ml2-binding-profile>`_
+.. [VNICTYP] `Add support for vnic type request to be managed by ML3 mechanism drivers <https://blueprints.launchpad.net/neutron/+spec/ml2-request-vnic-type>`_

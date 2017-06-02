@@ -268,7 +268,6 @@ References
 
 .. [1] https://review.openstack.org/#/c/182242/
 .. [2] https://review.openstack.org/#/c/142094/
-.. [3] https://blueprints.launchpad.net/nova/+spec/pci-passthrough-whitelist-regex
 
 History
 =======
