@@ -242,13 +242,12 @@ createImage action).
 References
 ==========
 
-.. [1] nova-specs: 'Quiesce filesystems with QEMU guest agent during image
-       snapshot':
-       https://review.openstack.org/#/c/126966/
+nova-specs: 'Quiesce filesystems with QEMU guest agent during image snapshot':
+`<https://review.openstack.org/#/c/126966/>`_
 
-.. [2] 'quiesce' and 'unquiesce' methods for libvirt driver:
-       https://blueprints.launchpad.net/nova/+spec/quiesced-image-snapshots-with-qemu-guest-agen/atomic/async
+'quiesce' and 'unquiesce' methods for libvirt driver:
+`<https://blueprints.launchpad.net/nova/+spec/quiesced-image-snapshots-with-qemu-guest-agen/atomic/async>`_
 
-.. [3] a VNF (telecom application) should, be able to restore in another site
-       for catastrophic failures happened
-       https://git.opnfv.org/cgit/multisite/tree/multisite-vnf-gr-requirement.rst
+a VNF (telecom application) should, be able to restore in another site
+for catastrophic failures happened
+`<https://git.opnfv.org/cgit/multisite/tree/multisite-vnf-gr-requirement.rst>`_

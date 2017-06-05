@@ -21,7 +21,7 @@ Aggregates may be applied to compute nodes in multiple cells and are a global
 concept.
 
 Currently aggregates are stored in the cell database but to keep their global
-nature they must be migrated to the API database.
+nature they must be migrated to the API database [1]_.
 
 Use Cases
 ---------

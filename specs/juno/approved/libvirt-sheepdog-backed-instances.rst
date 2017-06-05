@@ -149,14 +149,14 @@ Testing
 
 Devstack integration is required before tempest can run functional
 tests against the Sheepdog drivers for Nova, Glance and Cinder. A patch
-has been proposed which would use Sheepdog for each service. [2]
+has been proposed which would use Sheepdog for each service. [2]_
 
 This, I think, would result in many functional tests of the Sheepdog
 drivers via the Tempest tests. However, a Jenkins job would need
 to be defined and VMs would need to be provisioned to run the jobs.
 It is not clear if openstack-infra is willing or capable of committing
 to a proliferation of CI test runs. There is a Juno Summit scheduled for
-this. [3]
+this. [3]_
 
 
 Documentation Impact
