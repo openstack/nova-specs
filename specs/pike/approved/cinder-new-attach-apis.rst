@@ -4,9 +4,9 @@
 
  http://creativecommons.org/licenses/by/3.0/legalcode
 
-=====================================
-Use Cinder's new Attach/Dettach APIs
-=====================================
+===================================
+Use Cinder's new Attach/Detach APIs
+===================================
 
 https://blueprints.launchpad.net/nova/+spec/cinder-new-attach-apis
 
