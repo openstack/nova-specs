@@ -23,6 +23,11 @@ during the porting the v2 extensions to the v2.1 API, this extension was
 missed. It leads to the quota `server_groups` and `server_group_members`
 missing in the response of quota-classes API.
 
+There is another bug#1701211 in os-quota-class APIs, where networks related
+quotas are still available to create/update/show quota class. Network proxy
+APIs were deprecated in the 2.36 microversion along with network resource
+related quotas. But we missed to do so in the magical quota class APIs.
+
 Use Cases
 ---------
 
@@ -39,10 +44,19 @@ The legacy v2.1 compatible API won't be fixed, since it is as the default
 backend for legacy v2 endpoint in Liberty. And Liberty is already EOL, there
 is no way to back port the fix to the Liberty.
 
+Filter out all the networks related quotas from os-quota-class. Below quotas
+will be filtered out and not available from new microversion onwards.
+
+- "fixed_ips"
+- "floating_ips"
+- "networks",
+- "security_group_rules"
+- "security_groups"
+
 Alternatives
 ------------
 
-Fix this bug without microversion for v2.1 API, it will lead to the API
+Fix this bug without microversion for v2.1 API, but that would lead to the API
 interoperability issue.
 
 Data model impact
@@ -60,6 +74,19 @@ Two fields will be added to the response of the APIs::
 
     GET /os-quota-class-sets/{quota_class}
     PUT /os-quota-class-sets/{quota-class}
+
+Network related quotas ["fixed_ips", "floating_ips", "networks",
+"security_group_rules", "security_groups"] will not be allowed in
+PUT API request and 400 if those are present::
+
+    PUT /os-quota-class-sets/{quota-class}
+
+Those network related quotas will not be returned in the
+response of the APIs::
+
+    GET /os-quota-class-sets/{quota_class}
+    PUT /os-quota-class-sets/{quota-class}
+
 
 Security impact
 ---------------
@@ -130,6 +157,7 @@ References
 ==========
 
 * https://bugs.launchpad.net/nova/+bug/1693168
+* https://bugs.launchpad.net/nova/+bug/1701211
 
 .. _api-ref: http://developer.openstack.org/api-ref/compute/
 
