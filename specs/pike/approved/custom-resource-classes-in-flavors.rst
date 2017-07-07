@@ -20,7 +20,7 @@ Problem description
 ===================
 
 The background to this problem is well described in the custom resource
-classes[0] spec.
+classes [1]_ spec.
 
 With that spec implemented, we now are able to represent these units of
 consumable resources, but not schedule to them. The scheduler currently only
@@ -76,7 +76,7 @@ Alternatives
 
 We could instead add new field(s) to the Flavor object that are specifically
 meant for custom resource classes and overrides of standard resource classes.
-While this does have the benefit of avoiding an oft chance that some operator
+While this does have the benefit of avoiding an off chance that some operator
 is already using extra specs like this, there's a couple of reasons not to do
 this. First, it creates an extra cycle before we can require ironic operators
 to transition their flavors, because the new field wouldn't be available until
@@ -91,10 +91,25 @@ their ``instance.flavor`` attribute. As such, allocations won't be recorded for
 this resource class, and the node the instance exists on will be schedulable
 with new-style flavors.
 
-We'll need to check each existing instance at Pike startup, in the driver
-layer. If the ironic node that the instance exists on has a resource class
-defined, we add the custom resource class to ``instance.flavor``, correcting
-the allocations lazily.
+For example, let's say an existing ironic instance has a resource_class of
+``CUSTOM_BAREMETAL_GOLD`` which is accounted for in the baremetal service, but
+is not reported as an allocation against the resource provider  in the
+placement service. If an operator configures a flavor's extra_specs and sets
+``resources:CUSTOM_BAREMETAL_GOLD="1"``, the scheduler may pick a node to host
+the instance that placement thinks is available, as there are no allocations
+against it, but the resource is actually already consumed. This would result in
+a build failure.
+
+To resolve this, we need to do two things:
+
+1. We'll need to check each existing instance at Pike startup, in the driver
+   layer. If the ironic node that the instance exists on has a resource class
+   defined, we add the custom resource class to ``instance.flavor``.
+
+2. When updating instance allocations in the ``update_available_resource``
+   periodic task in the nova-compute service, the scheduler report client will
+   need to check for custom resource classes on the ``instance.flavor`` and
+   report those into the placement service.
 
 REST API impact
 ---------------
@@ -128,6 +143,9 @@ Other deployer impact
 Deployers will need to adjust their flavors to use custom resource classes,
 before upgrading to Queens.
 
+.. warning:: Deployers should not adjust their flavors until the data migration
+  described in the `Data model impact`_ section above is complete.
+
 Developer impact
 ----------------
 
@@ -140,29 +158,29 @@ Assignee(s)
 -----------
 
 Primary assignee:
-  jroll
+  Ed Leafe (edleafe)
 
 Other contributors:
-  jaypipes
+  Jay Pipes (jaypipes)
 
 Work Items
 ----------
 
 * Add code to migrate ironic instance flavor data.
 
+* Add code to report custom resource class allocations.
+
 * Add support for custom resource classes in the scheduler request.
 
-* Add overrides for standard resource classes.
+* Add overrides for standard resource classes (the deployer does this).
 
 
 Dependencies
 ============
 
-This depends on work to change the resource tracker to allow drivers to expose
-allocations of custom resource classes, and work to make ironic driver expose
-said allocations.
-
-TODO: add link to this work
+This change depends on the resource tracker reporting custom resource class
+inventory, which is tracked in the "Custom Resource Classes (Pike)"
+blueprint. [2]_
 
 
 Testing
@@ -181,7 +199,9 @@ the Upgrades guide.
 References
 ==========
 
-[0] http://specs.openstack.org/openstack/nova-specs/specs/ocata/approved/custom-resource-classes.html
+.. [1] http://specs.openstack.org/openstack/nova-specs/specs/ocata/approved/custom-resource-classes.html
+
+.. [2] https://blueprints.launchpad.net/nova/+spec/custom-resource-classes-pike
 
 History
 =======
