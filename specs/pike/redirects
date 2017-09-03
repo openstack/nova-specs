@@ -1,0 +1,3 @@
+approved/fix-to-return-server-groups-quota-in-quota-class.rst ../approved/fix-quota-classes-api.rst
+approved/nova-certificate-validation.rst ../approved/nova-validate-certificates.rst
+approved/tag-instances-when-boot.rst ../approved/support-tag-instance-when-boot.rst
