@@ -61,8 +61,8 @@ Error conditions
 * If configured to use Searchlight but it is not available in the service
   catalog or Nova does not have access to it, we will fallback to the default
   path which means iterating the cells to list instances and merge sort the
-  results. An error would be logged in this case but the API request should not
-  fail with a 500. We will log a warning and set a flag so that we do not
+  results. A warning would be logged in this case but the API request should
+  not fail with a 500. We will also set a flag so that we do not
   continue to check until the service is restarted, similar to how we handled
   the placement API in ``nova.scheduler.client.report.SchedulerReportClient``
   with the ``@safe_connect`` decorator in Newton.
