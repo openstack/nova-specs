@@ -1,1 +1,1 @@
-pike-template.rst
+queens-template.rst
