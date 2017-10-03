@@ -94,70 +94,20 @@ and an empty body. Error conditions include:
 * 400 Bad Request: When the JSON body does not match schema
 * 400 Bad Request: When a resource provider or resource class named in the body
                    does not exist.
-* 409 Conflict: When the at least one of the allocation will violate Inventory
+* 409 Conflict: When at least one of the allocations will violate Inventory
                 constraints or available capacity.
 * 409 Conflict: When, during the allocation process there is a resource
                 provider generation mismatch (if this happens the client should
-                retry).
+                retry). This 409 is distinguished from the previous by the
+                error text in the body.
 
 .. highlight:: javascript
 
-The format of the body is still to be decided. If we use the format used by the
-current ``PUT /allocations/{consumer_uuid}`` handler as a model (and try to
-reuse existing "allocation builder" code in nova) then a collection of lists
-could be used::
-
+The format of the body will be as follows, based on resolving the
+`asymmetric PUT and GET`_ bug to align on a dict-like format::
 
     {
-        "instance-uuid": {
-            "allocations": [
-                {
-                    "resource_provider": {
-                        "uuid": "$TARGET_UUID"
-                    },
-                    "resources": {
-                        "MEMORY_MB": 1024,
-                        "VCPU": 2
-                    }
-                },
-                {
-                    "resource_provider": {
-                        "uuid": "$SHARED_DISK"
-                    },
-                    "resources": {
-                        "DISK_GB": 5
-                    }
-                }
-            ],
-            "project_id": "$PROJECT_ID",
-            "user_id": "$USER_ID"
-        },
-        "migration-uuid": {
-            "allocations": [
-                {
-                    "resource_provider": {
-                        "uuid": "$SOURCE_UUID"
-                    },
-                    "resources": {
-                        "MEMORY_MB": 1024,
-                        "VCPU": 2
-                    }
-                }
-            ],
-            "project_id": "$PROJECT_ID",
-            "user_id": "$USER_ID"
-        }
-    }
-
-This would allow us to reused existing schema to compose the new schema.
-
-.. highlight:: javascript
-
-If we choose to resolve the `asymmetric PUT and GET`_ bug, then a different
-option could be::
-
-    {
-        "instance-uuid": {
+        "$INSTANCE-UUID": {
             "allocations": {
                 "$TARGET_UUID": {
                     "resources": {
@@ -174,7 +124,7 @@ option could be::
             project_id: "$PROJECT_ID",
             user_id: "$USER_ID"
         },
-        "migration_uuid": {
+        "$MIGRATION_UUID": {
             "allocations": {
                 "$SOURCE_UUID" {
                     "MEMORY_MB": 1024,
@@ -186,12 +136,11 @@ option could be::
         }
     }
 
-The author of this spec finds dicts a lot easier to work with in situations
-where you have legitimately unique keys in the data structure. Here we do, but
-changing things may be more than we want to do.
-
-In either case, an empty value for the ``allocations`` key will mean that the
-allocations for that consumer will be removed.
+``$INSTANCE_UUID`` and ``$MIGRATION_UUID`` are consumer uuids. If no
+allocations exist on the server for a consumer they will be created using
+values in the body of the ``allocations`` key. If allocations already exist,
+they will be replaced. An empty value for the ``allocations`` key will mean
+that the allocations for that consumer will be removed.
 
 Security impact
 ---------------
@@ -242,9 +191,8 @@ Other contributors:
 Work Items
 ----------
 
-* Figure out the remaining questions in this spec
 * Write JSONschema for the new body representation
-* Add URI and handler to Placementk
+* Add URI and handler to Placement
 * Integrate with AllocationList object
 * Add gabbi tests for the new microversion
 * Add document of the URI to placement-api-ref
@@ -278,10 +226,6 @@ References
 
 History
 =======
-
-Optional section intended to be used each time the spec is updated to describe
-new design, API or any database schema updated. Useful to let reader understand
-what's happened along the time.
 
 .. list-table:: Revisions
    :header-rows: 1
