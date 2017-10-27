@@ -16,8 +16,7 @@ there is a drive to use these mechanisms consistently any time endpoint
 discovery is needed. This effort aims to take advantage of Adapters to
 make endpoint discovery consistent across Nova for the various services
 it uses: identity (keystone), image (glance), block-storage (cinder),
-network (neutron), baremetal (ironic), key-manager (barbican), and
-placement.
+network (neutron), baremetal (ironic), and placement.
 
 .. note:: This is an evolving continuation of the effort begun via
           `blueprint use-service-catalog-for-endpoints`_.
@@ -135,6 +134,16 @@ is the form that has been used up until now, but ``public`` is the
 keystone v3 version of interface. The config should accept both, but
 the documentation attached to the conf options as exposed by
 keystoneauth1 shows examples using ``public``.)
+
+A Note About Barbican
+---------------------
+The Barbican configuration options are both supplied by and used from within
+the castellan library.  It may be possible to override/deprecate those options
+from Nova to shoehorn them into conforming to the standard of the remainder of
+this spec.  However, the right way to make this happen is to have the castellan
+project itself move toward common keystoneauth configuration.  There will
+therefore be no effort in the scope of this specification to "fix" the
+``[barbican]`` or ``[key_manager]`` conf sections.
 
 Alternatives
 ------------
