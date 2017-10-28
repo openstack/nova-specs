@@ -125,10 +125,32 @@ All of the following changes would happen within a new microversion.
        }
      }
 
-* GET /flavors/detail and GET /flavors/{flavor_id}
+* GET /flavors, GET /flavors/detail and GET /flavors/{flavor_id}
 
   Add a required ``description`` field in the response when getting flavor
   details. If the flavor does not have a description, None will be returned.
+
+  GET /flavors response sample::
+
+    {
+       "flavors": [
+           {
+              "id": "f68c1474-4ba6-4291-bbdc-2c7865c0f33f",
+              "links": [
+                  {
+                      "href": "http://openstack.example.com/v2/6f70656e737461636b20342065766572/flavors/f68c1474-4ba6-4291-bbdc-2c7865c0f33f",
+                      "rel": "self"
+                  },
+                  {
+                      "href": "http://openstack.example.com/6f70656e737461636b20342065766572/flavors/f68c1474-4ba6-4291-bbdc-2c7865c0f33f",
+                      "rel": "bookmark"
+                  }
+              ],
+              "name": "2vcpu-1024ram-10disk-baremetal-10gb",
+              "description": "Baremetal flavor with 10GB network card."
+           }
+       ]
+     }
 
   GET /flavors/detail response sample::
 
@@ -246,7 +268,10 @@ All of the following changes would happen within a new microversion.
 Security impact
 ---------------
 
-None. Administrators will want to keep any details about a flavor at a high
+A new policy rule for the ``PUT /flavors/{flavor_id}`` API will be added and
+default to admin-only.
+
+Administrators will want to keep any details about a flavor at a high
 enough level to abstract low-level details about their deployment or topology
 so as to not leak host aggregate details, but this is nothing new.
 
