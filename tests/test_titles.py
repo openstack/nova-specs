@@ -10,6 +10,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import collections
 import glob
 import re
 
@@ -21,6 +22,9 @@ import testtools
 # - "History" introduced in Liberty should be
 # mandatory for M.
 OPTIONAL_SECTIONS = ("History",)
+OPTIONAL_SUBSECTIONS = collections.defaultdict(lambda: ())
+OPTIONAL_SUBSECTIONS['backlog'] = ('Upgrade impact',)
+OPTIONAL_SUBSECTIONS['queens'] = ('Upgrade impact',)
 
 
 class TestTitles(testtools.TestCase):
@@ -45,7 +49,7 @@ class TestTitles(testtools.TestCase):
                 titles[section['name']] = section['subtitles']
         return titles
 
-    def _check_titles(self, filename, expect, actual):
+    def _check_titles(self, filename, expect, actual, release):
         missing_sections = [x for x in expect.keys() if (
             x not in actual.keys()) and (x not in OPTIONAL_SECTIONS)]
         extra_sections = [x for x in actual.keys() if x not in expect.keys()]
@@ -58,7 +62,8 @@ class TestTitles(testtools.TestCase):
 
         for section in expect.keys():
             missing_subsections = [x for x in expect[section]
-                                   if x not in actual.get(section, {})]
+                                   if x not in actual.get(section, []) and
+                                   x not in OPTIONAL_SUBSECTIONS[release]]
             # extra subsections are allowed
             if len(missing_subsections) > 0:
                 msgs.append("Section '%s' is missing subsections: %s"
@@ -128,7 +133,7 @@ class TestTitles(testtools.TestCase):
 
                 spec = docutils.core.publish_doctree(data)
                 titles = self._get_titles(spec)
-                self._check_titles(filename, template_titles, titles)
+                self._check_titles(filename, template_titles, titles, release)
                 self._check_lines_wrapping(filename, data)
                 self._check_no_cr(filename, data)
                 self._check_no_zwsp(filename, data)
