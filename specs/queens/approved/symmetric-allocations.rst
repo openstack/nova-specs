@@ -58,9 +58,10 @@ include those fields.
 
 Similarly, because the response to a ``GET /allocation_candidates`` includes
 an `allocation_requests` property that includes a series of JSON objects that
-are designed to be opaquely sent as bodies in ``PUT /allocations/{consumer_uuid}``
-the format of that response will be updated in the same microversion to reflect
-the dict-based format. See example below.
+are designed to be opaquely sent as bodies in
+``PUT /allocations/{consumer_uuid}``, the format of that response will be
+updated in the same microversion to reflect the dict-based format.
+See example below.
 
 Alternatives
 ------------
