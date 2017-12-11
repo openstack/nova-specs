@@ -59,20 +59,11 @@ The whitelist for REST API filters are ['user_id', 'project_id', 'tenant_id',
 'uuid', 'root_device_name', 'config_drive', 'access_ip_v4', 'access_ip_v6',
 'auto_disk_config', 'progress', 'sort_key', 'sort_dir', 'all_tenants',
 'deleted', 'limit', 'marker', 'status', 'ip', 'ip6', 'tag', 'not-tag',
-'tag-any', 'not-tag-any']
+'tag-any', 'not-tag-any', 'created_at', 'changes-since']
 
 For the non-admin user, there have a whitelist for filters already [1]. That
 whitelist will be kept. In the future, we hope to have same list for the admin
 and non-admin users.
-
-The policy 'os_compute_api:servers:detail:get_all_tenants' and
-'os_compute_api:servers:index:get_all_tenants' are deprecated. The default rule
-changes to '@'. In next release, it will be removed.
-
-The new rule 'os_compute_api:servers:all_tenants_visible' is introduced
-instead. It is a soft enforcement rule. When the user can't pass the rule, the
-API still return successfully, but the user only can see his own instances. The
-default rule is `rule:admin_api`.
 
 The whitelist for sorts are pretty similar with filters.
 ['user_id', 'project_id', 'launch_index', 'image_ref', 'kernel_id',
@@ -80,7 +71,7 @@ The whitelist for sorts are pretty similar with filters.
 'host', 'node', 'instance_type_id', 'launched_at',
 'terminated_at', 'availability_zone', 'display_name', 'display_description',
 'locked_by', 'uuid', 'root_device_name', 'config_drive', 'access_ip_v4',
-'access_ip_v6', 'auto_disk_config', 'progress']
+'access_ip_v6', 'auto_disk_config', 'progress', 'created_at', 'updated_at']
 
 The sorts whitelist compare to the filters, some parameters which aren't
 mapping to the API representation are removed, and tags filters, pagination
@@ -109,19 +100,6 @@ REST API impact
   attributes.
 * Few filters and sorts which aren't mapping to the REST API representaion
   will be ignored in all microversions.
-* The default behaviour of `all_tenants` changed. The new soft enforcement rule
-  is instead of the hard enforcement rule. The API behavior is as below for
-  a fresh install of Nova:
-
-  * For non-admin user, list servers with `all_tenants=True`, it will pass the
-    old rule `os_compute_api:servers:index:get_all_tenants`, and fails the new
-    rule `os_compute_api:servers:all_tenants_visible`. Then the API returns
-    successfully, but the response is still only includes the user-owned
-    instances.
-  * For admin user, list servers with `all_tenants=True`, it will pass the old
-    rule and the new rule. Then the API returns successfully, and the response
-    will includes all the instances from all the tenants.
-
 
 Security impact
 ---------------
@@ -148,21 +126,7 @@ None
 Other deployer impact
 ---------------------
 
-The new `os_compute_api:servers:all_tenants_visible` is introduced. The
-old rule `os_compute_api:servers:index:get_all_tenants` and
-`os_compute_api:servers:detail:get_all_tenants` is deprecated. The default
-of old rules are changed to '@' in Ocata. The old rule will be removed in the
-future.
-
-For a fresh install of Nova, the API behaviour is just as the description
-in the `REST API impact`_ section.
-
-For a upgrade of Nova from Newton, if the `policy.json` has an explicit setting
-which is the old default of admin-only or a custom rule. This overrides the
-default in code change to `@` for the old rules. The API behaviour will be same
-as before, when the request can't pass the old rule check, the API returns
-`HTTP Forbidden 403`.
-
+None
 
 Developer impact
 ----------------
