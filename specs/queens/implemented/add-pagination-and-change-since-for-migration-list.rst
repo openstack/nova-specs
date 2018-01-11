@@ -62,6 +62,12 @@ We propose to merge sort the results in compute api code once we get the
 results back from all of the multiple cells, and results are sorted in
 descending order by ['created_at', 'id'] keys.
 
+Also, since we are going to add the ``uuid`` field to the response for the
+``os-migrations`` API, we will also take this opportunity to add the migration
+``uuid`` to the response for the
+``GET /servers/{server_id}/migrations/{migration_id}`` and
+``GET /servers/{server_id}/migrations`` server migrations APIs.
+
 
 Alternatives
 ------------
