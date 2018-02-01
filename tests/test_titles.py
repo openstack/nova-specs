@@ -15,6 +15,7 @@ import glob
 import re
 
 import docutils.core
+from oslo_utils import encodeutils
 import testtools
 
 
@@ -102,7 +103,7 @@ class TestTitles(testtools.TestCase):
             (len(matches), tpl))
 
     def _check_no_zwsp(self, tpl, raw):
-        matches = raw.decode('utf-8').find(u"\u200B")
+        matches = encodeutils.safe_decode(raw).find(u"\u200B")
         self.assertEqual(
             matches, -1,
             "Found zero width space characters in file %s" %
