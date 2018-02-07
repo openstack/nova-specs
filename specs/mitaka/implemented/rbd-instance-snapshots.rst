@@ -207,7 +207,7 @@ To use this in an existing installation with authx, adding 'allow
 rwx pool=images' to nova's ceph user capabilities is necessary. The
 'ceph auth caps' command can be used for this [1]. If these permissions
 are not updated, nova will continue using the existing full copy
-mechanism for instance snapshots because the the fast snapshot will fail
+mechanism for instance snapshots because the fast snapshot will fail
 and nova compute will fall back to the full copy method.
 
 Developer impact

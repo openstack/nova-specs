@@ -150,7 +150,7 @@ aggregate.removehost.start, filterscheduler.select_destinations.end.
 The notification model will do basic validation on the content of the
 event_type e.g. enum for valid phases will be created.
 
-The value of the the priority field of the envelope on the wire can be selected
+The value of the priority field of the envelope on the wire can be selected
 from the predefined priorities in oslo.messaging (audit, debug, info, warn,
 error, critical, sample) except 'warning' (use warn instead).
 The notification model will do validation of the priority by providing an enum
