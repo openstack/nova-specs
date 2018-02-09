@@ -1,1 +1,0 @@
-../../../../specs/queens-template.rst
