@@ -1,6 +1,14 @@
+..
+ This work is licensed under a Creative Commons Attribution 3.0 Unported
+ License.
+
+ http://creativecommons.org/licenses/by/3.0/legalcode
+
 ===========================
 Nova Certificate Validation
 ===========================
+
+https://blueprints.launchpad.net/nova/+spec/nova-validate-certificates
 
 OpenStack now supports signature verification for signed images. However, it
 does not support strong certificate validation for certificates used to
@@ -527,7 +535,7 @@ given that it involves security features in nova. The following is a brief
 timeline of this proposal's history, with major changes documented below
 during each development cycle.
 
-..list-table:: Revisions
+.. list-table:: Revisions
   :header-rows: 1
 
   * - Release Name
@@ -537,8 +545,7 @@ during each development cycle.
   * - Ocata
     - Introduced for official review
   * - Pike
-    - Re-proposed for official review
-    - Approved
+    - Re-proposed for official review and Approved
   * - Queens
     - Re-proposed for official review
 
@@ -583,6 +590,7 @@ Version 8 addressed further feedback from the nova core team, including:
 
 Pike
 ----
+
 Version 9 duplicated Version 8 as a clean slate for the Pike review process.
 Version 10 addressed minor whitespace and spec formatting errors.
 
@@ -602,6 +610,7 @@ use of oslo versionedobjects for the modification to InstanceExtra.
 
 Queens
 ------
+
 Version 15 and 16 duplicated Version 14 as a clean slate for the Queens
 review process. Version 17 added information on merged and active patches
 implementing the various changes detailed by the spec.

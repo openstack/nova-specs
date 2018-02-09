@@ -8,8 +8,7 @@
 Add pagination and changes-since filter support for os-instance-actions API
 ===========================================================================
 
-https://blueprints.launchpad.net/nova/+spec/pagination-add-changes
--since-for-instance-action-list
+https://blueprints.launchpad.net/nova/+spec/pagination-add-changes-since-for-instance-action-list
 
 This blueprint adds `limit` and `marker` optional
 parameters to GET /os-instance-actions/{server_id} request to support

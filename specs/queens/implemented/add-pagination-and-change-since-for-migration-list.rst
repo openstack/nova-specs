@@ -8,8 +8,7 @@
 Add pagination and changes-since filter support for os-migrations API
 =====================================================================
 
-https://blueprints.launchpad.net/nova/+spec/
-add-pagination-and-change-since-for-migration-list
+https://blueprints.launchpad.net/nova/+spec/add-pagination-and-change-since-for-migration-list
 
 This blueprint adds `limit` and `marker` optional
 parameters to GET /os-migrations request to support pagination.
