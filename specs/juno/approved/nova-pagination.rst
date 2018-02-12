@@ -178,13 +178,13 @@ returned from a detailed query is a valid sort key.
 Performance data was gathered by running on a simple devstack VM with 2GB
 memory. 5000 instances were inserted into the DB. The data shows that the
 sort time on the main data table is dwarfed (see first table below) when
-running a detailed query -- most of the time is spent querying the the other
+running a detailed query -- most of the time is spent querying the other
 tables for each item; therefore, the impact of the sort key on a detailed
 query is minimal.
 
 For example, the data below compares the processing time of a GET request for
 a non-detailed query to a detailed query with various limits using the default
-sort keys. The purpose of this table is to show the the processing time for a
+sort keys. The purpose of this table is to show the processing time for a
 detailed query is dominated by getting the additional details for each item.
 
 +-------+--------------------+----------------+---------------------------+

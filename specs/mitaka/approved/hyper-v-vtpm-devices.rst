@@ -180,7 +180,7 @@ Contradicting image property and flavor extra spec will result in failing to
 create instance.
 
 Any key data should be stored into Barbican as secrets and create the image
-property ``os_vtpm_keys`` containing the the comma separated references to the
+property ``os_vtpm_keys`` containing the comma separated references to the
 secrets (maximum 6 references, due to a length limitation - maximum 255
 characters), otherwise the instances will be spawned with no data stored in the
 vTPMs. Example value: UUID1,UUID2,UUID3

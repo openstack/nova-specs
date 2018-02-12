@@ -121,7 +121,7 @@ make it more compatible, as mentioned above.
 In addition /v2 endpoint thats powered by the v2.1 code should never accept
 any requests not accepted by /v2, and should only return /v2 like responses.
 Basically, it should always ignore any X-OpenStack-Nova-API-Version
-just like the the v2 code base does today.
+just like the v2 code base does today.
 
 For consistency, /v1.1 will be the same as /v2
 

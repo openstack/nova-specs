@@ -180,7 +180,7 @@ Alternatives
 
 One alternative was considered around trying to eliminate races for IP resource
 between Nova and Neutron.  It involved significantly more active maintenance of
-the reserved field on the resource provider and required that the the
+the reserved field on the resource provider and required that the
 allocation was conditionally recorded depending on the scenario.
 
 This method was rejected in favor of the current proposal for its complexity.

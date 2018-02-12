@@ -260,7 +260,7 @@ in the "VIFConfig" class shown earlier. This object corresponds to the
 data that can be provided in the <portprofile>...</portprofile> XML
 block. This is required data when a VIF is connected to OpenVSwitch,
 or when using one of the two VEPA modes. This could have been provided
-inline in the the VIFConfig subclasses, but there are a few cases
+inline in the VIFConfig subclasses, but there are a few cases
 where the same data is needed by different VIF types, so breaking it
 out into a separate object allows better reuse, without increasing
 the number of VIF types.
