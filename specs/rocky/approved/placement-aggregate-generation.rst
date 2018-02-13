@@ -17,7 +17,7 @@ may need to be managed by multiple threads of processing, including
 different nova-compute processes.
 
 The `generation` concept in the placement service provides a tool for managing
-these kind of concurrent operations: a write API request that includes a
+these kinds of concurrent operations: a write API request that includes a
 generation has that generation compared against the value on the server. If
 there is a match the request can go ahead, otherwise a ``409 Conflict``
 response is returned.
@@ -111,6 +111,10 @@ In addition to the existing 200, 400 and 404 response codes currently possible
 when calling ``PUT /resource_providers/{uuid}/aggregates``, a ``409 Conflict``
 response code will be returned when the ``resource_provider_generation`` field
 does not match the server-side value.
+
+To preserve backward compatibility, using older microversions will result in
+the previous behavior: that is, the provider's aggregate associations will be
+replaced without consideration of the provider generation.
 
 Security impact
 ---------------
