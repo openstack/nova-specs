@@ -54,7 +54,7 @@ SRIOV-enabled network interface cards. In the case of multiple SRIOV-enabled
 NICs on a compute host, different qualitative traits may be tagged to each NIC.
 For example, the NIC called enp2s0 might have a trait "CUSTOM_PHYSNET_PUBLIC"
 indicating that the NIC is attached to a physical network called "public". The
-NIC enp2s1 might have a trait "CUSTOM_PHYSNET_PRIVATE" that indicates the NIC
+NIC enp2s1 might have a trait "CUSTOM_PHYSNET_INTRANET" that indicates the NIC
 is attached to the physical network called "Intranet". We need a way of
 representing that these NICs each provide SRIOV_NET_VF resources but those
 virtual functions are associated with different physical networks. In the
@@ -96,32 +96,32 @@ Proposed change
 We will add two new attributes to the resource provider data model:
 
 * `parent_provider_uuid`: Indicates the UUID of the immediate parent provider.
-  This will be None for the vast majority of providers, and for nested resource
-  providers, this will most likely be the compute host's UUID. To be clear,
-  a resource provider can have 0 or 1 parents. We will not support multiple
-  parents for a resource provider.
+  This will be None for root providers. To be clear, a resource provider can
+  have 0 or 1 parents. We will not support multiple parents for a resource
+  provider.
 * `root_provider_uuid`: Indicates the UUID of the resource provider that is at
-  the "root" of the tree of providers. This field allows us to implement
-  efficient tree-access queries and avoid use of recursive queries to follow
-  child->parent relations.
+  the "root" of the tree of providers. For Nova usage, this will be the UUID of
+  the resource provider corresponding to the compute host. This field allows us
+  to implement efficient tree-access queries and avoid use of recursive queries
+  to follow child->parent relations.
 
 A new microversion will be added to the placement REST API that adds the above
 attributes to the appropriate request and response payloads.
 
-The scheduler reporting client shall be modified to track NUMA nodes and
-SRIOV-enabled NICs as child resource providers to a parent compute host
-resource provider.
+In the future, the scheduler reporting client may be modified to track NUMA
+nodes and SRIOV-enabled NICs as child resource providers to a parent compute
+host resource provider.
 
-The `VCPU` and `MEMORY_MB` resource classes will continue to be inventoried on
-the parent resource provider (i.e the compute node resource provider) and not
-the NUMA node child providers. The NUMA node child providers will have
-inventory records populated for the `NUMA_CORE`, `NUMA_THREAD` and
-`NUMA_MEMORY_MB` resource classes. When a boot request is received, the Nova
-API service will need to determine whether the request (flavor and image)
-specifies a particular NUMA topology and, if so, construct the request to the
-placement service for the appropriate `NUMA_XXX` resources. This is currently
-out of scope for this spec. This spec is only about the inventorying of the
-various child providers with appropriate resource classes.
+Future NUMA support may entail the NUMA node child providers having inventory
+records populated for the `NUMA_CORE`, `NUMA_THREAD` and `NUMA_MEMORY_MB`
+resource classes. `VCPU` and `MEMORY_MB` resource classes would continue to be
+inventoried on the parent resource provider (i.e the compute node resource
+provider) and not the NUMA node child providers. When a boot request is
+received, the Nova API service would need to determine whether the request
+(flavor and image) specifies a particular NUMA topology and, if so, construct
+the request to the placement service for the appropriate `NUMA_XXX` resources.
+This is currently out of scope for this spec. This spec is only about the
+inventorying of the various child providers with appropriate resource classes.
 
 On the CPU-pinning side of the equation, we do not plan to allow a compute node
 to serve as *either* a general-purpose compute node *or* as a target for
@@ -131,12 +131,6 @@ It is not yet clear what we will use to indicate that a compute node targets
 floating workloads or not. Initial thoughts were to use the
 pci_passthrough_whitelist CONF option to determine this however this still
 needs to be debated.
-
-This spec will simply ensure that if a virt driver returns a NUMATopology
-object in the result of its get_available_resource() call, then we will create
-child resource providers representing those NUMA nodes. Similarly, if the PCI
-device manager returns a set of SR-IOV physical functions on the compute host,
-we will create child resource provider records for those SR-IOV PFs.
 
 Alternatives
 ------------
@@ -175,13 +169,31 @@ REST API impact
 `root_provider_uuid` and `parent_provider_uuid` fields will be added to the
 corresponding request and response payloads of appropriate placement REST APIs.
 
-The `GET /resource_providers` call will get a new filter on `root={uuid}` that,
-when present, will return all resource provider records, inclusive of the root,
-having a `root_provider_uuid` equal to `{uuid}`.
+The `GET /resource_providers` call will get a new filter on `in_tree={uuid}`
+that, when present, will return all resource provider records, inclusive of the
+root, having a `root_provider_uuid` equal to the `root_provider_uuid` of the
+provider indicated by `{uuid}`.  To be clear, consider a tree like:
 
-The filter parameter `root={uuid}` will *not* be added to
-`GET /allocation_candidates`, as this call is for a specific use case for the
-Nova scheduler, and there is no use case for it.
+.. code::
+
+        A
+       / \
+      B   D
+     /
+    C
+
+Specifying *any* of `A`, `B`, `C`, or `D`'s UUIDs to `in_tree={uuid}` will
+return *all* the providers in the entire tree (`{A, B, C, D}`).
+
+The filter parameter `in_tree={uuid}` will *not* be added to
+`GET /allocation_candidates`, as there is no use case for it.
+
+.. note:: More work is required to make tree models usable for real
+          deployments. The `GET /allocation_candidates` API will need to be
+          updated to process requests for resources that are distributed
+          throughout a tree. And work will need to be done in the resource
+          tracker and report client (ultimately at the behest of the virt
+          driver) to construct nested models using these capabilities.
 
 Security impact
 ---------------
@@ -232,12 +244,8 @@ Work Items
 * Add DB schema and object model changes
 * Add REST API microversion adding new attributes for resource providers and
   allocation candidates
-* Add REST API microversion adding new `root={uuid}` filter on `GET
+* Add REST API microversion adding new `in_tree={uuid}` filter on `GET
   /resource_providers`
-* Add code in scheduler reporting client to track NUMA nodes as child resource
-  providers on the parent compute host resource provider
-* Add code in scheduler reporting client to track SRIOV PFs as child resource
-  providers on the parent compute host resource provider
 
 Please note that not all of this spec is expected to be implemented in a single
 release cycle. At the Queens PTG we agreed that fully suppporting NUMA will
