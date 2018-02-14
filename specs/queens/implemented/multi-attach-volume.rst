@@ -39,17 +39,12 @@ Proposed change
 ===============
 
 The new 'multi-attach' functionality will be enabled by using the new Cinder
-attach/detach API which is available from the API microversion 3.45 [#]_.
+attach/detach API which is available from the API microversion 3.44 [#]_.
 
 Cinder will only allow a volume to be attached more than once if its
 'multiattach' flag is set on the volume at create time. Nova is expected to
 rely on Cinder to do the check on the volume state when it's reserving the
 volume on the API level by calling attachment_create.
-
-.. todo:: A volume should only be allowed to be attached to a given instance
-   once, regardless of multiattach. This requires investigation since the
-   ``nova.block_device_mappings`` table and ``cinder.volume_attachment`` tables
-   do not have unique constraints on volume_id and instance_uuid.
 
 There are problems today when multiple volume attachments share a single
 target to the volume backend. If we do not take care, multi-attach would
@@ -173,12 +168,12 @@ When we enable the feature we will have a 'multiattach' policy to enable or
 disable the operation entirely on the Cinder side as noted above. Read/Only
 policy is a future work item and out of the scope of this spec.
 
-.. todo:: Whether or not a new compute API microversion is needed will be
-   determined during implementation and code review. API users will need
-   some way to discover if they can perform volume multiattach and a
-   microversion might be the signal, but it is unclear if Nova would block
-   those requests on a lower microversion, e.g. 2.1. It probably makes sense
-   to do a microversion like 2.49 for tagged attach capabilities.
+A new compute API microversion will be added since users will need
+some way to discover if they can perform volume multiattach. The semantics
+of the microversion will be similar to the `2.49`_ microversion for tagged
+attach.
+
+.. _2.49: https://docs.openstack.org/nova/latest/reference/api-microversion-history.html#id44
 
 Security impact
 ---------------
@@ -300,7 +295,7 @@ References
 * Queens PTG etherpad:
   https://etherpad.openstack.org/p/cinder-ptg-queens-thursday-notes
 
-.. [#] https://review.openstack.org/#/c/509005/
+.. [#] https://docs.openstack.org/cinder/latest/contributor/api_microversion_history.html#id41
 
 .. [#] http://lists.openstack.org/pipermail/openstack-dev/2016-May/094089.html
 
