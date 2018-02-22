@@ -30,6 +30,12 @@ additional query parameter, ``required``, which accepts a comma-separated list
 of string trait names.  When specified, the API results will be filtered to
 include only resource providers marked with *all* the specified traits.
 
+.. note:: As with the ``resources`` query parameter, the ``required`` semantic
+          is different for `GET /resource_providers`_ than for `GET
+          /allocation_candidates`_.  The latter deals with *groups* of
+          providers where each *group* must collectively satisfy the filters;
+          whereas the former applies the filters to *each* provider.
+
 This is in addition to (logical ``AND``) any filtering based on other query
 parameters.
 
