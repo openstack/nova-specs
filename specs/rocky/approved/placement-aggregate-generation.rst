@@ -61,6 +61,12 @@ rejected with a ``409 Conflict`` response.
 
 Details of representation changes can be found below.
 
+When requests are made at an older microversion, thus not including the
+generation in the request, the generation of the resource provider will *not*
+be updated in the database. This is because there is existing code in Nova
+which currently relies on the generation not being updated. If Nova has it
+then there could easily be code elsewhere.
+
 Alternatives
 ------------
 
