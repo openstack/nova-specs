@@ -53,7 +53,10 @@ parameters:
   therefore be modified without locking/concurrency considerations.  Note,
   however, that it may contain providers not directly owned/controlled by the
   compute host.  Care must be taken not to remove or modify such providers
-  inadvertently.
+  inadvertently.  In addition, providers may be associated with traits and/or
+  aggregates maintained by outside agents.  The ``update_provider_tree`` must
+  therefore also be careful only to add/remove traits/aggregates it explicitly
+  controls.
 * String name of the compute node (i.e. ``ComputeNode.hypervisor_hostname``)
   for which the caller is updating providers and inventory.  Drivers may use
   this to help identify the compute node provider in the ProviderTree.  Drivers
@@ -112,8 +115,11 @@ Some of the methods which may be useful are as follows:
 * ``remove``: Remove a provider **and its descendants** from the tree.  Use
   caution in multiple-ownership scenarios.
 * ``update_inventory``: Set the inventory for a provider.
-* ``update_traits``: Set the traits for a provider.
-* ``update_aggregates``: Set the aggregates for a provider.
+* ``add_traits``, ``remove_traits``: Set/unset virt-owned traits for a provider
+  (see `ProviderTree.add_traits and .remove_traits`_).
+* ``add_aggregates``, ``remove_aggregates``: Set/unset virt-owned aggregate
+  associations for a provider (see `ProviderTree.add_aggregates and
+  .remove_aggregates`_).
 
 .. note:: There is no supported mechanism for ``update_provider_tree`` to
           effect changes to allocations.  This is intentional: in Nova,
@@ -152,7 +158,7 @@ would become:
 Porting from get_traits
 ~~~~~~~~~~~~~~~~~~~~~~~
 To replace ``get_traits``, developers should use the
-``ProviderTree.update_traits`` method, specifying the compute node as the
+``ProviderTree.add_traits`` method, specifying the compute node as the
 provider and the same traits as returned by ``get_traits``.  For example:
 
 .. code::
@@ -166,8 +172,8 @@ would become:
 .. code::
 
   def update_provider_tree(self, provider_tree, nodename):
-      traits = ['HW_CPU_X86_AVX', 'HW_CPU_X86_AVX2', 'CUSTOM_GOLD']
-      provider_tree.update_traits(nodename, traits)
+      provider_tree.add_traits(
+          nodename, 'HW_CPU_X86_AVX', 'HW_CPU_X86_AVX2', 'CUSTOM_GOLD')
 
 SchedulerReportClient.update_from_provider_tree
 -----------------------------------------------
@@ -221,6 +227,48 @@ to:
           ComputeDriver.get_traits()
       except NotImplementedError:
           pass
+
+ProviderTree.add_traits and .remove_traits
+------------------------------------------
+Since outside agents (e.g. operators) need to be able to set and unset
+traits which are outside of the purview of the virt driver,
+`ComputeDriver.update_provider_tree`_ needs to be able to add and remove traits
+explicitly, rather than simply overwriting the entire set of traits for a given
+provider.  To facilitate this, we will add the following methods to
+ProviderTree:
+
+.. code::
+
+ def add_traits(self, name_or_uuid, \*traits)
+ def remove_traits(self, name_or_uuid, \*traits)
+
+Arguments:
+
+* ``name_or_uuid``: Either the name or the UUID of the resource provider whose
+  traits are to be affected.
+* ``traits``: String names of traits to add or remove.  Any other traits
+  associated with the provider are untouched.
+
+ProviderTree.add_aggregates and .remove_aggregates
+--------------------------------------------------
+Since outside agents (e.g. operators) need to be able to set and unset
+aggregate associations which are outside of the purview of the virt driver,
+`ComputeDriver.update_provider_tree`_ needs to be able to add and remove
+aggregate associations explicitly, rather than simply overwriting the entire
+set of aggregate associations for a given provider.  To facilitate this, we
+will add the following methods to ProviderTree:
+
+.. code::
+
+ def add_aggregates(self, name_or_uuid, \*aggregates)
+ def remove_aggregates(self, name_or_uuid, \*aggregates)
+
+Arguments:
+
+* ``name_or_uuid``: Either the name or the UUID of the resource provider whose
+  aggregates are to be affected.
+* ``aggregates``: String UUIDs of aggregates to add or remove.  Any other
+  aggregates associated with the provider are untouched.
 
 Alternatives
 ------------
