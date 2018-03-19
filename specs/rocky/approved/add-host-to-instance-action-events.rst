@@ -70,7 +70,7 @@ REST API impact
 
 Add a new microversion to
 ``GET /servers/{server_id}/os=instance-actions/{req_id}`` API to include
-the ``host`` field for admin and an obfuscated hashed host id "hostId" for
+the ``host`` field for admin and an obfuscated hashed host id ``hostId`` for
 admin and non-admin users.
 
 * For admin users::
@@ -181,8 +181,7 @@ Work Items
   host that the event occurs on.
 * Add a new microversion to
   ``GET /servers/{server_id}/os=instance-actions/{req_id}`` API to include
-  the ``host`` field for admin and an ``obfuscated-hashed-host-id`` for
-  non-admin users.
+  the ``host`` field for admin and a ``hostId`` field for non-admin users.
 * Adopt the new microversion in python-novaclient.
 * Add related tests.
 
