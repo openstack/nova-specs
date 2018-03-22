@@ -33,8 +33,26 @@ aggregate.
 Use Cases
 ---------
 
-Simple post-processing scheduler filters like the aggregate multi-tenancy
+Simple pre-processing scheduler filters like the aggregate multi-tenancy
 isolation filter can be replaced with more efficient placement-side filtering.
+This requires only the ability to provide a list of aggregates, one of which
+the candidates must belong to.
+
+More complex cases arise when multiple aggregate-based requirements
+need to be expressed. For example, imagine the above case of a tenant
+confined to a set of aggregates, combined with a user's request to
+boot into a specific AZ (aggregate). In order to express this, we need
+to be able to provide multiple OR'd sets of aggregates, each of which
+are AND'd together. This would allow us to express a logical query like::
+
+  Give me all allocation candidates that are allowed to house tenant
+  "foo" (either "tenant_foo_old_computes" or
+  "tenant_foo_new_computes") and are also in AZ "US Chicago".
+
+The desired nodes are the resource providers that are in the union
+of all the aggregates that define suitable computes assigned to the
+tenant by the operator, which intersect with the aggregate that
+defines the AZ requested by the user.
 
 Proposed change
 ===============
@@ -45,10 +63,29 @@ aggregate uuid; or the prefix in: followed by a comma-separated list of strings
 representing aggregate uuids. The returned resource providers must be
 associated with at least one of the aggregates identified by uuid."
 
+This provides sufficient expressivity to query for the set of
+providers desired in the first use case above. For the second, we must
+be able to provide multiple such sets, and take the resulting
+intersection.
+
 We propose to support this exact same parameter for the ``GET
 /allocation_candidates`` placement REST API call.
 
 .. _parameter: https://developer.openstack.org/api-ref/placement/#list-resource-providers
+
+If multiple `member_of` parameters are provided, the corresponding values will
+be considered by the underlying implementation to be ANDed together. In other
+words, the following query string::
+
+  &member_of=in:agg1,agg2&member_of=agg3
+
+would translate logically to:
+
+  Candidate resource providers should be in either agg1 or agg2, but definitely
+  in agg3.
+
+For consistency, the ``GET /resource_providers`` REST API call should also be
+augmented to handle multiple ``member_of`` query sets in the same way as above.
 
 Alternatives
 ------------
@@ -94,8 +131,8 @@ scheduler can limit the number of compute hosts it operates on.
 Other deployer impact
 ---------------------
 
-We should be able to deprecate the aggregate multi-tenancy isolation scheduler
-filter after the "S" release.
+We should be able to deprecate the aggregate multi-tenancy isolation
+and availability zone scheduler filters after the "S" release.
 
 Developer impact
 ----------------
@@ -128,6 +165,11 @@ Work Items
 
 * Add new microversion to the placement REST API to support the ``member_of``
   query parameter
+
+* Add support to the ``nova.objects.AllocationCandidates.get_by_requests()``
+  method for multiple ``member_of`` query sets.
+
+* Add new microversion to the placement REST API to support multiple sets.
 
 Dependencies
 ============
