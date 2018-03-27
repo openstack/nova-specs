@@ -15,12 +15,15 @@ Add a new microversion to the following APIs to return also
 
 * GET /flavors/details
 * GET /flavors/{flavor_id}
+* POST /flavors
+* PUT /flavors/{flavor_id}
 
 Problem description
 ===================
 
-Currently the response of ``GET /flavors/details`` and
-``GET /flavors/{flavor_id}`` does not include ``extra_spces`` field,
+Currently the response of ``GET /flavors/details``,
+``GET /flavors/{flavor_id}``, ``POST /flavors`` and
+``PUT /flavors/{flavor_id}`` does not include ``extra_specs`` field,
 The users have to call ``GET /flavors/{flavor_id}/extra_specs`` again
 to get the extra_specs field.
 
@@ -41,6 +44,8 @@ Add a new microversion to the following APIs to return also
 
 * GET /flavors/details
 * GET /flavors/{flavor_id}
+* POST /flavors
+* PUT /flavors/{flavor_id}
 
 .. note:: The ``extra_specs`` field is already included in the embedded
           instance flavor in the server detail response and will be only
@@ -133,9 +138,80 @@ Following changes will be introduced in a new API microversion.
             "rxtx_factor": 1.0,
             "description": "test description",
             "extra_specs": {
-                    "key1": "value1",
-                    "key2": "value2"
+                "key1": "value1",
+                "key2": "value2"
+            }
+        }
+    }
+
+
+* POST /flavors
+
+  Add ``extra_specs`` data to response body.
+
+  JSON response body example::
+
+    {
+        "flavor": {
+            "OS-FLV-DISABLED:disabled": false,
+            "disk": 10,
+            "OS-FLV-EXT-DATA:ephemeral": 0,
+            "os-flavor-access:is_public": true,
+            "id": "10",
+            "links": [
+                {
+                    "href": "http://openstack.example.com/v2/6f70656e737461636b20342065766572/flavors/10",
+                    "rel": "self"
+                },
+                {
+                    "href": "http://openstack.example.com/6f70656e737461636b20342065766572/flavors/10",
+                    "rel": "bookmark"
                 }
+            ],
+            "name": "test_flavor",
+            "ram": 1024,
+            "swap": "",
+            "rxtx_factor": 2.0,
+            "vcpus": 2,
+            "description": "test description",
+            "extra_specs": {}
+        }
+    }
+
+
+* PUT /flavors/{flavor_id}
+
+  Add ``extra_specs`` data to response body.
+
+  JSON response body example::
+
+    {
+        "flavor": {
+            "OS-FLV-DISABLED:disabled": false,
+            "disk": 1,
+            "OS-FLV-EXT-DATA:ephemeral": 0,
+            "os-flavor-access:is_public": true,
+            "id": "1",
+            "links": [
+                {
+                    "href": "http://openstack.example.com/v2.1/6f70656e737461636b20342065766572/flavors/1",
+                    "rel": "self"
+                },
+                {
+                    "href": "http://openstack.example.com/6f70656e737461636b20342065766572/flavors/1",
+                    "rel": "bookmark"
+                }
+            ],
+            "name": "m1.tiny",
+            "ram": 512,
+            "swap": "",
+            "vcpus": 1,
+            "rxtx_factor": 1.0,
+            "description": "updated description",
+            "extra_specs": {
+                "key1": "value1",
+                "key2": "value2"
+            }
         }
     }
 
@@ -186,10 +262,10 @@ Assignee(s)
 -----------
 
 Primary assignee:
-  Kevin Zheng
+  Yikun Jiang
 
 Other contributors:
-  None
+  Kevin Zheng
 
 Work Items
 ----------
