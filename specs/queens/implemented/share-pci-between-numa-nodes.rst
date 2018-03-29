@@ -67,10 +67,9 @@ Use Cases
 Proposed change
 ===============
 
-This spec is needed to decide which PCI device will be used by a new instance.
-To this end, we will add a new flavor extra spec
-``hw:pci_numa_affinity_policy`` and image metadata
-``hw_pci_numa_affinity_policy``. They will have one of three values.
+This spec is needed to decide the affinity of PCI devices used by instances. To
+this end, we will add a new key, ``numa_policy``, to the ``[pci] alias`` JSON
+configuration option. This option can have one of three values.
 
 **required**
 
@@ -118,6 +117,17 @@ property will be used. In a case of conflicts between flavor and image
 properties (both properties are set and they are not equal) an exception will
 be raised.
 
+The end result will be an option that looks something like this::
+
+    [pci]
+    alias = '{
+      "name": "QuickAssist",
+      "product_id": "0443",
+      "vendor_id": "8086",
+      "device_type": "type-PCI",
+      "numa_policy": "legacy"
+    }'
+
 Alternatives
 ------------
 
@@ -134,20 +144,16 @@ Alternatives
   first alternative and has actually been addressed by the
   'reserve-numa-with-pci' spec [4]_.
 
-- Make the PCI NUMA strictness part of the individual PCI device request. This
-  would allow us to represent requests like "I need to be strictly affined to
-  this NIC, but I don't need to be strictly affined to this FPGA". It is very
-  unlikely that this level of granularity of request would be required. In
-  addition, it's difficult to see how this would fit into the resource provider
-  world in the future as the problem is transformed from a scheduling one (at
-  the host level) to a placement one.
+- Make the PCI NUMA strictness part of the device request. This level of
+  granularity would likely be sufficient but it does necessitate another lot of
+  flavor extra specs and image metadata options. This isn't something we want.
 
 Data model impact
 -----------------
 
-A new field, ``pci_numa_affinity_policy``, will be added to the
-``InstanceNUMACell`` object. As this object is stored as a JSON blob in the
-database, no DB migrations are necessary to add the new field to this object.
+A new field, ``numa_policy``, will be added to the ``InstancePCIRequest``
+object. As this object is stored as a JSON blob in the database, no DB
+migrations are necessary to add the new field to this object.
 
 REST API impact
 ---------------
@@ -223,8 +229,8 @@ Other contributors:
 Work Items
 ----------
 
-* Add new spec to the flavor
-* Add new field to the InstanceNUMACell object
+* Add new field to the ``[pci] alias`` option
+* Add new field to the ``InstancePCIRequest`` object
 * Change the process of NUMA node choosing, considering new policy
 * Update user docs
 
@@ -242,8 +248,8 @@ Documentation Impact
 ====================
 
 This feature will not add a new scheduling filter, but it will change the
-behaviour of NUMATopologyFilter. We should add documentation to describe new
-flavor extra spec and image metadata.
+behaviour of ``NUMATopologyFilter``. We should add documentation to describe
+the new key for the ``[pci] alias`` option.
 
 References
 ==========
