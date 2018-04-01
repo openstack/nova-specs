@@ -31,7 +31,7 @@ right flavor.
 
 The attributes on the image can be used to specify traits required on the hosts
 similar to traits on the flavor. For example support for a specific CPU
-instruction set, nic features or whether its a trusted host etc
+instruction set, NIC features or whether it's a trusted host, etc.
 
 Use Cases
 ---------
@@ -43,8 +43,8 @@ For example, if a workload instance will be applying an encryption algorithm or
 will process privacy data, there might be specific capabilities/traits that the
 instance needs on the hosts.
 
-The administrator would be able to add this capability requirements to the
-glance image as a required traits. This would allow the nova scheduler to
+The administrator would be able to add these capability requirements to the
+glance image as required traits. This would allow the nova scheduler to
 automatically select only hosts which have those traits.
 
 For administrative users
@@ -65,7 +65,7 @@ information provided by the flavor AND the image metadata into a union of the
 two. This union set will be passed to the Placement API to generate allocation
 candidates.
 
-The glance image already allow users to specify additional properties as
+The glance image already allows users to specify additional properties as
 key:value pairs. We will be re-using the same mechanism used by nova to encode
 traits information in nova's flavor metadata items.
 
@@ -79,6 +79,11 @@ The trait syntax in the glance image's additional properties looks like::
 
 For now the only valid value is `required`. Validation of traits specified as
 part of the image additional properties is out of scope for this change.
+
+Due to the difficulty of attempting to reconcile `granular request groups`_
+between an image and a flavor, only the (un-numbered) ``trait`` group is
+supported. The traits listed there are merged with those of the un-numbered
+request group from the flavor.
 
 Based on the `ironic driver traits spec`_ implemented we need to send image
 traits to ironic similar to how we are sending `extra_specs` traits to ironic.
@@ -94,7 +99,7 @@ flavors with traits required for the workload image and the end user needs to
 select the flavor with the configured traits.
 
 One other aspect to look at would be, because the flavor describes both the
-quantitative and qualitative aspects of the request, the number of flavor will
+quantitative and qualitative aspects of the request, the number of flavors will
 need to increase substantially if we are given a mix of workloads.
 
 In a typical openstack installation with 7 flavors(nano -> xlarge) if we need
@@ -206,6 +211,7 @@ References
 http://specs.openstack.org/openstack/nova-specs/specs/queens/approved/request-traits-in-nova.html
 
 .. _ironic driver traits spec: https://review.openstack.org/#/c/508116/
+.. _granular request groups: http://specs.openstack.org/openstack/nova-specs/specs/rocky/approved/granular-resource-requests.html#numbered-request-groups
 
 History
 =======
