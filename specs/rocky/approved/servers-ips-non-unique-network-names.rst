@@ -48,7 +48,8 @@ as if there would be a single network with multiple IP addresses.
    }
 
 Instead, the response should indicate that there are two networks with single
-address each. Additionally network label shall be preserved.
+address each. Additionally network label shall be preserved. Note drop of
+unnecessary ``OS-EXT-IPS-MAC`` and ``OS-EXT-IPS`` prefixes.
 
 .. code-block:: javascript
 
@@ -60,10 +61,10 @@ address each. Additionally network label shall be preserved.
             "name":"testnet1",
             "ips":[
                {
-                  "OS-EXT-IPS-MAC:mac_addr":"fa:16:3e:65:83:12",
+                  "mac_addr":"fa:16:3e:65:83:12",
                   "version":4,
                   "addr":"192.168.0.12",
-                  "OS-EXT-IPS:type":"fixed"
+                  "type":"fixed"
                }
             ]
          },
@@ -71,10 +72,10 @@ address each. Additionally network label shall be preserved.
             "name":"testnet1",
             "ips":[
                {
-                  "OS-EXT-IPS-MAC:mac_addr":"fa:16:3e:7c:67:72",
+                  "mac_addr":"fa:16:3e:7c:67:72",
                   "version":4,
                   "addr":"192.168.1.4",
-                  "OS-EXT-IPS:type":"fixed"
+                  "type":"fixed"
                }
             ]
          }
@@ -88,6 +89,14 @@ Consequently request for specific network shall be altered from::
 to::
 
     /servers/{server_id}/ips/{network_id}
+
+Server detail responses shall be updated acordingly as those contain
+similar adresses sections::
+
+   GET /servers/detail
+   GET /servers/{server_id}
+   PUT /servers/{server_id}
+   GET /servers/{server_id/action (rebuild)
 
 Use Cases
 ---------
@@ -117,7 +126,7 @@ None
 REST API impact
 ---------------
 
-Two changes to API by new microversion:
+Five changes to API by new microversion:
 
 Change resource path from::
 
@@ -131,6 +140,7 @@ Change schema of ``/servers/{server_id}/ips`` resource to:
 
 * group networks by IDs
 * preserve network name in the network group
+* commonalize data model with ``/servers/detail`` path
 
 .. code-block:: javascript
 
@@ -140,15 +150,41 @@ Change schema of ``/servers/{server_id}/ips`` resource to:
             "name":"testnet1",
             "ips":[
                {
-                  "OS-EXT-IPS-MAC:mac_addr":"fa:16:3e:65:83:12",
+                  "mac_addr":"fa:16:3e:65:83:12",
                   "version":4,
                   "addr":"192.168.0.12",
-                  "OS-EXT-IPS:type":"fixed"
+                  "type":"fixed"
                }
             ]
          }
       }
    }
+
+Change schema in the following routes to match ID-identified adresses
+response as in ``/servers/{server_id}/ips``:
+
+* GET /servers/detail
+* GET /servers/{server_id}
+* PUT /servers/{server_id}
+* POST /servers/{server_id}/action (rebuild)
+
+.. code-block:: javascript
+
+    ...
+    "addresses":{
+       "b7388c79-b206-4ddf-9d75-95ec4488b906":{
+          "name":"testnet1",
+          "ips":[
+             {
+                "mac_addr":"aa:bb:cc:dd:ee:ff",
+                "type":"fixed",
+                "addr":"192.168.0.12",
+                "version":4
+             }
+          ]
+       },
+    },
+    ...
 
 Security impact
 ---------------
