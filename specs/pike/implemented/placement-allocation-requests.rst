@@ -29,7 +29,7 @@ want the Nova scheduler to be able to claim resources against these nested or
 sharing resource providers.
 
 In order for this to happen, we propose creating a new REST API endpoint in the
-Placement API called `GET /allocation_requests` that will return a collection
+Placement API called `GET /allocation_candidates` that will return a collection
 of opaque (to the Nova compute node and conductor) HTTP request bodies that can
 be provided to a `POST /allocations/{consumer_uuid}` request along with a set
 of information the Nova scheduler can use to make fitness choices for the
@@ -45,11 +45,11 @@ the Nova scheduler and the Placement API.
 Proposed change
 ===============
 
-We propose adding a new `GET /allocation_requests` REST API endpoint that will
-return both a collection of opaque request bodies that can be sent to the `POST
-/allocations/{consumer_uuid}` endpoint as well as a collection of information
-that the scheduler can use to determine best fit for an instance launch
-request.
+We propose adding a new `GET /allocation_candidates` REST API endpoint that
+will return both a collection of opaque request bodies that can be sent to the
+`POST /allocations/{consumer_uuid}` endpoint as well as a collection of
+information that the scheduler can use to determine best fit for an instance
+launch request.
 
 .. note:: At this time, we make no suggestion as to **how** the scheduler will
           use the information returned back from the placement API in its
@@ -116,7 +116,7 @@ None.
 REST API impact
 ---------------
 
-The new `GET /allocation_requests` Placement REST API endpoint shall accept
+The new `GET /allocation_candidates` Placement REST API endpoint shall accept
 requests with the following query parameters:
 
 * `resources`: A comma-delimited string of `RESOURCE_CLASS:AMOUNT` pairs, one
@@ -125,7 +125,7 @@ requests with the following query parameters:
 
 Given an HTTP request of:
 
-`GET /allocation_requests?resources=$RESOURCES`
+`GET /allocation_candidates?resources=$RESOURCES`
 
 where `$RESOURCES` = "VCPU:4,MEMORY_MB:16384,DISK_GB:100" and given two empty
 compute nodes each attached via an aggregate to a resource provider sharing
