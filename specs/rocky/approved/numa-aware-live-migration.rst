@@ -25,7 +25,7 @@ In the following paragraphs the term NUMA is incorrectly used to signify any
 guest characteristic that is expressed in the `InstanceNUMATopology` object,
 for example CPU pinning and hugepages. CPU pinning can be achieved without a
 guest NUMA topology, but because no better term than NUMA is available it will
-contine to be used.
+continue to be used.
 
 The problem can best be described with three examples.
 
@@ -66,7 +66,7 @@ As a cloud administrator, I want live migration of hugepage-backed instances to
 work and for the instances to successfully run on the destination compute host.
 
 As a cloud administrator, I want live migration of instances with an explicit
-NUMA topology to work and for the instaces to successfully run on the
+NUMA topology to work and for the instances to successfully run on the
 destination compute host.
 
 Proposed change
@@ -119,7 +119,7 @@ instance's existing NUMA topology in the `migrate_data` that its
 `check_can_live_migrate_source` returns to the destination. The destination's
 virt driver will fit this `InstanceNUMATopology` to the destination's
 `NUMATopology` and claim the resources using the resource tracker. It will then
-send the updated `InstanceNUMATopoogy` back to the conductor as part of the
+send the updated `InstanceNUMATopology` back to the conductor as part of the
 existing `migrate_data` that `check_can_live_migrate_destination` returns. The
 updated `InstanceNUMATopology` will continue to be propagated as part of
 `migrate_data`, eventually reaching the source. The source's libvirt driver
@@ -159,7 +159,7 @@ summarised in the following diagram.::
           |                                                              |                                            |            |-----------------------------------| |
           |                                                              |                                            |                                                  |
 
-Exhanging instance NUMA topologies is done early (in
+Exchanging instance NUMA topologies is done early (in
 `check_can_live_migrate_source` rather than `pre_live_migration`) in order to
 fail as fast as possible if the destination cannot fit the instance. What
 happens when the compute hosts are not both running the updated handshake code
