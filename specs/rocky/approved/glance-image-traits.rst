@@ -12,7 +12,7 @@ https://blueprints.launchpad.net/nova/+spec/glance-image-traits
 
 This blueprint proposes to extend the granular scheduling of compute instances
 to use traits provided by glance image metadata in addition to the traits
-provided by the flavor.
+provided by the flavor [1]_.
 
 Problem description
 ===================
@@ -88,6 +88,25 @@ request group from the flavor.
 Based on the `ironic driver traits spec`_ implemented we need to send image
 traits to ironic similar to how we are sending `extra_specs` traits to ironic.
 
+**Dealing with rebuild**
+
+In case of rebuild with new image(host and flavor staying the same), we need to
+make sure the image traits(if updated) are taken into account. Ideally the
+scheduler would request new candidates from placement and makes sure the
+current host is part of that list, but this is problematic in-case the compute
+is close to full as the current host will be excluded. This is described in the
+issue `rebuild should not check with placement`_.
+
+To resolve the above, the conductor can do `pre-flight` checks on the rebuild
+request to make sure the image traits can still be accommodated within the
+current allocations for that instance.
+
+The conductor can request current allocations for the instance using
+`GET /allocations/{instance_uuid}` and collect all the resource providers and
+their corresponding traits from the allocations. It can then check to see if
+any of the requested image traits are missing from the set of traits above.
+If there are any missing traits, we can fail the rebuild.
+
 Alternatives
 ------------
 
@@ -102,7 +121,7 @@ One other aspect to look at would be, because the flavor describes both the
 quantitative and qualitative aspects of the request, the number of flavors will
 need to increase substantially if we are given a mix of workloads.
 
-In a typical openstack installation with 7 flavors(nano -> xlarge) if we need
+In a typical Openstack installation with 7 flavors(nano -> xlarge) if we need
 to add one trait to each of the flavors we will end up with 14 flavors. If we
 need to add combinations of traits along with the quantitative aspects, this
 number will grow pretty quickly.
@@ -119,6 +138,62 @@ filter to filter select hosts within specific host aggregates. Host aggregate
 metadata is not standardized unlike the traits and also requires host
 aggregates to be pre-created with duplicated standard traits which is not
 ideal.
+
+**Dealing with rebuild**
+
+see `rebuild should not check with placement`_
+
+*Alternative 1*
+
+If the image's required traits have changed from the original image, we can
+reject the rebuild request at the API layer with a clear error message. This is
+a simpler approach but comes with draw backs.
+
+In scenarios where a user is trying to do a rebuild that should be valid, the
+request would get rejected because old image traits != new image traits. It
+seems like unnecessary user and admin pain.
+
+*Alternative 2*
+
+The scheduler can request traits of current host using the existing
+`GET /resource_providers/{UUID}/traits` API and try to match the
+traits returned for the current host against the traits specified in the image.
+
+If the traits do not match, `NoValidHost` exception will be raised before the
+filters are run. If the traits match, then the request will continue to be
+processed as it does currently(passing through the various filters etc)
+
+Potential issue with this is that the traits on the image maybe attached to a
+nested resource provider under the compute node. For example, in case the
+instance is running on a host which has two SRIOV nic's. One is normal SRIOV
+nic, another one with some kind of offload feature.
+
+So, the original request is::
+
+    resources=SRIOV_VF:1
+
+The instance gets a VF from the normal SRIOV nic.
+
+But with the new image, the new request is::
+
+    resources=SRIOV_VF:1
+    traits=HW_NIC_OFFLOAD_XX
+
+To handle nested resource providers and gather their traits we might need to
+make multiple `GET /resource_providers/{UUID}/traits` for every resource
+provider present in the tree.
+
+Ideally this request should fail since we can't ensure we allocated VF from the
+other SRIOV PF.
+
+This alternative can also be implemented in the ImagePropertiesFilter in case
+of rebuild. But this is not ideal since none of the other filters make any API
+calls during the filtering process.
+
+*Other alternatives*
+
+Few other alternatives have been discussed on the ML [2]_.
+
 
 Data model impact
 -----------------
@@ -183,6 +258,8 @@ Work Items
 * Update `ImageMetaProps` class to return traits
 * Update Nova Scheduler to extract properties from `ImageMeta` and pass them
   to the Placement API
+* Update Nova Conductor to validate the image traits match the existing
+  allocations for the instance during a rebuild
 * Need to update the ironic virt driver to push traits from images to nodes
   based on `ironic driver traits spec`_
 
@@ -208,10 +285,13 @@ Documentation Impact
 References
 ==========
 
-http://specs.openstack.org/openstack/nova-specs/specs/queens/approved/request-traits-in-nova.html
+.. [1] http://specs.openstack.org/openstack/nova-specs/specs/queens/approved/request-traits-in-nova.html
+
+.. [2] http://lists.openstack.org/pipermail/openstack-dev/2018-April/129726.html
 
 .. _ironic driver traits spec: https://review.openstack.org/#/c/508116/
 .. _granular request groups: http://specs.openstack.org/openstack/nova-specs/specs/rocky/approved/granular-resource-requests.html#numbered-request-groups
+.. _rebuild should not check with placement: https://bugs.launchpad.net/nova/+bug/1750623
 
 History
 =======
