@@ -1,8 +1,8 @@
-================================================
-Libvirt driver emulator threads placement policy
-================================================
+=====================================================================
+Overhead option to differ hypervisor process on a global set of pCPUs
+=====================================================================
 
-https://blueprints.launchpad.net/nova/+spec/libvirt-emulator-threads-policy
+https://blueprints.launchpad.net/nova/+spec/overhead-pin-set
 
 The Nova scheduler and the placement API determine CPU resource
 utilization and instance CPU placement based on the number of vCPUs in
