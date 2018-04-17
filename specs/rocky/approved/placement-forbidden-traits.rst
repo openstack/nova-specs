@@ -62,11 +62,11 @@ understood to mean "not".
 
 More specifics below.
 
-.. note:: This spec does not enumerate any changes required in nova-scheduler's
-          handling of flavor extra specs or image metadata to pass not-required
-          traits to the placement API. Such work should be explained in its own
-          spec. However, the existing handling of traits in Nova is important
-          when considering the syntax; see the alternative below.
+.. note:: Although this spec does not enumerate any changes required in
+          nova-scheduler's handling of flavor extra specs or image metadata to
+          pass not-required traits, we plan that the format will mirror the
+          format used for required traits and be
+          ``trait:$TRAIT_NAME=forbidden``.
 
 Alternatives
 ------------
