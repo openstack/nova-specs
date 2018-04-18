@@ -222,6 +222,18 @@ Notifications impact
 Please specify any changes to notifications. Be that an extra notification,
 changes to an existing notification, or removing a notification.
 
+Consider proposing changes to the versioned notifications:
+
+* When the feature adds or removes fields to the API responses. For example
+  when the feature adds a new field to the ``GET /servers`` API response
+  consider adding similar information to the payload of the instance action
+  notifications
+* When the feature adds a new action to the existing API entities. For example
+  adding a new action to the server might mean you want to emit a corresponding
+  new instance action notification
+* When the feature adds a new resource (noun) to the REST API consider adding
+  new notifications about the creation and deletion of such resource
+
 Other end user impact
 ---------------------
 
