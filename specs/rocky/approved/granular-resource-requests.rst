@@ -18,11 +18,14 @@ exercised, it becomes necessary to be able to express:
   the *same* resource class with a *different* set of traits.
 
 * _`Requirement 2`: Ensuring that requests of certain resources are allocated
-  from the same resource provider.
+  from the *same* resource provider (affinity).
 
-* _`Requirement 3`: The ability to spread allocations of effectively-identical
+* _`Requirement 3`: Ensuring that requests of certain resources are allocated
+  from *different* resource providers (anti-affinity).
+
+* _`Requirement 4`: The ability to spread allocations of effectively-identical
   resources across multiple resource providers in situations of high
-  saturation.
+  saturation ("any fit").
 
 This specification attempts to address these requirements by way of a numbered
 syntax on resource and trait keys in flavor extra_specs and the ``GET
@@ -154,6 +157,22 @@ This demonstrates *both* `Requirement 1`_ and `Requirement 2`_.
 
 Use Case 4
 ~~~~~~~~~~
+In a high-availability scenario, request **two VFs on NET1 from different
+PFs.**
+
+Expect:
+
+* ``[RP1(SRIOV_NET_VF:1), RP3(SRIOV_NET_VF:1)]``
+
+But **not** either of:
+
+* ``[RP1(SRIOV_NET_VF:2)]``
+* ``[RP3(SRIOV_NET_VF:2)]``
+
+This demonstrates `Requirement 3`_.
+
+Use Case 5
+~~~~~~~~~~
 As an Operator, I need to be able to express a request for more than one VF and
 have the request succeed even if my PFs are nearly saturated.  For this use
 case, assume that **each PF resource provider has only two VFs unallocated**.
@@ -161,7 +180,7 @@ I need to be able to express a request for **four VFs on NET1**.
 
 Expect: ``[RP1(SRIOV_NET_VF:2), RP3(SRIOV_NET_VF:2)]``
 
-This demonstrates `Requirement 3`_.
+This demonstrates `Requirement 4`_.
 
 Proposed change
 ===============
@@ -221,6 +240,8 @@ Logical Representation
                    ... },
     requiredX = [ TRAIT_XC, TRAIT_XD, ... ],
 
+    group_policy = "none"|"isolate"
+
 Semantics
 ~~~~~~~~~
 The term "results" is used below to refer to the contents of one item in the
@@ -232,9 +253,17 @@ response.
   "shared" is fully implemented, the same aggregate).
 * However, a numbered group will always return results from the *same* RP.
   This is to satisfy `Requirement 2`_.
-* Separate groups (numbered or un-numbered) may return results from the same
-  RP.  That is, you are not guaranteeing RP exclusivity by separating groups.
-  (If you want to guarantee such exclusivity, you need to do it with traits.)
+* With ``group_policy=none``, separate groups (numbered or un-numbered) may
+  return results from different RPs *or* the same RP (assuming isolation is not
+  otherwise forced e.g. via traits or inventory/usage constraints).
+* With ``group_policy=isolate``, numbered request groups are guaranteed to be
+  satisfied by *separate* RPs.  This applies only to numbered request groups.
+  That is, resources within the un-numbered group are still able to be provided
+  by any RPs in the tree (or aggregate); and there is no restriction between
+  the RPs satisfied by the un-numbered group and those satisfied by the
+  numbered groups.
+* The ``group_policy`` option is **required** when more than one numbered group
+  is specified; omitting it will result in a 400 error.
 * It is still not supported to repeat a resource class within a given (numbered
   or un-numbered) ``resources`` grouping, but there is no restriction on
   repeating a resource class from one grouping to the next.  The same applies
@@ -249,7 +278,7 @@ response.
   *resource_class*:*count* will never be split across multiple RPs.
   While such a split could be seen to be sane for e.g. VFs, it is clearly not
   valid for e.g. DISK_GB.  If you want to be able to split, use separate
-  numbered groups.  This satisfies `Requirement 3`_.
+  numbered groups.  This satisfies `Requirement 4`_.
 * Specifying a ``resources`` (numbered or un-numbered) without a corresponding
   ``required`` returns results unfiltered by traits.
 * It is an error to specify a ``required`` (numbered or un-numbered) without a
@@ -294,6 +323,14 @@ A given numbered ``resources`` or ``trait`` key may be repeated to specify
 multiple resources/traits in the same grouping, just as with the un-numbered
 syntax.
 
+Specify inter-group affinity policy via the ``group_policy`` key, which may
+have the following values:
+
+* ``isolate``: Different numbered request groups will be satisfied by
+  *different* providers.
+* ``none``: Different numbered request groups may be satisfied by different
+  providers *or* common providers.
+
 For example::
 
     resources:VCPU=2
@@ -307,6 +344,7 @@ For example::
     resources2:NET_EGRESS_BYTES_SEC:20000
     trait2:CUSTOM_PHYSNET_NET2=required
     trait2:HW_NIC_ACCEL_SSL=required
+    group_policy=isolate
 
 Syntax In the Placement API
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -326,8 +364,10 @@ For example::
         &required=HW_CPU_X86_AVX,CUSTOM_MAGIC
 
 **Proposed:** Allow the same syntax for numbered resource and trait groupings
-via the number being appended to the ``resources`` and ``required`` keywords.
-In the following example, groups 1 and 2 represent `Use Case 3`_::
+via the number being appended to the ``resources`` and ``required`` keywords,
+and require a ``group_policy`` to be specified when more than one numbered
+grouping is given.  In the following example, groups 1 and 2 represent `Use
+Case 3`_::
 
     GET /allocation_candidates?resources=VCPU:2,MEMORY_MB:2048
         &required=HW_CPU_X86_AVX,CUSTOM_MAGIC
@@ -335,6 +375,18 @@ In the following example, groups 1 and 2 represent `Use Case 3`_::
         &required1=CUSTOM_PHYSNET_NET1
         &resources2=SRIOV_NET_VF:1,NET_EGRESS_BYTES_SEC:20000
         &required2=CUSTOM_PHYSNET_NET2,HW_NIC_ACCEL_SSL
+        &group_policy=none
+
+The following example demonstrates the use of ``group_policy=isolate`` and
+represents `Use Case 4`_ by ensuring that the two VFs come from different
+providers, even though they are otherwise identical::
+
+    GET /allocation_candidates
+        ?resources1=SRIOV_NET_VF:1
+        &required1=CUSTOM_PHYSNET_NET1
+        &resources2=SRIOV_NET_VF:1
+        &required2=CUSTOM_PHYSNET_NET1
+        &group_policy=isolate
 
 There is no change to the response payload syntax.
 
@@ -356,12 +408,10 @@ Alternatives
   simple) enhancements to the querystring syntax of the existing ``GET
   /allocation_candidates`` API.
 
-* It has been suggested to include (or at least keep the way open for) syntax
-  that would allow the user to express (anti-)affinity of resources.  The
-  change proposed by this spec leaves a small niche of affinity-related use
-  cases unsatisfied.  The scope and exact form of, and real-world need for,
-  these use cases is poorly understood at this time, and is therefore not
-  addressed by this specification.
+* Much discussion has occurred around whether and how to satisfy both
+  anti-affinity (`Requirement 3`_) and "any fit" (`Requirement 4`_).  See the
+  `separate_providers proposal`_, the `can_split proposal`_, and the `mailing
+  list thread`_ for details.
 
 Data model impact
 -----------------
@@ -505,6 +555,9 @@ References
 .. _`Nested Resource Providers`: https://specs.openstack.org/openstack/nova-specs/specs/queens/approved/nested-resource-providers.html
 .. _`Placement API`: https://developer.openstack.org/api-ref/placement/#list-allocation-candidates
 .. _`Placement Devref`: https://docs.openstack.org/nova/latest/user/placement.html
+.. _`separate_providers proposal`: https://review.openstack.org/#/c/561717/
+.. _`can_split proposal`: https://review.openstack.org/#/c/560974/
+.. _`mailing list thread`: http://lists.openstack.org/pipermail/openstack-dev/2018-April/129477.html
 
 History
 =======
