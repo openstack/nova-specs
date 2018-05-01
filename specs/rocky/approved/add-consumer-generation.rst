@@ -55,46 +55,171 @@ As this is an API change, a new microversion will be created. Any older service
 that does not support this new microversion will continue to work, but will be
 susceptible to the race condition described above.
 
-There will be no changes to the ``allocations`` table, but there will be
-changes to the Allocation and AllocationList objects. Allocation will have a
-``consumer_generation`` nullable IntegerField added, and AllocationList will
-have a ``enforce_consumer_generation`` BooleanField added, with a default of
-False to preserve old behavior. These fields are needed to to pass the consumer
-generation information from the API layer to the object layer. They will not be
-persisted to the database.
+.. note::
 
-Below is a summary of the behaviors after this change is made:
+    The term "Microversion 1.X" is used here to indicate the microversion that
+    will be added for this new functionality. "Microversion 1.X-1" is used to
+    refer to the microversion directly preceding the one added for this new
+    functionality.
 
-When there is no existing consumer record:
+.. warning::
 
-* Old microversion: always succeeds, and new consumer record created. Since
-  calls using older microversions may not pass the project_id and user_id in
-  the request, those columns in the consumers table will be changed to allow
-  null values. In that case, the consumer record will contain the consumer ID
-  and the generation, but the project_id and user_id columns will be NULL.
+    Two clients operating on the *same* allocation, one of which using a
+    pre-generation microversion is an unsafe operation.
 
-* New microversion, CG = None: Success. Since there is no existing record,
-  passing None indicates that the caller's view of the state of the consumer
-  matches reality.
+In order to ensure that a consumer record exists for all allocation records, we
+will add an online data migration that will find any consumer UUIDs in the
+allocations table that have no corresponding record in the consumers table and
+populate a record in the consumers table with that UUID. Because we do not want
+the consumers.project_id and consumers.user_id columns to be NULLable, we will
+add two CONF options for indicating the project and user external identifier to
+use for missing consumer records.
 
-* New microversion, CG = <anything other than None>: Fail. A 409 Conflict will
-  be the response, as the view of the state of the consumer for the caller is
-  not in sync with the database.
+``PUT /allocations/{consumer_uuid}``
+------------------------------------
 
-When there is an existing consumer record:
+The below sections detail the behavior expected from the ``PUT
+/allocations/{consumer_uuid}`` call.
 
-* Old microversion: always succeeds. The value of the generation field will be
-  incremented, but the other fields will remain untouched.
+No existing allocation records for the consumer
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-* New microversion, CG = None: Fail. The caller beieves there is no existing
-  consumer, and so is not in sync.
+When there **ARE NO** existing allocation records that referenced this
+consumer UUID, the call will exhibit the following behavior:
 
-* New microversion, CG = <anything other than current gen in DB>: Fail. Again,
-  something else has modified the allocations for the consumer, and the caller
-  is not in sync.
+* Microversion <1.8: always succeeds. A consumer record is always created, and
+  the value of ``CONF.placement.incomplete_consumer_{project|user}_id`` will be
+  used for the missing project and user identifiers. A generation will be
+  created for this new consumer record.
 
-* New microversion, CG = <matches DB>: Success.
+* Microversion 1.8 - 1.X-1: always succeeds, and consumer record is always
+  created with the ``project_id`` and ``user_id`` present in the request
+  payload. A generation will be created for this new consumer record
 
+* Microversion 1.X: A new ``consumer_generation`` field will be required in the
+  request payload. It will be required to be ``None`` in order to indicate the
+  caller expects that this is a new consumer. A new consumer record will be
+  created with a generation.
+
+Existing allocation records, but no consumer record for the consumer
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In this situation, there **ARE** existing allocation records that referenced
+this consumer UUID, however there **ARE NO** consumer records that reference
+the consumer UUID. This means the allocation records were created prior to
+microversion 1.8 *and* the online data migration that creates incomplete
+consumer records has *not yet run*.
+
+In this case, the call will exhibit the following behavior:
+
+* Microversion <1.8: always succeeds. A consumer record is always created, and
+  the value of ``CONF.placement.incomplete_consumer_{project|user}_id`` will be
+  used for the missing project and user identifiers. A generation will be
+  created for this new consumer record.
+
+* Microversion 1.8 - 1.X-1: always succeeds, and consumer record is always
+  created with the ``project_id`` and ``user_id`` present in the request
+  payload. A generation will be created for this new consumer record
+
+* Microversion 1.X: A new ``consumer_generation`` field will be required in the
+  request payload. It will be required to be ``None`` in order to indicate the
+  caller understands the allocation was created with an older microversion.
+
+Existing allocation records, existing consumer record for the consumer
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In this final situation, there **IS** an existing consumer record as well as
+allocation records that reference the consumer. The allocations must have been
+created at or after microversion 1.8 *or* the online data migration that
+creates incomplete consumer records has *already run*.
+
+In this case, the call will exhibit the following behavior:
+
+* Microversion <1.X: always succeeds and always overwrites the consumer's
+  allocations entirely. The placement service will read the consumer's current
+  generation before attempting to replace the allocations, and increment that
+  generation at the end of the allocation replacement transaction.
+
+* Microversion 1.X: A new ``consumer_generation`` field will be required in the
+  request payload. It will be required to be match the value of the consumer's
+  known generation. Placement will check that its known generation matches the
+  given generation and return a ``409 Conflict`` if there is a mismatch.
+  Furthermore, if another process modifies the same consumer's allocations
+  concurrently to the request, the generation increment will fail for the
+  consumer and a ``409 Conflict`` will be returned indicating a concurrent
+  write occurred. The caller should then re-read the consumer's generation,
+  evaluate if the original allocation request is still valid, and if so,
+  re-issue the allocation request.
+
+``POST /allocations``
+---------------------
+
+This variant of creating allocations was introduced in microversion 1.13 and
+required a project and user to be specified for one or more consumers involved
+in the allocation.
+
+No existing allocation records for the consumer
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When there **ARE NO** existing allocation records that referenced this
+consumer UUID, the call will exhibit the following behavior:
+
+* Microversion 1.13 - 1.X-1: always succeeds, and consumer records are always
+  created since ``project_id`` and ``user_id`` will always be present. A
+  generation will be created for these new consumer records
+
+* Microversion 1.X: A new ``consumer_generation`` field will be required in the
+  request payload **for each consumer allocation section**. It will be required
+  to be ``None`` in order to indicate the caller expects that this is a new
+  consumer.
+
+Existing allocation records, but no consumer record for the consumer
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When there **IS NOT** an existing consumer record, however there exist
+allocation records for consumers referenced in the request, that means that a
+user previously created allocations for that consumer using microversion <1.8.
+
+In this case, the call will exhibit the following behavior:
+
+* Microversion 1.13 - 1.X-1: always succeeds, and consumer records are always
+  created since ``project_id`` and ``user_id`` will always be present. A
+  generation will be created for these new consumer records
+
+* Microversion 1.X: A new ``consumer_generation`` field will be required in the
+  request payload **for each consumer allocation section**. It will be required
+  to be ``None`` in order to indicate the caller expects that this is a new
+  consumer.
+
+Existing allocation records, existing consumer record for the consumer
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When there **IS** an existing consumer record, the call will exhibit the
+following behavior:
+
+* Microversion 1.13 - 1.X-1: always succeeds, the existing consumer records
+  will have their generation automatically incremented with no protection
+  against concurrent updates
+
+* Microversion 1.X: A new ``consumer_generation`` field will be required in the
+  request payload **for each consumer allocation section**. It will be required
+  to be equal to the value of the consumer's known generation. Placement will
+  check that its known generation matches the given generation and return a
+  ``409 Conflict`` if there is a mismatch. Furthermore, if another process
+  modifies the same consumer's allocations concurrently to the request, the
+  generation increment will fail for the consumer and a ``409 Conflict`` will
+  be returned indicating a concurrent write occurred and the caller should
+  re-read the consumer's generation and retry its request as appropriate.
+
+``DELETE /allocations/{uuid}``
+------------------------------
+
+There are no changes to ``DELETE /allocations/{uuid}``. We were unable to find
+a way to supply a consumer generation in the ``DELETE /allocations/{uuid}``
+call.
+
+Generation-safe deletions need to be done via PUT/POST with an empty
+allocations dict.
 
 Alternatives
 ------------
@@ -103,6 +228,9 @@ We could modify the way that allocations are handled, and allow for a PATCH
 method to avoid accidentally overwriting another service's allocations. While
 this will also address the race condition, it was not favored by many in the
 discussions we had at the Rocky PTG.
+
+We considered adding the generation to a header, queryparam, and payload on
+DELETE but couldn't conscion the inconsistency.
 
 Data model impact
 -----------------
@@ -164,11 +292,14 @@ REST API impact
         'consumer_generation': CONSUMER_GENERATION
     }
 
-  The PUT and DELETE methods will be changed to require consumer generation,
-  and will return a 409 Conflict if the supplied generation does not match the
-  current value in the consumers table. Currently the consumer_uuid is obtained
-  from the request environ; with this change, consumer_generation will also be
-  required. If it is missing, a 400 Bad Request will be returned.
+  The PUT method will be changed to require consumer generation, and will
+  return a 409 Conflict if the supplied generation does not match the current
+  value in the consumers table. See above for detailed explanation of the
+  expected behavior.
+
+  In addition to the above changes, we will also be modifying the PUT method to
+  accept empty allocations. This will allow similar behaviour to POST and
+  facilitate a concurrent-update-safe DELETE operation for allocations.
 
 * /allocations - The POST method accepts multiple allocations, and the schema
   will be modified in a new version to add a required value for
@@ -198,6 +329,8 @@ REST API impact
         # This will be a new required field in the POST request
         "consumer_generation"
     ]
+
+POST will be changed to require consumer generation per consumer section.
 
 Security impact
 ---------------
@@ -239,8 +372,17 @@ conflict.
 Upgrade impact
 --------------
 
-None
+A new online data migration hook will be added that will ensure consumer
+records are created for any allocation that references a consumer UUID that has
+no corresponding record in the consumers table. Two new CONF options --
+``CONF.placement.incomplete_consumer_project_id`` and
+``CONF.placement.incomplete_consumer_user_id`` will allow the deployer to set a
+particular project or user UUID to use when creating missing consumer records
+for allocations that were created prior to microversion 1.8.
 
+Running the existing ``nova-manage db online_data_migrations`` CLI command will
+automatically run this online data migration to create missing consumer
+records.
 
 Implementation
 ==============
@@ -253,6 +395,7 @@ Primary assignee:
 
 Other contributors:
   cdent
+  jaypipes
 
 Work Items
 ----------
