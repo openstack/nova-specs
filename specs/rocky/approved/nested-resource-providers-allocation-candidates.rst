@@ -62,11 +62,6 @@ would expect to get back 1 allocation request containing the PF which has the
 required trait.  However, we currently get 0 results since the calculation of
 allocation candidates is not "nested aware".
 
-In addition, we need to adapt the placement service to return all providers in
-a particular provider tree that match the search criteria. This is so that
-callers -- like the filter scheduler in nova -- can use this hierarchy
-information in making further sorting or filtering decisions.
-
 Use Cases
 ---------
 
@@ -80,6 +75,88 @@ understands that when provider trees are present, a resource may be provided by
 a child provider. When evaluating required traits, the placement service must
 ensure that traits are associated with the providers that are actually
 supplying the inventory to meet the allocation request.
+
+Namely, with the host described in `Problem description`_,
+
+.. code::
+
+    GET /allocation_candidates?resources=VCPU:2,SRIOV_NET_VF=1
+
+would provide the following result:
+
+.. code-block:: javascript
+
+    {
+        "allocation_requests": [
+            {
+                "allocations": {
+                    "35791f28-fb45-4717-9ea9-435b3ef7c3b3": {
+                        "resources": {
+                            "VCPU": 2
+                        },
+                    },
+                    "7d2590ae-fb85-4080-9306-058b4c915e3f": {
+                        "resources": {
+                            "SRIOV_NET_VF": 1
+                        },
+                    },
+                },
+            },
+            {
+                "allocations": {
+                    "35791f28-fb45-4717-9ea9-435b3ef7c3b3": {
+                        "resources": {
+                            "VCPU": 2
+                        },
+                    },
+                    "99c09379-6e52-4ef8-9a95-b9ce6f68452e": {
+                        "resources": {
+                            "SRIOV_NET_VF": 1
+                        },
+                    },
+                },
+            },
+        ],
+        "provider_summaries": {
+            "35791f28-fb45-4717-9ea9-435b3ef7c3b3": {
+                "resources": {
+                    "VCPU": {
+                        "used": 0,
+                        "capacity": 16
+                    },
+                "traits": []
+                },
+            },
+            "7d2590ae-fb85-4080-9306-058b4c915e3f": {
+                "resources": {
+                    "SRIOV_NET_VF": {
+                        "used": 0,
+                        "capacity": 4
+                    },
+                "traits": []
+                },
+            },
+            "99c09379-6e52-4ef8-9a95-b9ce6f68452e": {
+                "resources": {
+                    "SRIOV_NET_VF": {
+                        "used": 0,
+                        "capacity": 4
+                    },
+                },
+                "traits": [
+                    "HW_NIC_OFFLOAD_GRO"
+                ]
+            },
+        },
+    }
+
+Note that in ``provider_summaries`` we will show only resource providers that
+are in ``allocation_requests``.
+
+We'd also like to adapt the placement service to return all providers in a
+particular provider tree that match the search criteria in
+``provider_summaries``. This is sequentially enabled by another spec,
+`Return resources of entire trees in Placement`_.
 
 Alternatives
 ------------
@@ -170,4 +247,6 @@ providers are present in the system.
 References
 ==========
 
-None
+* `Return resources of entire trees in Placement`_ spec
+
+.. _`Return resources of entire trees in Placement`: https://blueprints.launchpad.net/nova/+spec/placement-return-all-resources
