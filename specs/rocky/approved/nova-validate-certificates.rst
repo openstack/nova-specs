@@ -75,6 +75,14 @@ requirements for a certificate manager. In the future, any OpenStack or
 third-party service that is supported by castellan and provides certificate
 management could be used instead of barbican.
 
+Note also that booting an instance from an existing volume is currently
+incompatible with trusted certificate validation. The block storage service
+does not have a method for associating trusted certificates with image data
+stored in a volume. If trusted certificate validation is enabled and an
+instance is booted from a volume, there is no way for certificate validation
+to proceed. Therefore, all attempts to boot-from-volume with certificate
+validation will result in a build error.
+
 Proposed change
 ===============
 
@@ -189,7 +197,29 @@ TrustedCerts object for instances to reference.
 The above change has been implemented and awaits additional nova feedback.
 See [11] and [12] for more information.
 
-The seventh change updates the novaclient/openstackclient to support the
+The seventh change updates the InstancePayload notification base, adding in
+trusted certificate IDs to the create and rebuild instance notifications.
+This will help users and administrators identify when their instances are
+leveraging certificate validation and can assist in diagnosing validation
+failures when they occur.
+
+The eighth change updates the control flow for booting instances from
+volumes, intercepting these requests if certificate validation is enabled and
+generating a build failure instead. Certificate validation cannot be supported
+in these cases until the underlying block storage service supports mapping
+trusted certificate information to instance data [19].
+
+The ninth change adds new policy rules around the use of trusted
+certificates, allowing nova administrators to easily enable/disable
+certificate validation if their deployments can/cannot support the feature.
+Specifically, new policy rules will be added for the server create and rebuild
+requests. If either request is made and trusted certificates are provided,
+the policy checker will verify that the operation is allowed. If not, a
+PolicyNotAuthorized exception will be raised to fail the request. This is
+useful in cases where a deployment supports boot-from-volume (see the seventh
+change above) or supports virtualization drivers aside from libvirt.
+
+The tenth change updates the novaclient/openstackclient to support the
 trusted_image_certificates parameter for the server create/rebuild commands.
 This includes support for a new environment variable,
 OS_TRUSTED_CERTIFICATE_IDS, that can be used to define a comma-delimited list
@@ -209,7 +239,7 @@ certificate for certificate validation. In this case there would be no way to
 determine if the image's signing certificate is trusted so signature
 verification would fail, in turn failing server creation.
 
-The eighth and final change updates the output of the server show command to
+The eleventh and final change updates the output of the server show command to
 include the list of trusted certificate IDs stored with the server instance
 data. If no certificate IDs are stored with the server instance data, the
 output from the server show command will still contain the new key
@@ -358,7 +388,13 @@ security of the signed image verification feature is improved.
 Notifications impact
 --------------------
 
-None
+With the addition of trusted certificate information to the InstanceExtra data
+model, create and rebuild instance notifications should be updated to include
+the trusted certificate IDs for a specific instance. Specifically, the
+InstanceCreatePayload and InstanceActionRebuildPayload should be updated to
+include a 'trusted_image_certificates' field that will contain the list of
+trusted certificate IDs obtained from the instance associated with the
+notification.
 
 Other end user impact
 ---------------------
@@ -415,6 +451,12 @@ deployments looking to enable this feature. If these options are enabled, all
 prior usage of the server create/rebuild API when booting signed images will
 now fail if trusted certificates cannot be located.
 
+The inclusion of new policy rules controlling the usage of certificate
+validation will make it easy for administrators to enable or disable the
+feature if their deployment supports other features that are incompatible with
+certificate validation, like boot-from-volume support and non-libvirt based
+virtualization.
+
 Developer impact
 ----------------
 
@@ -459,6 +501,13 @@ Work Items
   create and rebuild commands. The value of this parameter will need to be
   passed through to the signature verification step when downloading the image
   from glance. See [14].
+* Add a new notification field, 'trusted_image_certificates', to the
+  InstanceCreatePayload and InstanceActionRebuildPayload. See [20].
+* Modify the control flow for booting an instance from a volume to generate
+  a build error when certificate validation is enabled.
+* Add new policy rules to allow simple enable/disable control for certificate
+  validation if a deployment supports features that are incompatible with
+  certificate validation.
 * Update novaclient to support the trusted_image_certificates parameter.
 * Update novaclient to pull the value of the OS_TRUSTED_CERTIFICATE_IDS
   environment variable when the trusted_image_certificates parameter is not
@@ -532,6 +581,10 @@ References
 
 [18] "Add certificate validation scenario tests." https://review.openstack.org/#/c/515210/
 
+[19] "Support image signature verification." https://review.openstack.org/#/c/384143/
+
+[20] "Add notification support for trusted_certs." https://review.openstack.org/#/c/563269/
+
 History
 =======
 
@@ -557,6 +610,8 @@ during each development cycle.
     - Approved
   * - Rocky
     - Re-proposed for official review
+    - Approved
+    - Amended and re-proposed for official review
 
 Newton
 ------
@@ -630,3 +685,7 @@ Rocky
 Version 18 duplicated Version 17 as a clean state for the Rocky review
 process. Version 19 added minor updates, including updated blueprint and
 code review links.
+
+Version 20 incorporates reviewer feedback, including updates on notification
+changes for instances, the inclusion of new policy rules, and associated
+error handling when certificate validation is used with boot-from-volume.
