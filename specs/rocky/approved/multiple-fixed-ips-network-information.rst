@@ -122,6 +122,16 @@ JSON Response::
                   "10.184.0.244/20",
                   "10.184.0.245/20"
                 ],
+                "services": [
+                    {
+                        "type": "dns",
+                        "address": "8.8.8.8"
+                    },
+                    {
+                        "type": "dns",
+                        "address": "8.8.4.4"
+                    }
+                ],
                 "routes": [
                     {
                         "network": "192.168.0.0",
@@ -145,6 +155,16 @@ JSON Response::
                 "ip_addresses": [
                   "2001:db8::3257:9652/24"
                 ],
+                "services": [
+                    {
+                        "type": "dns",
+                        "address": "1:2:3:4::"
+                    },
+                    {
+                        "type": "dns",
+                        "address": "2:3:4:5::"
+                    }
+                ],
                 "routes": [
                     {
                         "network": "::",
@@ -167,6 +187,14 @@ JSON Response::
             {
                 "type": "dns",
                 "address": "8.8.4.4"
+            },
+            {
+                "type": "dns",
+                "address": "1:2:3:4::"
+            },
+            {
+                "type": "dns",
+                "address": "2:3:4:5::"
             }
         ]
     }
