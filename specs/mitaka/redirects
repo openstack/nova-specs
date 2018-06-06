@@ -36,3 +36,4 @@ approved/virt-driver-cpu-thread-pinning.rst ../implemented/virt-driver-cpu-threa
 approved/vmware-limits.rst ../implemented/vmware-limits.rst
 approved/vmware-opaque-network-support.rst.rst ../implemented/vmware-opaque-network-support.rst
 approved/volume-ops-when-shelved.rst ../implemented/volume-ops-when-shelved.rst
+approved/sriov_pf_neutron_port.rst sriov-pf-passthrough-neutron-port.rst
