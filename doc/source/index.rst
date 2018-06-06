@@ -14,6 +14,7 @@ on for the upcoming release. This is the output of those discussions:
    :glob:
    :maxdepth: 1
 
+   priorities/stein-priorities
    priorities/rocky-priorities
    priorities/queens-priorities
    priorities/pike-priorities
@@ -32,6 +33,7 @@ Here you can find the specs, and spec template, for each release:
    :glob:
    :maxdepth: 1
 
+   specs/stein/index
    specs/rocky/index
    specs/queens/index
    specs/pike/index
