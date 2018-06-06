@@ -215,9 +215,9 @@ Other end user impact
 ---------------------
 
 This change will require in-guest agent such as cloud-init to read and
-parse the new configuration drive version to benefit from it.
+parse the new metadata version to benefit from it.
 Older in-guest agent versions will continue to read from the previous
-version.
+metadata version.
 
 Performance Impact
 ------------------
