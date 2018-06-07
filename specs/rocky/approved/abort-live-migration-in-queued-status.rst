@@ -67,9 +67,9 @@ This spec will propose a design that can achieve the above mentioned goal:
   the current ``eventlet.spawn_n()`` + python ``Semaphore`` implementation.
   The size of the Thread Pool will be limited by
   ``CONF.max_concurrent_live_migrations``. When a live migration request
-  came in, we submit the ``_do_live_migration`` calls to the pool, and it
+  comes in, we submit the ``_do_live_migration`` calls to the pool, and it
   will return a ``Future`` object, we will use that later. If the pool is
-  full, the new comming request will be blocked and kept in ``queued``
+  full, the new request will be blocked and kept in ``queued``
   status.
 
 * Add a new ``_waiting_live_migration`` variable to the ``ComputeManager``
@@ -112,12 +112,31 @@ blocked by ``migration_uuid`` and then we can abort them:
   ``DELETE /servers/{id}/migrations/{migration_id}`` API to allow abort
   live migration in ``queued`` status. If the microversion of the request
   is equal or beyond the newly added microversion, API will check the
-  ``instance.host's`` nova-compute service version and make sure it is
-  new enough for the new support, if not, API will still return 400 as today.
+  ``instance.host's`` nova-compute service version before making RPC call
+  and make sure it is new enough for the new support, if not, API will
+  still return 400 as today.
+
+* The rpcapi interface will be modified to take migration object as parameter
+  thus we can make decision whether we can send rpc calls depend on target
+  compute version and migration status, we will still send migration.id in
+  the rpc call.
 
 * We will also add a cleanup to the pool when the compute manager is
-  shutting down. This can simply be done by calling
-  ``ThreadPoolExecutor.shutdown(wait=False)``.
+  shutting down. This part will be a trial-and-error during the
+  implementation as there are still some details to be figure out.
+  The principle here is that we don't want to block the shutdown of the
+  service on queued migrations, so we want to set those migrations to
+  ``cancelled`` status, cancel() the queue Future so the pool shutdown does
+  not block on it. The steps during cleanup_host are:
+
+  1. Shutdown the pool so we don't get new requests
+
+  2. For any queued migrations, set the migration status to ``cancelled``
+
+  3. Cancel the future using Future.cancel()
+
+  Step 2 and 3 might be interchangeable, we will find out the best order
+  in implementation.
 
 Alternatives
 ------------
@@ -190,9 +209,13 @@ Primary assignee:
 Work Items
 ----------
 
+* Convert compute manager to queue migrations with threads/futures
 * Create a new API microversion to allow abort live migrations in
   ``queued`` status.
-* Modify the Nova client to handle the new microversion.
+* Modify the rpcapi interface to take migration object as parameter
+  thus we can make decision whether we can send rpc calls depend on
+  target compute version and migration status.
+* Modify the python-novaclient to handle the new microversion.
 
 Dependencies
 ============
