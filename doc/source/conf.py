@@ -19,6 +19,7 @@ extensions = ['redirect',
               'sphinx.ext.viewcode',
               'oslosphinx',
               'yasfb',
+              'sphinxcontrib.seqdiag',
              ]
 
 todo_include_todos = True
@@ -75,3 +76,7 @@ htmlhelp_basename = 'Nova-Specsdoc'
 
 feed_base_url = 'http://specs.openstack.org/openstack/nova-specs'
 feed_author = 'OpenStack Nova Team'
+
+# -- seqdiag configuration -----------------------------------------------------
+seqdiag_html_image_format = 'SVG'
+seqdiag_antialias = True
