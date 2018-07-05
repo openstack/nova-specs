@@ -119,8 +119,14 @@ JSON Response::
                 "ip_address": "10.184.0.244",
                 "netmask": "255.255.240.0",
                 "ip_addresses": [
-                  "10.184.0.244/20",
-                  "10.184.0.245/20"
+                    {
+                        "address": "10.184.0.244",
+                        "netmask": "255.255.240.0"
+                    },
+                    {
+                        "address": "10.184.0.245",
+                        "netmask": "255.255.240.0"
+                    }
                 ],
                 "services": [
                     {
@@ -153,7 +159,10 @@ JSON Response::
                 "ip_address": "2001:db8::3257:9652",
                 "netmask": "ffff:ffff:ffff:ffff::",
                 "ip_addresses": [
-                  "2001:db8::3257:9652/24"
+                    {
+                        "address": "2001:db8::3257:9652",
+                        "netmask": "ffff:ffff:ffff:ffff::"
+                    }
                 ],
                 "services": [
                     {
