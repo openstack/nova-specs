@@ -85,7 +85,7 @@ from the down cell:
 #. ``nova list`` should return a minimalistic construct from the available
    information in the API DB which would include:
 
-   #. instance_uuid and project_id from the instance_mapping table.
+   #. created_at, instance_uuid and project_id from the instance_mapping table.
    #. status of the instance would be "UNKNOWN" which would be the major
       indication that the record for this instance is partial.
    #. rest of the field keys will be missing.
@@ -100,6 +100,8 @@ from the down cell:
    include:
 
    #. instance_uuid, created_at and project_id from the instance_mapping table.
+   #. status of the instance would be "UNKNOWN" which would be the major
+      indication that the record for this instance is partial.
    #. user_id, flavor, image and availability_zone from the request_spec table.
    #. power_state is set to NOSTATE.
    #. rest of the field keys will be missing.
@@ -119,10 +121,11 @@ from the down cell:
    instance_mapping table and prevent the boot request if it has. However it
    might not be desirable to block VM creation for users having VMs in multiple
    cells if a single cell goes down. Hence a new policy rule
-   ``os_compute_api:servers:create:cell_down`` which defaults to ``is_admin``
-   can be added by which the ability to create instances when a project has
-   instances in a down cell can be controlled between users/admin. Using this
-   deployments can configure their setup in whichever way they desire.
+   ``os_compute_api:servers:create:cell_down`` which defaults to
+   ``rule:admin_api`` can be added by which the ability to create instances
+   when a project has instances in a down cell can be controlled between
+   users/admin. Using this deployments can configure their setup in whichever
+   way they desire.
 
 For the 1st, 2nd and 4th operations to work when a cell is down, we need to
 have the information regarding if an instance is in SOFT_DELETED/DELETED state
@@ -313,6 +316,7 @@ JSON response body example::
                 "metadata": {}
             },
             {
+                "created": "2018-06-29T15:07:29Z",
                 "status": "UNKNOWN",
                 "tenant_id": "940f47b984034c7f8f9624ab28f5643c",
                 "id": "bcc6c6dd-3d0a-4633-9586-60878fd68edb",
@@ -337,8 +341,8 @@ When a cell DB cannot be connected, ``nova list``, ``nova show`` and
 ``nova service-list`` will work with the records from the down cell not having
 all the information. When these commands are used with filters/sorting/paging,
 the output will totally skip the down cell and return only information from the
-up cells. ``nova boot`` will not work if that tenant_id has any living
-instances in the down cell.
+up cells. As per default policy ``nova boot`` will not work if that tenant_id
+has any living instances in the down cell.
 
 Performance Impact
 ------------------
