@@ -174,7 +174,7 @@ References
 
 * https://github.com/openstack/os-brick
 
-* https://pypi.python.org/pypi/os-brick
+* https://pypi.org/project/os-brick
 
 History
 =======

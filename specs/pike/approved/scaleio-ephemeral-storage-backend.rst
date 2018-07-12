@@ -308,7 +308,7 @@ References
    `JuJu charm <https://jujucharms.com/u/cloudscaling/scaleio-openstack>`_,
    `Fuel plugin <https://github.com/openstack/fuel-plugin-scaleio>`_.
 
-.. [4] `Python ScaleIO client <https://pypi.python.org/pypi/siolib>`_.
+.. [4] `Python ScaleIO client <https://pypi.org/project/siolib>`_.
 
 History
 =======
