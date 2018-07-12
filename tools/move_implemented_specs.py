@@ -18,19 +18,7 @@ from __future__ import print_function
 import argparse
 import os
 
-from launchpadlib import launchpad
-
-LPCACHEDIR = os.path.expanduser('~/.launchpadlib/cache')
-
-
-def get_choices():
-    # 3-tuple (dirpath, dirnames, filenames)
-    for _, choices, _ in os.walk('specs'):
-        choices.remove('backlog')
-        choices.sort()
-        # Quit walking (release dirs are at the first level in 'specs')
-        break
-    return choices
+import lib
 
 
 def get_options():
@@ -43,7 +31,7 @@ def get_options():
                         help='Do everything except move the files.',
                         action='store_true')
     parser.add_argument('release', help='The release to process.',
-                        choices=get_choices())
+                        choices=lib.get_releases())
     return parser.parse_args()
 
 
@@ -56,11 +44,7 @@ def move_implemented_specs(release, verbose=False, dry_run=False):
     implemented_dir = os.path.join(cwd, 'specs', release, 'implemented')
     redirects_file = os.path.join(cwd, 'specs', release, 'redirects')
     approved_specs = os.listdir(approved_dir)
-    # NOTE(mriedem): We have to use the development API since getSpecification
-    # is not in the v1.0 API.
-    lp = launchpad.Launchpad.login_anonymously(
-        'move-specs', 'production', LPCACHEDIR, version='devel')
-    lp_nova = lp.projects['nova']
+    lp_nova = lib.get_lp_nova('move-specs')
     # yay for stats and summaries
     move_count = 0
     incomplete_count = 0
