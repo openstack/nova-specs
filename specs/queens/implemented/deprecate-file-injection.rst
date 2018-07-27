@@ -29,9 +29,8 @@ There are a few issues with nova's file injection support.
    behavior is to not honor the user request, at least when using libvirt
    which is by far the most widely deployed compute driver in nova. Note
    that the ``[libvirt]/inject_partition`` configuration option default value
-   has been to disable file injection `since the Icehouse release`_.
-
-.. _since the Icehouse release: https://review.openstack.org/#/c/70239/
+   has been to disable file injection
+   `since the Icehouse release <https://review.openstack.org/#/c/70239/>`_.
 
 #. It is not secure
 
