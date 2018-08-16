@@ -1,1 +1,0 @@
-../../rocky-template.rst
