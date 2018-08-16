@@ -23,6 +23,16 @@ from launchpadlib import launchpad
 LPCACHEDIR = os.path.expanduser('~/.launchpadlib/cache')
 
 
+def get_choices():
+    # 3-tuple (dirpath, dirnames, filenames)
+    for _, choices, _ in os.walk('specs'):
+        choices.remove('backlog')
+        choices.sort()
+        # Quit walking (release dirs are at the first level in 'specs')
+        break
+    return choices
+
+
 def get_options():
     parser = argparse.ArgumentParser(
         description='Move implemented specs for a given release. Requires '
@@ -33,14 +43,7 @@ def get_options():
                         help='Do everything except move the files.',
                         action='store_true')
     parser.add_argument('release', help='The release to process.',
-                        choices=['juno',
-                                 'kilo',
-                                 'liberty',
-                                 'mitaka',
-                                 'newton',
-                                 'ocata',
-                                 'pike',
-                                 'queens'])
+                        choices=get_choices())
     return parser.parse_args()
 
 
