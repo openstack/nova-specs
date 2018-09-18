@@ -1,0 +1,9 @@
+- project:
+    templates:
+      - openstack-specs-jobs
+    check:
+      jobs:
+        - openstack-tox-pep8
+    gate:
+      jobs:
+        - openstack-tox-pep8
