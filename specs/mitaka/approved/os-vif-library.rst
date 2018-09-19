@@ -753,7 +753,7 @@ the modern VIF type.
 References
 ==========
 
-The proposal to add a negotiation between Neuton and Nova for
+The proposal to add a negotiation between Neutron and Nova for
 vif port binding types. This is a pre-requisite for this spec
 
   https://review.openstack.org/#/c/190917/
