@@ -8,7 +8,7 @@
 Configure maximum number of volumes to attach
 =============================================
 
-https://blueprints.launchpad.net/nova/+spec/nova-improvement-of-maximum-attach-volumes-more-than-26-vols
+https://blueprints.launchpad.net/nova/+spec/conf-max-attach-volumes
 
 Currently, there is a limitation in the libvirt driver restricting the maximum
 number of volumes to attach to a single instance to 26. Depending on virt
