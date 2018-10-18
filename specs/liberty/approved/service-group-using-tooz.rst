@@ -218,5 +218,5 @@ Others:
   h/006674.html
 - http://lists.openstack.org/pipermail/openstack-dev/2015-April/062737.html
 
-.. _tooz: https://pypi.python.org/pypi/tooz
+.. _tooz: https://pypi.org/project/tooz
 .. _kazoo: http://kazoo.readthedocs.org/

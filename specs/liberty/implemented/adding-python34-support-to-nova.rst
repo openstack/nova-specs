@@ -174,8 +174,8 @@ Remaining dependencies not compatible with Python 3 yet:
   the RabbitMQ driver, until AMQP is ported to Python 3 too. A new version
   of ``oslo.messaging`` will be released in a few weeks.
 * ``mysql-python``: the fork `mysqlclient
-  <https://pypi.python.org/pypi/mysqlclient>`_ works on Python 3 and includes
-  bug fixes. There is also `PyMySQL <https://pypi.python.org/pypi/PyMySQL>`_,
+  <https://pypi.org/project/mysqlclient>`_ works on Python 3 and includes
+  bug fixes. There is also `PyMySQL <https://pypi.org/project/PyMySQL>`_,
   a driver fully implemented in Python which works on Python 3 too, but it has
   worse performances.
 * ``python-memcached``: see the pull request `Port memcache to Python 3

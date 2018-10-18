@@ -68,7 +68,7 @@ bump.
 A `microversion-parse`_ library already exists to facilitate this
 change.
 
-.. _microversion-parse: https://pypi.python.org/pypi/microversion_parse
+.. _microversion-parse: https://pypi.org/project/microversion_parse
 
 Alternatives
 ------------
