@@ -85,7 +85,7 @@ method will look up the API endpoint corresponding to the conf group from the
 Keystone service catalog using ``keystoneauth``.
 
 Conf groups supporting ``get_service_url()`` will include the following set of
-options, based on ``keystonauth1.adapter.Adapter``:
+options, based on ``keystoneauth1.adapter.Adapter``:
 
 - ``service_type``
 - ``service_name``
