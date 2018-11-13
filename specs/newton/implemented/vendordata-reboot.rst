@@ -68,7 +68,7 @@ Proposed change
 
 * Add a new flag, vendordata_providers, which is a list of the names of
   modules which add vendordata to the instance metadata. The current
-  vendordata_json module will be be presented as "StaticJSON" in this list.
+  vendordata_json module will be presented as "StaticJSON" in this list.
 
 * Add a new module which hooks the name "DynamicJSON" and which has a flag to
   configure a list of URLs to REST microservices which provide dynamic
