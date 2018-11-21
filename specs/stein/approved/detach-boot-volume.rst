@@ -104,12 +104,20 @@ When a boot volume is detached, we will set the root block device
 mapping(boot_index=0) with ``volume_id=None``, meaning that it's not
 attached to any volume.
 
-A new microversion will be added to the attach volume API. A new ``is_root``
-parameter will be allowed for requests with the new microversion or greater,
-indicating that the user is trying to attach a root volume. The attachment
-with this parameter will only be allowed if the instance is powered off or
-shelved_offloaded and it has a "no volume" block device mapping for the
-root device.
+A new microversion will be added to the show volume attachments API. We
+will expose the BDM ``boot_index`` field for GET request with the new
+microversion or greater, so that users can use this information when they
+detach volumes. This new microversion will also affect volume attach API.
+A new ``is_root``  parameter will be allowed for requests with the new
+microversion or greater, indicating that the user is trying to attach a
+root volume. The attachment with this parameter will only be allowed if
+the instance is powered off or shelved_offloaded.
+
+Currently Nova also allowed users to attach/detach volumes to servers in
+``PAUSED``, ``RESIZED`` and ``SOFT_DELETED`` states. As discussed in the
+maillist [4], the usecase of allowing attach/detach root volumes in these
+states is unclear and it could cause complexity in handling them, so we
+will not support attach/detach root volumes for these states in this spec.
 
 There are some specific considerations for detaching/attaching a root volume
 instances, here is what will happen:
@@ -129,7 +137,7 @@ instances, here is what will happen:
    Find the root BDM via BlockDeviceMappingList.root_bdm(); at this point
    the root BDM has a null attachment_id and volume_id.
 
-   Create a volume attachment record for the new root volume [4] and then
+   Create a volume attachment record for the new root volume [5] and then
    update the BDM's attachment_id and volume_id fields and save those to
    the DB.
 
@@ -138,9 +146,9 @@ instances, here is what will happen:
    it's a multiattach volume.
 
 The start and unshelve operation will be guarded with a check for the
-"no volume" block device mapping. An instance will not be allowed to
-start or unshelve when its boot volume has been detached unless another
-has been attached in its place.
+"no volume" block device mapping. An instance will not be allowed to start
+or unshelve when its boot volume has been detached unless another has been
+attached in its place.
 
 For dettach/attach volume for powered off instances, This would involve
 affecting the connection to the hypervisor on the compute node, thus
@@ -148,10 +156,10 @@ will depend on the ability of compute drivers. We are now aware of that
 ``libvirt``, ``vmaware`` and ``xen`` driver will be capable of doing this.
 The feature support matrix will be appropriately updated for this feature.
 
-There is a race condition identified in this bug [5] between volume
+There is a race condition identified in this bug [6] between volume
 operations and instance state changes. The same race condition will
 exist between the boot volume detach and the unshelve operations until
-that bug is fixed. That bug will be addressed by spec [6].
+that bug is fixed. That bug will be addressed by spec [7].
 
 Alternatives
 ------------
@@ -184,8 +192,11 @@ None
 REST API impact
 ---------------
 
-Add a new microversion for attach volume REST API to allow passing
-``is_root`` as a parameter.
+Add a new microversion for show volume attachments REST API to allow exposing
+the ``boot_index`` field.
+
+In the same microversion we will change attach volume REST API to allow
+passing ``is_root`` as a parameter.
 
 An attempt to detach a boot volume currently always returns the error:
 
@@ -275,9 +286,9 @@ The following changes are part of this spec.
 Dependencies
 ============
 
-This spec extends the volume operations enabled by [7].
+This spec extends the volume operations enabled by [8].
 
-There is a parallel (but not dependant) spec [6] that addresses bug [5].
+There is a parallel (but not dependant) spec [7] that addresses bug [6].
 That spec is not required for this one, but it is worth noting that this
 feature will benefit from the general bug fix dealt with there.
 
@@ -309,15 +320,18 @@ References
 [3] shelved_offload_time config option
     https://docs.openstack.org/nova/latest/configuration/config.html#DEFAULT.shelved_poll_interval
 
-[4] Cinder attachment create
+[4] Mailing list discussion about instance vm_state to allow detach/attach root
+    volume. http://lists.openstack.org/pipermail/openstack-discuss/2019-January/001344.html
+
+[5] Cinder attachment create
     https://github.com/openstack/nova/blob/85b36cd2f82ccd740057c1bee08fc722209604ab/nova/volume/cinder.py#L710
 
-[5] Volume operations should set task state.
+[6] Volume operations should set task state.
     https://bugs.launchpad.net/nova/+bug/1275144
 
-[6] https://blueprints.launchpad.net/nova/+spec/avoid-parallel-conflicting-api-operations
+[7] https://blueprints.launchpad.net/nova/+spec/avoid-parallel-conflicting-api-operations
 
-[7] Spec for volume-ops-when-shelved (Completed in Mitaka)
+[8] Spec for volume-ops-when-shelved (Completed in Mitaka)
     https://blueprints.launchpad.net/nova/+spec/volume-ops-when-shelved
 
 
