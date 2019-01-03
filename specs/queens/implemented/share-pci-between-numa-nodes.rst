@@ -110,13 +110,6 @@ configuration option. This option can have one of three values.
   integrated on to the dies of recent Intel Xeon chips, which hook into the QPI
   bus and therefore have no NUMA affinity [3]_.
 
-If both image and flavor properties are not set (equals ``None``) the
-``legacy`` policy will be used. If one of image *or* flavor property is not set
-(equals ``None``) but the other property is set then the value of the set
-property will be used. In a case of conflicts between flavor and image
-properties (both properties are set and they are not equal) an exception will
-be raised.
-
 The end result will be an option that looks something like this::
 
     [pci]
