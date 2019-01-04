@@ -94,6 +94,7 @@ simply control which counting method will be called by the pluggable quota
 system. For example (pseudo-code):
 
 ::
+
     if CONF.workarounds.disable_quota_usage_from_placement:
         CountableResource('cores', _cores_ram_count, 'cores')
         CountableResource('ram', _cores_ram_count, 'ram')
@@ -160,6 +161,11 @@ unavailable.
 Performance Impact
 ------------------
 
+There will be a performance impact for checking if data needs to be migrated at
+the time of the quota check. The impact can be reduced by caching the results
+of checks that indicate data migration has been completed for a project and
+avoid a useless check per project in that case.
+
 The change involves making external REST API calls to placement instead of
 doing a parallel scatter-gather to all cells. It might be slower to make the
 external REST API calls if all cells are fast responding. It might be faster to
@@ -184,12 +190,12 @@ populate the ``user_id`` field. The migration routine would look for mappings
 where ``user_id`` is None and query cells by corresponding ``project_id`` in
 the mapping. The query could filter on instance UUIDs, finding the ``user_id``
 values to populate in the mappings. This would implement the batched
-``nova-manage db online_data_migration`` way of doing the migration.
+``nova-manage db online_data_migrations`` way of doing the migration.
 
 We will also heal/populate an instance mapping on-the-fly when it is accessed
 during a server GET request. This would provide some data migration in the
-situation where an upgrade has not run ``nova-manage db online_data_migration``
-yet.
+situation where an upgrade has not run
+``nova-manage db online_data_migrations`` yet.
 
 In order to handle a live in-progress upgrade, we will need to be able to fall
 back on the legacy counting method for instances, cores, and ram if
@@ -199,7 +205,7 @@ the migration has not yet been run in order to fall back on the legacy counting
 method. We could have a check such as ``if count(InstanceMapping.id) where
 project_id=<project id> and user_id=None > 0``, then fall back on the legacy
 counting method to query cell databases. We should cache the results of the
-each migration done success check by ``project_id`` so we avoid needlessly
+each migration completeness check per ``project_id`` so we avoid needlessly
 checking a ``project_id`` that has already been migrated every time quota is
 checked.
 
@@ -278,6 +284,20 @@ This builds upon the work done in Pike to re-architect quotas to count
 resources.
 
 * http://specs.openstack.org/openstack/nova-specs/specs/pike/approved/cells-count-resources-to-check-quota-in-api.html
+
+This may also inadvertantly fix a bug we have where if the "recheck" quota
+check fails during the conductor check and the request is a multi-create, we
+will have all servers fall into ERROR state for the user to clean up. Because
+this change will count instance mappings for the instance count and instance
+mappings have almost [*]_ the same lifetime as build requests, we should not
+see the behavior of multi-create servers in ERROR state if they fail the quota
+"recheck" in conductor.
+
+* https://bugs.launchpad.net/nova/+bug/1716706
+
+.. [*] We create build request and instance mapping in separate database
+       transactions, so there is a tiny window where build request can exist
+       without a corrensponding instance mapping.
 
 History
 =======
