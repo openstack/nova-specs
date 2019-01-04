@@ -58,7 +58,7 @@ optionally executed, to make the running schema match the model.
 The existing schema management workflow is the 'db sync' command to
 nova-manage. This is managed by sqlalchemy-migrate and uses individual
 migration scripts. This workflow will remain for now, but is expected
-to be be removed at some future time, leaving the expand/contract
+to be removed at some future time, leaving the expand/contract
 workflow as the way to manage the database schema.
 
 Until the sqlalchemy-migrate workflow is removed, all schema changes
