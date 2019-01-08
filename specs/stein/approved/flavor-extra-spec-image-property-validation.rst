@@ -42,6 +42,7 @@ from all three operations: creation, rebuild, and resize.
 .. note:: Only things that are not virt driver specific are validated.
 
 Examples of validations to be added [1]_:
+
 * Call hardware.numa_get_constraints to validate all the various numa-related
   things. This is currently done only on _create_instance(), should be done for
   resize/rebuild as well.
