@@ -1,0 +1,1 @@
+../../../../specs/train-template.rst

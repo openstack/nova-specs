@@ -1,1 +1,1 @@
-queens-template.rst
+train-template.rst
