@@ -8,7 +8,7 @@
 Show server numa topology
 =========================
 
-Add NUMA into new sub-resource``GET /servers/{server_id}/topology`` API.
+Add NUMA into new sub-resource ``GET /servers/{server_id}/topology`` API.
 
 https://blueprints.launchpad.net/nova/+spec/show-server-numa-topology
 
@@ -92,9 +92,7 @@ REST API impact
 API ``GET /servers/{server_id}/topology`` will show NUMA information with
 a new microversion.
 
-The returned information for NUMA topology:
-
-.. code-block:: json
+The returned information for NUMA topology::
 
    {
          # overall policy: TOPOLOGY % 'index
@@ -132,31 +130,33 @@ Security impact
 
 * Add new ``topology`` policy, admin only by default:
 
-TOPOLOGY = 'os_compute_api:servers:topology:%s'
+  .. code-block:: python
 
-server_topology_policies = [
-    policy.DocumentedRuleDefault(
-        BASE_POLICY_NAME,
-        base.RULE_ADMIN_API,
-        "Show the topology data for a server",
-        [
-            {
-                'method': 'GET',
-                'path': '/servers/{server_id}/topology'
-            }
-        ]),
-    policy.DocumentedRuleDefault(
-        # control host numa node and cpu pin information
-        TOPOLOGY % 'index:host_info',
-        base.RULE_ADMIN_API,
-        "List all servers with detailed information",
-        [
-            {
-                'method': 'GET',
-                'path': '/servers/{server_id}/topology'
-            }
-        ]),
-]
+    TOPOLOGY = 'os_compute_api:servers:topology:%s'
+
+    server_topology_policies = [
+        policy.DocumentedRuleDefault(
+            BASE_POLICY_NAME,
+            base.RULE_ADMIN_API,
+            "Show the topology data for a server",
+            [
+                {
+                    'method': 'GET',
+                    'path': '/servers/{server_id}/topology'
+                }
+            ]),
+        policy.DocumentedRuleDefault(
+            # control host numa node and cpu pin information
+            TOPOLOGY % 'index:host_info',
+            base.RULE_ADMIN_API,
+            "List all servers with detailed information",
+            [
+                {
+                    'method': 'GET',
+                    'path': '/servers/{server_id}/topology'
+                }
+            ]),
+    ]
 
 
 Notifications impact

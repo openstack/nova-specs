@@ -51,7 +51,7 @@ Examples of validations to be added [1]_:
 * Validate the realtime mask.
 * Validate the number of serial ports.
 * Validate the cpu topology constraints.
-* Validate the ``quota:*``settings (that are not virt driver specific) in the
+* Validate the ``quota:*`` settings (that are not virt driver specific) in the
   flavor.
 
 Alternatives
