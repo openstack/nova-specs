@@ -164,7 +164,7 @@ development and testing would include the following deliverables:
     It is also recommended to include an additional padding of at
     least 256KB for safety, since ROM sizes can occasionally change.
     For example the total of 10832KB required here for ROMs / ACPI
-    tables could be rounded up to 16MB.
+    tables should be rounded up to 16MB.
 
     The first two values are expected to commonly vary per VM, and
     are already accounted for dynamically by the placement service.
@@ -311,9 +311,11 @@ The following limitations are expected long-term:
      break images with legacy OS's which expect the config drive to be
      an IDE CD-ROM.  It would also not deal with other CD-ROM devices.
 
-  #. Set the (largely undocumented) ``hw_cdrom_bus`` image property to
-     ``virtio-scsi``, which is recommended as a replacement for
-     ``ide``.
+  #. Set the (largely `undocumented
+     <https://bugs.launchpad.net/glance/+bug/1808868>`_)
+     ``hw_cdrom_bus`` image property to ``virtio``, which is
+     recommended as a replacement for ``ide``, and ``hw_scsi_model``
+     to ``virtio-scsi``.
 
   Some potentially cleaner long-term solutions which require code
   changes are suggested as a stretch goal in the `Work Items`_ section
@@ -323,7 +325,9 @@ For the sake of eliminating any doubt, the following actions are *not*
 expected to be limited when SEV encryption is used:
 
 - Cold migration or shelve, since they power off the VM before the
-  operation at which point there is no encrypted memory
+  operation at which point there is no encrypted memory (although this
+  could change since there is work underway to add support for `PMEM
+  <https://pmem.io/>`_)
 
 - Snapshot, since it only snapshots the disk
 
@@ -335,7 +339,8 @@ expected to be limited when SEV encryption is used:
 
 - Use of spice / VNC / serial / RDP consoles
 
-- vNUMA
+- `VM guest virtual NUMA (a.k.a. vNUMA)
+  <https://www.suse.com/documentation/sles-12/singlehtml/article_vt_best_practices/article_vt_best_practices.html#sec.vt.best.perf.numa.vmguest>`_
 
 Alternatives
 ------------
@@ -598,15 +603,15 @@ need to be made to nova's libvirt driver:
    #. Introduce a new ``nova.conf`` option for specifying the default
       bus to use for CD-ROMs.  Then for instance the default could be
       ``scsi`` (for consistency with other CPU architectures) or
-      ``virtio-scsi``, with ``hw_cdrom_bus`` overriding this value
-      where needed.  This is likely to be more future-proof as the use
-      of very old machine types is gradually phased out, although the
+      ``virtio``, with ``hw_cdrom_bus`` overriding this value where
+      needed.  This is likely to be more future-proof as the use of
+      very old machine types is gradually phased out, although the
       downside is a small risk of breaking legacy images.
 
       If there exist clouds where such legacy x86 images are common,
       the option could then be set to ``ide`` and
-      ``hw_cdrom_bus=virtio-scsi`` overriding when newer machine types
-      are required for SEV (or any other reason).  Although this is
+      ``hw_cdrom_bus=virtio`` overriding when newer machine types are
+      required for SEV (or any other reason).  Although this is
       perhaps sufficiently unlikely as to make a new config option
       overkill.
 
@@ -687,10 +692,12 @@ Documentation Impact
   <https://docs.openstack.org/nova/rocky/admin/configuration/hypervisor-kvm.html>`_
   should be updated with details of how to set up SEV-capable
   hypervisors.  It would be prudent to mention the current
-  `limitations`_ here too, including the impact on compute host
-  maintenance, and the need to correctly calculate
-  `reserved_host_memory_mb`_ based on the expected maximum number of
-  SEV guests simultaneously running on the host.
+  `limitations`_ here too, including the impact on config drive
+  configuration, compute host maintenance, the need to correctly
+  calculate `reserved_host_memory_mb`_ based on the expected maximum
+  number of SEV guests simultaneously running on the host, and the
+  details provided above (such as memory region sizes) which cover how
+  to calculate it correctly.
 
 Other non-nova documentation should be updated too:
 
