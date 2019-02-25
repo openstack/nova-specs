@@ -52,20 +52,30 @@ Proposed change
 
 The ``GET /allocation_candidates`` call will accept a new query parameter
 ``in_tree``. This parameter is a string representing a resource provider uuid.
-When this is present, the response of the allocation candidates is limited to
-only allocation requests where at least one resource provider in the specified
-tree is involved.
+When this is present, the only resource providers returned will be those in the
+same tree with the given resource provider.
+
+The numbered syntax ``in_tree<N>`` is also supported. This restricts providers
+satisfying the Nth granular request group to the tree of the specified
+provider. This may be redundant with other ``in_tree<N>`` values specified in
+other groups (including the unnumbered group). However, it can be useful in
+cases where a specific resource (e.g. DISK_GB) needs to come from a specific
+sharing provider (e.g. shared storage).
 
 In the following environments,
 
 .. code::
 
-                           +-----------------------+
-                           | sharing storage (ss1) |
-                           |   DISK_GB: 1000       |
-                           +-----------+-----------+
+         +-----------------------+          +-----------------------+
+         | sharing storage (ss1) |          | sharing storage (ss2) |
+         |   DISK_GB: 1000       |          |   DISK_GB: 1000       |
+         +-----------+-----------+          +-----------+-----------+
+                     |                                  |
+                     +-----------------+----------------+
+                                       |
                                        | Shared via an aggregate
                      +-----------------+----------------+
+                     |                                  |
       +--------------|---------------+   +--------------|--------------+
       | +------------+-------------+ |   | +------------+------------+ |
       | | compute node (cn1)       | |   | |compute node (cn2)       | |
@@ -82,29 +92,103 @@ for example::
 
     GET /allocation_candidates?resources=VCPU:1,DISK_GB:50&in_tree={cn1_uuid}
 
-would return 4 combinations of allocation candidates.
+will return 2 combinations of allocation candidates.
 
-1. numa1_1 (VCPU) + cn1 (DISK_GB)
-2. numa1_2 (VCPU) + cn1 (DISK_GB)
-3. numa1_1 (VCPU) + ss1 (DISK_GB)
-4. numa1_2 (VCPU) + ss1 (DISK_GB)
+result A::
 
-Note that candidates number 3 and 4 have "ss1", which is out of the specified
-tree. They are not excluded because candidates number 3 and 4 have at least
-one provider (numa1_1 and numa1_2 respectively) from the specified tree.
+    1. numa1_1 (VCPU) + cn1 (DISK_GB)
+    2. numa1_2 (VCPU) + cn1 (DISK_GB)
 
 The specified tree can be a non-root provider::
 
     GET /allocation_candidates?resources=VCPU:1,DISK_GB:50&in_tree={numa1_1_uuid}
 
-would return the same result.
+will return the same result.
+
+result B::
+
+    1. numa1_1 (VCPU) + cn1 (DISK_GB)
+    2. numa1_2 (VCPU) + cn1 (DISK_GB)
+
+When you want to have ``VCPU`` from ``cn1`` and ``DISK_GB`` from wherever,
+the request may look like::
+
+    GET /allocation_candidates?resources=VCPU:1&in_tree={cn1_uuid}
+                              &resources1=DISK_GB:10
+
+which will return the sharing providers as well.
+
+result C::
+
+    1. numa1_1 (VCPU) + cn1 (DISK_GB)
+    2. numa1_2 (VCPU) + cn1 (DISK_GB)
+    3. numa1_1 (VCPU) + ss1 (DISK_GB)
+    4. numa1_2 (VCPU) + ss1 (DISK_GB)
+    5. numa1_1 (VCPU) + ss2 (DISK_GB)
+    6. numa1_2 (VCPU) + ss2 (DISK_GB)
+
+When you want to have ``VCPU`` from wherever and ``DISK_GB`` from ``ss1``,
+the request may look like::
+
+    GET: /allocation_candidates?resources=VCPU:1
+                               &resources1=DISK_GB:10&in_tree1={ss1_uuid}
+
+which will stick to the first sharing provider for DISK_GB.
+
+result D::
+
+    1. numa1_1 (VCPU) + ss1 (DISK_GB)
+    2. numa1_2 (VCPU) + ss1 (DISK_GB)
+    3. numa2_1 (VCPU) + ss1 (DISK_GB)
+    4. numa2_2 (VCPU) + ss1 (DISK_GB)
+
+When you want to have ``VCPU`` from ``cn1`` and ``DISK_GB`` from ``ss1``,
+the request may look like::
+
+    GET: /allocation_candidates?resources1=VCPU:1&in_tree1={cn1_uuid}
+                               &resources2=DISK_GB:10&in_tree2={ss1_uuid}
+                               &group_policy=isolate
+
+which will return only 2 candidates.
+
+result E::
+
+    1. numa1_1 (VCPU) + ss1 (DISK_GB)
+    2. numa1_2 (VCPU) + ss1 (DISK_GB)
+
 
 Alternatives
 ------------
 
-We could have other query parameters like ``resource_provider_uuid`` or
-``root_provider_uuid``, but ``in_tree`` would be consistent with the similar
-``GET /resource_providers`` query parameter.
+Alternative 1:
+
+We could mitigate the restriction to include sharing providers assuming that
+they are in specified non-sharing tree that shares them. For example, we could
+change result A to return::
+
+    1. numa1_1 (VCPU) + cn1 (DISK_GB)
+    2. numa1_2 (VCPU) + cn1 (DISK_GB)
+    3. numa1_1 (VCPU) + ss1 (DISK_GB)
+    4. numa1_2 (VCPU) + ss1 (DISK_GB)
+    5. numa1_1 (VCPU) + ss2 (DISK_GB)
+    6. numa1_2 (VCPU) + ss2 (DISK_GB)
+
+This is possible if we assume that ``ss1`` and ``ss2`` are in "an expanded
+concept of a tree" of ``cn1``, but we don't take this way because we can get
+the same result using the granular request. Different result for a different
+request means we support more use cases than the same result for a different
+request.
+
+Alternative 2:
+
+In result B, we could exclude ``numa1_2`` resource provider (the second
+candidate), but we don't take this way for the following reason:
+It is not consistent with the existing ``in_tree`` behavior in
+``GET /resource_providers``. The inconsistency despite of the same queryparam
+name could confuse users. If we need this behaivor, that would be something
+like ``subtree`` queryparam which should be symmetrically implemented to
+``GET /resource_providers`` as well. This is already proposed in
+`Support subtree filter for GET /resource_providers`_ spec.
 
 Data model impact
 -----------------
@@ -205,3 +289,4 @@ References
 .. _`Nested Resource Providers`: https://specs.openstack.org/openstack/nova-specs/specs/queens/approved/nested-resource-providers.html
 .. _`Bug#1777591`: https://bugs.launchpad.net/nova/+bug/1777591
 .. _`Limiting Allocation Candidates`: https://specs.openstack.org/openstack/nova-specs/specs/queens/implemented/allocation-candidates-limit.html
+.. _`Support subtree filter for GET /resource_providers`: https://review.openstack.org/#/c/595236/
