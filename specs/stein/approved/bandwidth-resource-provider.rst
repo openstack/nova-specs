@@ -72,12 +72,8 @@ Separation of responsibilities
   the actual resource request. But Nova needs to assign unique granular
   resource request group suffix for each port's resource request.
 * Nova selects one allocation candidate and claims the resources in Placement.
-* Nova passes the allocation information it received from placement during
-  resource claiming to Neutron during port binding. Nova will send this
-  information in the same format as the PUT ``/allocations/{consumer_uuid}``
-  request uses in Placement. Neutron will not use this to send PUT
-  ``/allocations/{consumer_uuid}`` requests as Nova has already claimed these
-  resources.
+* Nova passes the RP UUID used to fulfill the port resource request to Neutron
+  during port binding
 
 Scoping
 -------
@@ -91,9 +87,6 @@ if the extension is not loaded.
 
 Out of scope from Nova perspective:
 
-* Mapping parts of a server's allocation back to the resource_request of each
-  individual port of the server. Instead Nova will send the whole allocation
-  request in the port binding to Neutron.
 * Supporting separate proximity policy for the granular resource request groups
   created from the Neutron port's resource_request. Nova will use the policy
   defined in the flavor extra_spec for the whole request as today such policy
@@ -238,6 +231,10 @@ destination host. A possible solution is to `send the move requests through
 the scheduler`_ regardless of the force flag but skipping the scheduler
 filters.
 
+.. note::
+    Server move operations with ports having resource request are not
+    supported in Stein.
+
 Shelve_offload and unshelve
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -245,6 +242,11 @@ During shelve_offload Nova deletes the resource allocations including the port
 related resources as those also have the same consumer_id, the instance uuid.
 During unshelve a new scheduling is done in the same way as described in the
 server create case.
+
+.. note::
+    Unshelve after Shelve offload operations with ports having resource
+    request are not supported in Stein.
+
 
 Details
 -------
@@ -337,8 +339,8 @@ Data model impact
 -----------------
 
 Two new standard Resource Classes will be defined to represent the bandwidth in
-each direction, named as `NET_BANDWIDTH_INGRESS_KILOBITS_PER_SECOND` and
-`NET_BANDWIDTH_EGRESS_KILOBITS_PER_SECOND`. The kbps unit is selected as the
+each direction, named as `NET_BW_IGR_KILOBIT_PER_SEC` and
+`NET_BW_EGR_KILOBIT_PER_SEC`. The kbps unit is selected as the
 Neutron API already use this unit in the `QoS minimum bandwidth rule`_ API and
 we would like to keep the units in sync.
 
@@ -346,6 +348,13 @@ A new `requested_resources` field is added to the RequestSpec versioned
 object with ListOfObjectField('RequestGroup') type to store the resource and
 trait requests coming from the Neutron ports. This field will not be persisted
 in the database.
+
+A new field ``requester_id`` is added to the InstancePCIRequest versioned
+object to connect the PCI request created from a Neutron port to the resource
+request created from the same Neutron port. Nova will populate this field with
+the ``port_id`` of the Neutron port and the ``requester_id`` field of the
+RequestGroup versioned object will be used to match the PCI request with the
+resource request.
 
 The  `QoS minimum bandwidth allocation in Placement API`_ Neutron spec will
 propose the modeling of the Networking RP subtree in Placement. Nova will
@@ -389,10 +398,8 @@ infrastructure. To be able to do that Neutron needs to know the mapping between
 a port's resource request and a specific RP (or RPs) in the allocation record
 of the server that are fulfilling the request.
 
-In the current scope we do not try to solve the whole problem of mapping
-resource request groups to allocation subsets. Instead Nova will send the whole
-allocation of the server to Neutron in the port binding of each port of the
-given server and let Neutron try to do the mapping.
+Nova will calculate which port is fulfilled by which RP and the RP UUID will be
+provided to Neutron during the port binding.
 
 REST API impact
 ---------------
@@ -407,6 +414,17 @@ of requested traits. This feature will be described in the separate
 
 This feature also depends on the `granular-resource-request`_ and
 `nested-resource-providers`_ features which impact the Placement REST API.
+
+A new microversion will be added to the Nova REST API to indicate that server
+create supports ports with resource request. Server operations
+(e.g. create, interface_attach, move) involving ports having resource request
+will be rejected with older microversion. However server delete and port detach
+will be supported with old microversion for these server too.
+
+.. note::
+    Server move operations are not supported in Stein even with the new
+    microversion.
+
 
 Security impact
 ---------------
@@ -431,6 +449,9 @@ Performance Impact
 
 * Nova will send more complex allocation candidate request to Placement as it
   will include the port related resource request as well.
+
+* Nova will calculate the mapping between each port's resource request and the
+  RP in the overall allocation that fulfills such request.
 
 As Placement do not seem to be a bottleneck today we do not foresee
 performance degradation due to the above changes.
@@ -599,4 +620,5 @@ History
    * - Rocky
      - Reworked after several discussions
    * - Stein
-     - Re-proposed as implementation hasn't been finished in Rocky
+     - * Re-proposed as implementation hasn't been finished in Rocky
+       * Updated based on what was implemented in Stein
