@@ -1,1 +1,0 @@
-../../../../specs/stein-template.rst

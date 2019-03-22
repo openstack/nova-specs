@@ -2,13 +2,6 @@
 Nova Stein Specifications
 =========================
 
-Template:
-
-.. toctree::
-   :maxdepth: 1
-
-   Specification Template (Stein release) <template>
-
 Stein implemented specs:
 
 .. toctree::
