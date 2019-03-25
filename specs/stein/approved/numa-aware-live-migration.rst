@@ -97,10 +97,10 @@ Resource claims
 
 Let's address the resource claims aspect first. An effort has begun to support
 NUMA resource providers in placement [3]_ and to standardize CPU resource
-tracking [8]_. However, placement can only track inventories and allocations of
+tracking [4]_. However, placement can only track inventories and allocations of
 quantities of resources. It does not track which specific resources are used.
 Specificity is needed for NUMA live migration. Consider an instance that uses
-4 dedicated CPUs in a future where the standard CPU resource tracking spec [8]_
+4 dedicated CPUs in a future where the standard CPU resource tracking spec [4]_
 has been implemented. During live migration, the scheduler claims those 4 CPUs
 in placement on the destination. However, we need to prevent other instances
 from using those specific CPUs. Therefore, in addition to claiming quantities
@@ -394,7 +394,7 @@ Primary assignee:
 Work Items
 ----------
 
-* Fail live migration of instances with NUMA topology [9]_ until this spec is
+* Fail live migration of instances with NUMA topology [5]_ until this spec is
   fully implemented.
 * Add NUMA Nova objects
 * Add claim context to live migration
@@ -411,13 +411,13 @@ Testing
 =======
 
 The libvirt/qemu driver used in the gate does not currently support NUMA
-features (though work is in progress [4]_). Therefore, testing NUMA aware
+features (though work is in progress [6]_). Therefore, testing NUMA aware
 live migration in the upstream gate would require nested virt. In addition, the
 only assertable outcome of a NUMA live migration test (if it ever becomes
 possible) would be that the live migration succeeded. Examining the instance
 XML to assert things about its NUMA affinity or CPU pin mapping is explicitly
 out of tempest's scope. For these reasons, NUMA aware live migration is best
-tested in third party CI [5]_ or other downstream test scenarios [6]_.
+tested in third party CI [7]_ or other downstream test scenarios [8]_.
 
 Documentation Impact
 ====================
@@ -432,12 +432,13 @@ References
 .. [1] https://bugs.launchpad.net/nova/+bug/1496135
 .. [2] https://bugs.launchpad.net/nova/+bug/1607996
 .. [3] https://review.openstack.org/#/c/552924/
-.. [4] https://review.openstack.org/#/c/533077/
-.. [5] https://github.com/openstack/intel-nfv-ci-tests
-.. [6] https://review.rdoproject.org/r/gitweb?p=openstack/whitebox-tempest-plugin.git
-.. [7] https://review.openstack.org/#/c/244489/
-.. [8] https://review.openstack.org/#/c/555081/
-.. [9] https://review.openstack.org/#/c/611088/
+.. [4] https://review.openstack.org/#/c/555081/
+.. [5] https://review.openstack.org/#/c/611088/
+.. [6] https://review.openstack.org/#/c/533077/
+.. [7] https://github.com/openstack/intel-nfv-ci-tests
+.. [8] https://review.rdoproject.org/r/gitweb?p=openstack/whitebox-tempest-plugin.git
+
+[9] https://review.openstack.org/#/c/244489/
 
 History
 =======

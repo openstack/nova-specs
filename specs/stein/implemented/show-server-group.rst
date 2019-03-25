@@ -17,7 +17,7 @@ Problem description
 
 Currently you had to loop over all groups to find the group the server
 belongs to. This spec tries to address this by proposing showing the server
-group information in API `GET /servers/{server_id}`.
+group information in API ``GET /servers/{server_id}``.
 
 Use Cases
 ---------
@@ -41,11 +41,11 @@ needs another DB query.
 Alternatives
 ------------
 
-*  One alternative is support the server groups filter by server UUID. Like
-  "GET /os-server-groups?server=<UUID>".
+* One alternative is support the server groups filter by server UUID. Like
+  ``GET /os-server-groups?server=<UUID>``.
 
 * Another alternative to support the server group query is following API:
-  "GET /servers/{server_id}/server_groups".
+  ``GET /servers/{server_id}/server_groups``.
 
 Data model impact
 -----------------
@@ -57,11 +57,9 @@ REST API impact
 ---------------
 
 
-Allows the `GET /servers/{server_id}` API to show server group's UUID.
-"PUT /servers/{server_id}" and REBUILD API "POST /servers/{server_id}/action"
-also response same information.
-
-.. highlight:: json
+Allows the ``GET /servers/{server_id}`` API to show server group's UUID.
+``PUT /servers/{server_id}`` and REBUILD API
+``POST /servers/{server_id}/action`` also response same information.
 
 The returned information for server group::
 
@@ -94,7 +92,7 @@ Performance Impact
 ------------------
 
 * Need another DB query retrieve the server group UUID. To reduce the
-  perfermance impact for batch API call, "GET /servers/detail" won't
+  perfermance impact for batch API call, ``GET /servers/detail`` won't
   return server group information.
 
 Other deployer impact
@@ -147,7 +145,7 @@ Documentation Impact
 References
 ==========
 
-* Stein PTG discussion:https://etherpad.openstack.org/p/nova-ptg-stein
+* Stein PTG discussion: https://etherpad.openstack.org/p/nova-ptg-stein
 
 
 History
@@ -158,7 +156,6 @@ History
 
    * - Release Name
      - Version
-
    * - Stein
      - First Version
 
