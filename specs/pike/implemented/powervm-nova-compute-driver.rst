@@ -254,7 +254,7 @@ References
 
 * nova-powervm:
     * Overview: Out-of-tree Nova driver for PowerVM
-    * Source: `<git://git.openstack.org/openstack/nova-powervm/>`_
+    * Source: `<https://git.openstack.org/openstack/nova-powervm/>`_
     * Bugs: `<https://bugs.launchpad.net/nova-powervm/>`_
 
 * pypowervm
@@ -266,13 +266,13 @@ References
 * networking-powervm:
     * Overview: Neutron ML2 mechanism driver and plugin supporting PowerVM's
       Shared Ethernet Adapter and (as of newton) SR-IOV virtual NIC.
-    * Source: `<git://git.openstack.org/openstack/networking-powervm/>`_
+    * Source: `<https://git.openstack.org/openstack/networking-powervm/>`_
     * Bugs: `<https://bugs.launchpad.net/networking-powervm/>`_
 
 * ceilometer-powervm:
     * Overview: Ceilometer collector for the PowerVM platform.  Captures I/O,
       CPU and memory statistics.
-    * Source: `<git://git.openstack.org/openstack/ceilometer-powervm/>`_
+    * Source: `<https://git.openstack.org/openstack/ceilometer-powervm/>`_
     * Bugs: `<https://bugs.launchpad.net/ceilometer-powervm/>`_
 
 * Continuous Integration:
