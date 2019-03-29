@@ -54,6 +54,14 @@ There are also some approved backlog specifications that are looking for owners:
 
    specs/backlog/index
 
+Abandoned specs live here:
+
+.. toctree::
+   :glob:
+   :maxdepth: 1
+
+   specs/abandoned/index
+
 Process
 =======
 

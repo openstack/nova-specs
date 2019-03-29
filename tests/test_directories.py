@@ -21,6 +21,8 @@ class TestDirectories(testtools.TestCase):
     def test_directories(self):
         releases = [x.split('/')[1] for x in glob.glob('specs/*/')]
         for release in releases:
+            if release == 'abandoned':
+                continue
             files = os.listdir("specs/%s/" % release)
             valid = ['redirects', 'implemented', 'approved']
             for name in files:
