@@ -8,6 +8,9 @@
 Flavor classes
 ==============
 
+.. note:: This spec was abandoned by efried on account of having been
+          sitting in the backlog directory since 2015.
+
 As an operator I would like to be able to define policy and quotas differently
 for different sets of hardware.
 
@@ -180,3 +183,5 @@ time.
      - Description
    * - Liberty
      - Introduced
+   * - Train
+     - Abandoned
