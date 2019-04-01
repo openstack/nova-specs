@@ -20,3 +20,9 @@ see what is going to happen::
 
 When you are satisfied, remove the ``-n`` option to make it happen for
 real.
+
+.. toctree::
+   :glob:
+   :maxdepth: 1
+
+   *

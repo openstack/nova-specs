@@ -8,6 +8,9 @@
 Parallel Filter Scheduler
 ==========================
 
+.. note:: This spec was abandoned by efried on account of having been
+          sitting in the backlog directory since 2015.
+
 This backlog spec discusses the issues around parallelism and the current
 Filter Scheduler in Nova. This is particularly interesting for when
 migrating existing cells v1 users to cells v2.
@@ -423,5 +426,11 @@ Google omega paper: http://research.google.com/pubs/pub41684.html
 History
 =======
 
-None
+.. list-table:: Revisions
+   :header-rows: 1
+
+   * - Release Name
+     - Description
+   * - Train
+     - Abandoned
 
