@@ -32,7 +32,7 @@ I want to decommission old hardware in older cells and have new and existing
 servers move to newer cells running newer hardware using newer flavors without
 users having to destroy and recreate their workloads.
 
-As a user, I want to my servers to retain their IPs, volumes and UUID
+As a user, I want my servers to retain their IPs, volumes and UUID
 while being migrated to another cell.
 
 Proposed change
@@ -153,6 +153,8 @@ There are two major reasons why we perform this check in the API:
    which the instance lives (because the request context is targeted to that
    cell). If the request is allowed to perform a cross-cell resize then we
    will adjust the target host check to allow for other cells as well.
+
+.. _api-cast:
 
 2. Currently, the resize/migrate API actions are synchronous until conductor
    RPC casts to ``prep_resize()`` on the selected target host. This could be
@@ -451,6 +453,8 @@ Known issues
    recording a ``compute_prep_resize`` event when calling the
    ``prep_snapshot_based_resize_at_dest`` method.
 
+.. _personality-files:
+
 3. Servers created with personality files, commonly known as file injection,
    that are resized across cells will lose the personality files since they are
    not persisted in the database. There are two ways to view this. First is
@@ -490,8 +494,6 @@ Edge cases
    * When copying the migration context from the target cell DB to the source
      cell DB, update the ``MigrationContext.migration_id`` to match the
      ``Migration.id`` of the source cell migration record.
-
-.. _personality-files:
 
 3. It is possible to attach/detach volumes to/from a resized server. Because of
    this, mirroring those block device mapping changes from the target cell DB
@@ -579,6 +581,12 @@ intact.
 While the instance is resized and contains records in both cells, the API will
 have to take care to filter out duplicate instance and migration records while
 listing those across cells (using the ``hidden`` field).
+
+As noted :ref:`above <api-cast>`, if cross-cell resize is allowed the API
+service will asynchronously cast to the conductor service rather than RPC
+call and block the HTTP response until a target host is chosen. Regardless
+of this the ``resize`` and ``migrate`` server action API response status code
+is always a 202.
 
 Security impact
 ---------------
