@@ -54,6 +54,9 @@ is at ``specs/kilo/redirects``.
 
             tox -r -e move-implemented-specs -- --dry-run --verbose newton
 
+          Remove the ``--dry-run`` flag to perform the actual file
+          moves/writes.
+
 This directory structure allows you to see what we thought about doing,
 decided to do, and actually got done. Users interested in functionality in a
 given release should only refer to the ``implemented`` directory.
@@ -61,25 +64,63 @@ given release should only refer to the ``implemented`` directory.
 Example specifications
 ----------------------
 
-You can find an example spec in ``specs/template.rst``.
+You can find an example spec for a given release in
+``specs/<release>-template.rst``.
 
 Backlog specifications
 ----------------------
 
-Additionally, we allow the proposal of specifications that do not have a
-developer assigned to them. These are proposed for review in the same manner as
-above, but are added to::
+Additionally, we allow the proposal of specifications that either do not have a
+developer assigned to them or are not targeted for the current release. These
+are proposed for review in the same manner as above, but are added to::
 
   specs/backlog/approved
 
-Specifications in this directory indicate the original author has either
-become unavailable, or has indicated that they are not going to implement the
+Specifications in this directory indicate the original author has either become
+unavailable or has indicated that they are not going to implement the
 specification. The specifications found here are available as projects for
-people looking to get involved with Nova. If you are interested in
-claiming a spec, start by posting a review for the specification that moves it
-from this directory to the next active release. Please set yourself as the new
+people looking to get involved with Nova. Alternatively, they may be for ideas
+generated during a given release cycle to begin design discussions, but not
+intended to be implemented until a future cycle. If you are interested in
+claiming an unassigned backlog spec, or are the assignee and are ready to
+propose it for implementation in the current release, start by posting a review
+for the specification that moves it from this directory to the next active
+release. To ensure existing links are not broken, redirects must be created in
+a fashion similar to the process for ``implemented`` specs above. The
+``move-spec`` tox target is available to help with this. For example::
+
+  tox -e move-spec -- --dry-run --verbose specs/backlog/my-great-idea.rst specs/train/approved
+
+Remove the ``--dry-run`` option to perform the actual file moves/writes.
+
+.. note:: Please do not use ``move-spec`` to repropose an unimplemented spec
+          from one release to another. Instead follow the instructions at
+          `Previously approved specifications`_
+
+When claiming an unassigned backlog spec, please set yourself as the new
 `primary assignee` and maintain the original author in the `other contributors`
 list.
+
+Abandoning a specification
+--------------------------
+.. note:: For now, this process should only be used to abandon backlog specs.
+          Please do not use this process for specs in a real release's
+          ``approved`` directory. Currently the indication that such a spec is
+          abandoned is that it never appears in any release's ``implemented``
+          directory. We may change this process in the future.
+
+If it is decided that a ``backlog`` spec is "never" going to be implemented,
+post a review moving the specification from ``specs/<release>/approved`` to
+``specs/abandoned``. As with the above processes, redirects must be created to
+ensure existing links are not broken. The ``abandon-spec`` tox target is
+available to help with this. For example::
+
+  tox -e abandon-spec -- --dry-run --verbose specs/backlog/it-was-a-great-idea.rst
+
+Remove the ``--dry-run`` option to perform the actual file moves/writes.
+
+Please add an explanation to the spec indicating why it is being abandoned, and
+update the History section accordingly.
 
 Design documents for releases prior to Juno
 -------------------------------------------

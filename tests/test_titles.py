@@ -119,6 +119,8 @@ class TestTitles(testtools.TestCase):
         releases = [x.split('/')[1] for x in glob.glob('specs/*/')]
         self.assertTrue(len(releases), "Not able to find spec directories")
         for release in releases:
+            if release == 'abandoned':
+                continue
             with open("specs/%s-template.rst" % release) as f:
                 template = f.read()
             spec = docutils.core.publish_doctree(template)

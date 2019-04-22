@@ -42,7 +42,6 @@ def move_implemented_specs(release, verbose=False, dry_run=False):
     cwd = os.getcwd()
     approved_dir = os.path.join(cwd, 'specs', release, 'approved')
     implemented_dir = os.path.join(cwd, 'specs', release, 'implemented')
-    redirects_file = os.path.join(cwd, 'specs', release, 'redirects')
     approved_specs = os.listdir(approved_dir)
     lp_nova = lib.get_lp_nova('move-specs')
     # yay for stats and summaries
@@ -61,7 +60,7 @@ def move_implemented_specs(release, verbose=False, dry_run=False):
 
         bp_name = spec_fname.split('.rst')[0]
         if verbose:
-            print('Processing approved blueprint: %s' % bp_name)
+            print('\n=== %s ===' % bp_name)
 
         # get the blueprint object from launchpad
         lp_spec = lp_nova.getSpecification(name=bp_name)
@@ -71,17 +70,9 @@ def move_implemented_specs(release, verbose=False, dry_run=False):
             # or obsolete.
             if (lp_spec.is_complete and
                     lp_spec.implementation_status == 'Implemented'):
-                if verbose:
-                    print('Moving blueprint to implemented: %s' % spec_fname)
-
-                if not dry_run:
-                    # move the file from approved to implemented
-                    os.rename(os.path.join(approved_dir, spec_fname),
-                              os.path.join(implemented_dir, spec_fname))
-                    # add an entry to the redirects file
-                    with open(redirects_file, 'a') as redirects:
-                        redirects.write('approved/%s ../implemented/%s\n' %
-                                        (spec_fname, spec_fname))
+                lib.move_spec(
+                    os.path.join(approved_dir, spec_fname), implemented_dir,
+                    verbose, dry_run)
                 move_count += 1
             else:
                 if verbose:
