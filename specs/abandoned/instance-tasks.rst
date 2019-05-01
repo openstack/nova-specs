@@ -8,6 +8,9 @@
 Instance tasks - A short history and primer
 ===========================================
 
+.. note:: This spec was abandoned by efried on account of having been
+          sitting in the backlog directory since 2015.
+
 This starts as a story about exposing errors to users.
 
 From very early on, if not the beginning, the Nova API has had a concept of an
@@ -219,3 +222,5 @@ time.
      - Description
    * - Liberty
      - Introduced
+   * - Train
+     - Abandoned
