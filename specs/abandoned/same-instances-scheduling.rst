@@ -8,6 +8,9 @@
 Sort instances if possible inside an host aggregate
 ===================================================
 
+.. note:: This spec was abandoned by efried on account of having been
+          sitting in the backlog directory since 2015.
+
 https://blueprints.launchpad.net/nova/+spec/same-instances-scheduling
 
 Nova should allow sorting instances based on preferences without
@@ -132,3 +135,5 @@ None
      - Description
    * - Liberty
      - Introduced
+   * - Train
+     - Abandoned
