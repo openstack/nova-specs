@@ -204,8 +204,8 @@ provider representing the compute node and report inventory of ``PCPU`` and
 
     COMPUTE NODE provider
         PCPU:
-            total: 18
-            reserved: 2
+            total: 16
+            reserved: 0
             min_unit: 1
             max_unit: 16
             step_size: 1
@@ -224,7 +224,7 @@ Example flavor configurations
 Consider the following example flavor/image configurations, in increasing order
 of complexity.
 
-1) A simple web application server workload requires a couple CPU resources.
+1) A simple web application server workload requires a couple of CPU resources.
    The workload does not require any dedicated CPU resources::
 
        resources:VCPU=2
@@ -241,8 +241,7 @@ of complexity.
 
 2) A database server requires 8 CPU resources, and the workload needs dedicated
    CPU resources to minimize effects of other workloads hosted on the same
-   hardware. The deployer wishes to ensure that those dedicated CPU resources
-   are all served by the same resource provider::
+   hardware::
 
        resources:PCPU=8
 
@@ -252,7 +251,7 @@ of complexity.
        $ openstack flavor set --property resources:PCPU=8 example-2
 
    Alternatively, you can skip the explicit resource request and use the legacy
-   ``hw:cpu_policy`` flavor extra spec instead, ::
+   ``hw:cpu_policy`` flavor extra spec instead::
 
        $ openstack flavor create --vcpus 8 ... example-2
        $ openstack flavor set --property hw:cpu_policy=dedicated example-2
@@ -315,7 +314,7 @@ of complexity.
 Alternatives
 ------------
 
-There's definitely going to be some confusion around ``Flavour.vcpus``
+There's definitely going to be some confusion around ``Flavor.vcpus``
 referring to both ``VCPU`` and ``PCPU`` resource classes. To avoid this, we
 could call the ``PCPU`` resource class ``CPU_DEDICATED`` to more explicitly
 indicate its purpose. However, we will continue to use the ``VCPU`` resource
@@ -330,7 +329,9 @@ confusing.
 Data model impact
 -----------------
 
-None.
+The ``NUMATopology`` object will need to be updated to include
+``cpu_shared_set`` and ``cpu_dedicated_set`` fields and to deprecate the
+``cpu_set`` field.
 
 REST API impact
 ---------------
@@ -427,10 +428,8 @@ instances.
 We will also deprecate the ``reserved_host_cpus`` config option in Train. If
 both the ``[compute] cpu_dedicated_set`` and ``[compute] cpu_shared_set``
 config options are set in Train, the value of the ``reserved_host_cpus`` config
-option will be ignored and the virt driver will calculate the ``PCPU``
-inventory reserved amount using the following formula::
-
-    (set(all_cpus) - (set(dedicated) | set(shared)))
+option will be ignored and neither the ``VCPU`` nor ``PCPU`` inventories will
+have a reserved value unless explicitly set via the placement API.
 
 If the ``[compute] cpu_dedicated_set`` config option is not set, a warning will
 be logged stating that ``reserved_host_cpus`` is deprecated and that the
