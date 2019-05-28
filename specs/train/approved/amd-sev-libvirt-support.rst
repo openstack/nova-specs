@@ -773,9 +773,10 @@ need to be made to nova's libvirt driver:
 #. Add a new ``nova.virt.libvirt.LibvirtConfigGuestSEVLaunchSecurity`` class
    to describe the ``<launchSecurity/>`` element.
 
-#. Extend ``nova.virt.libvirt.LibvirtDriver`` to add
-   the required XML to the VM's domain definition if the new trait is
-   in the flavor of the VM being launched.
+#. Extend ``nova.virt.libvirt.LibvirtDriver`` to add the required XML
+   to the VM's domain definition if ``MEM_ENCRYPTION_CONTEXT=1`` is in
+   the ``allocations`` dictionary passed to the libvirt driver's
+   ``spawn()`` method, *and* the host is SEV-capable.
 
 #. Determine whether hugepages should be used, and if so, whether they
    can help with accounting.
