@@ -49,8 +49,9 @@ If the operator configures cross_az_attach=True [3]_ in nova.conf, in the
 not match the volumes being attached to the server. Unshelve should likely
 also fail for the same reason, but to figure that out we'd have to iterate
 the volumes (via BDMs) attached to the server and determine if their AZ
-matches the user-specified AZ and if not, fail the unshelve request, this
-needs to be checked as an edge case in the API.
+matches the user-specified AZ and if not, fail the unshelve request, and
+return a badRequest(400) response, this needs to be checked as an edge case
+in the API.
 
 Add ``availability_zone`` attribute to unshelve Action request body.
 
@@ -97,11 +98,11 @@ The availability zone data will be able to add to request payload ::
 The ``availability_zone`` field is optional.
 
 If the server status is 'SHELVED' rather than 'SHELVED_OFFLOADED' and an AZ
-is specified the API will return a 400 response, otherwise if my server was
-created in AZ1, I shelved it (but didn't offload it yet), and then unshelved
-and specified AZ2 but the server doesn't end up in AZ2, this request will be
-ignored, because of that will be start instance directly. So this change only
-supports the case where the server status is 'SHELVED_OFFLOADED'.
+is specified the API will return a badRequest(400) response, otherwise if my
+server was created in AZ1, I shelved it (but didn't offload it yet), and then
+unshelved and specified AZ2 but the server doesn't end up in AZ2, this request
+will be ignored, because of that will be start instance directly. So this
+change only supports the case where the server status is 'SHELVED_OFFLOADED'.
 
 Security impact
 ---------------
