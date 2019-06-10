@@ -259,12 +259,12 @@ development and testing would include the following deliverables:
   <https://libvirt.org/formatdomain.html#sev>`_ enabled.
 
 - Add support for a new ``hw:mem_encryption`` parameter in flavor
-  extra specs and image properties, which when set to ``true`` would
-  be translated behind the scenes into
-  ``resources:MEM_ENCRYPTION_CONTEXT=1`` which would be added to the
-  flavor extra specs in the ``RequestSpec`` object.  (This change to
-  the flavor would only affect this launch context and not be
-  persisted to the database.)
+  extra specs, and a new ``hw_mem_encryption`` image property.  When
+  either of these is set to ``true``, it would be translated behind
+  the scenes into ``resources:MEM_ENCRYPTION_CONTEXT=1`` which would
+  be added to the flavor extra specs in the ``RequestSpec`` object.
+  (This change to the flavor would only affect this launch context and
+  not be persisted to the database.)
 
   Implementing this new parameter, which hides the implementation of
   the resource inventory and allocation behind an abstraction, has
@@ -568,8 +568,8 @@ encrypted guest memory functionality, extra specs are currently
 incapable of expressing a requirement for *either* AMD SEV hardware
 *or* Intel MKTME hardware.  Therefore there would be no way to
 translate the vendor-agnostic ``hw:mem_encryption=true`` extra spec
-parameter or image property into an extra spec parameter which would
-achieve the desired effect.
+parameter or ``hw_mem_encryption`` image property into an extra spec
+parameter which would achieve the desired effect.
 
 Some fundamentally different `approaches to SEV were originally
 proposed
@@ -782,9 +782,9 @@ need to be made to nova's libvirt driver:
    can help with accounting.
 
 #. Add support for a new ``hw:mem_encryption`` parameter in flavor
-   extra specs and image properties as described above.  Most likely
-   this can be implemented as a new request filter in
-   ``request_filter.py``.
+   extra specs, and a new ``hw_mem_encryption`` image property as
+   described above.  Most likely these can be implemented via a new
+   request filter in ``request_filter.py``.
 
 #. Since live migration between hosts is not (yet) supported for
 
