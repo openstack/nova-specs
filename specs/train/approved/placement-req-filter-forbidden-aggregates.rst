@@ -200,10 +200,13 @@ command:
 
 ``nova-manage placement sync_aggregates``
 
-We will modify this command to synchronize traits to placement and add these
+This spec will not sync traits to placement and it will not add these
 traits to the compute node resource providers that belongs to the aggregates
-if aggregate has metadata key=value pair with syntax
-`trait:<trait_name>=required`.
+which has metadata key=value pair with syntax `trait:<trait_name>=required`.
+Please refer to the `Nova meeting log`_ and `Mailing thread`_ where we have
+mutually agreed to let operator sync these traits manually. In future,
+if required, a utility tool can be developed for syncing these traits which is
+outside the scope of this spec.
 
 Implementation
 ==============
@@ -252,6 +255,8 @@ References
 .. _Strict-isolation-group-hosts-images: https://review.openstack.org/#/c/381912/17/specs/rocky/approved/strict_isolation_of_group_of_hosts_for_image.rst
 .. _mirror_nova_host_aggregates: https://specs.openstack.org/openstack/nova-specs/specs/rocky/implemented/placement-mirror-host-aggregates.html
 .. _IsolatedHostsFilter: https://docs.openstack.org/nova/latest/admin/configuration/schedulers.html#isolatedhostsfilter
+.. _Nova meeting log: http://eavesdrop.openstack.org/meetings/nova/2019/nova.2019-06-13-14.00.log.html#l-267
+.. _Mailing thread: http://lists.openstack.org/pipermail/openstack-discuss/2019-June/006950.html
 .. Rocky PTG: https://etherpad.openstack.org/p/nova-ptg-rocky
 .. Stein PTG: https://etherpad.openstack.org/p/nova-ptg-stein
 
