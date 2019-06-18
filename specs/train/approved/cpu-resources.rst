@@ -165,13 +165,6 @@ hyperthreading is detected.
 
 .. note::
 
-    The ``HW_CPU_HYPERTHREADING`` trait will need to be among the traits that
-    the virt driver cannot always override, since the operator may want to
-    indicate that a single NUMA node on a multi-NUMA-node host is meant for
-    guests that tolerate hyperthread siblings as dedicated CPUs.
-
-.. note::
-
     This has significant implications for the existing CPU thread policies
     feature. These are discussed :ref:`below <cpu-resources_upgrade>`.
 
@@ -329,9 +322,10 @@ confusing.
 Data model impact
 -----------------
 
-The ``NUMATopology`` object will need to be updated to include
-``cpu_shared_set`` and ``cpu_dedicated_set`` fields and to deprecate the
-``cpu_set`` field.
+The ``NUMATopology`` object will need to be updated to include a new
+``pcpuset`` field, which complements the existing ``cpuset`` field. In the
+future, we may wish to rename these to e.g. ``cpu_shared_set`` and
+``cpu_dedicated_set``.
 
 REST API impact
 ---------------
@@ -400,13 +394,22 @@ situations:
 * `NUMA, CPU Pinning and 'vcpu_pin_set'
   <https://that.guru/blog/cpu-resources/>`__
 
+A key point here is that the new behavior must be opt-in during Train. We
+recognize that operators may need time to upgrade a critical number of compute
+nodes so that they are reporting ``PCPU`` classes. This is reflected at
+numerous points below.
+
 Configuration options
 ~~~~~~~~~~~~~~~~~~~~~
 
+:Summary: A user must unset the ``vcpu_pin_set`` and ``reserved_host_cpus``
+          config options and set one or both of the existing ``[compute]
+          cpu_shared_set`` and new ``[compute] cpu_dedicated_set`` options.
+
 We will deprecate the ``vcpu_pin_set`` config option in Train. If both the
 ``[compute] cpu_dedicated_set`` and ``[compute] cpu_shared_set`` config options
-are set in Train, this option will be ignored entirely and ``[compute]
-cpu_shared_set`` will be used in place of ``vcpu_pin_set`` to calculate the
+are set in Train, the ``vcpu_pin_set`` option will be ignored entirely and
+``[compute] cpu_shared_set`` will be used instead to calculate the
 amount of ``VCPU`` resources to report for each compute node. If the
 ``[compute] cpu_dedicated_set`` option is not set in Train, we will issue a
 warning and fall back to using ``vcpu_pin_set`` as the set of host logical
@@ -426,22 +429,42 @@ float across the cores that are supposed to be "dedicated" to the pinned
 instances.
 
 We will also deprecate the ``reserved_host_cpus`` config option in Train. If
-both the ``[compute] cpu_dedicated_set`` and ``[compute] cpu_shared_set``
+either the ``[compute] cpu_dedicated_set`` or ``[compute] cpu_shared_set``
 config options are set in Train, the value of the ``reserved_host_cpus`` config
 option will be ignored and neither the ``VCPU`` nor ``PCPU`` inventories will
 have a reserved value unless explicitly set via the placement API.
 
-If the ``[compute] cpu_dedicated_set`` config option is not set, a warning will
-be logged stating that ``reserved_host_cpus`` is deprecated and that the
-operator should set both ``[compute] cpu_shared_set`` and ``[compute]
-cpu_dedicated_set``.
+If neither the ``[compute] cpu_dedicated_set`` or ``[compute] cpu_shared_set``
+config options are set, a warning will be logged stating that
+``reserved_host_cpus`` is deprecated and that the operator should set either
+``[compute] cpu_shared_set`` and ``[compute] cpu_dedicated_set``.
 
 The meaning of ``[compute] cpu_shared_set`` will change with this feature, from
 being a list of host CPUs used for emulator threads to a list of host CPUs used
 for both emulator threads and ``VCPU`` resources. Note that because this option
 already exists, we can't rely on its presence to do things like ignore
 ``vcpu_pin_set``, as outlined previously, and must rely on ``[compute]
-cpu_dedicated_set`` instead.
+cpu_dedicated_set`` instead. For this same reason, we will only use ``[compute]
+cpu_shared_set`` to determine the number of ``VCPU`` resources if
+``vcpu_pin_set`` is unset. If ``vcpu_pin_set`` is set, a warning will be logged
+and ``vcpu_pin_set`` will continue to be used to calculate the number of
+``VCPU`` resource available while ``[compute] cpu_shared_set`` will continue to
+be used only for emulator threads.
+
+.. note::
+
+   It is possible that there are already hosts in the wild that have
+   ``[compute] cpu_shared_set`` set but do not have ``vcpu_pin_set`` set.
+   We consider this is to be exceptionally unlikely and purposefully ignore
+   this combination. The only reason to define ``[compute] cpu_shared_set`` in
+   Stein or before is to use emulator thread offloading, which is used to
+   isolate the additional work the emulator needs to do from the work the guest
+   OS is doing. It is mainly required for real-time use cases. The use of
+   ``[compute] cpu_shared_set`` without ``vcpu_pin_set`` could result in
+   instance vCPUs being pinned to any host core including those listed in
+   ``cpu_shared_set``. This would defeat the whole purpose of the feature and
+   is very unlikely to be configured by the performance conscious users of this
+   feature, hence the reason for the scenario being ignored.
 
 Finally, we will change documentation for the ``cpu_allocation_ratio`` config
 option to make it abundantly clear that this option ONLY applies to ``VCPU``
@@ -450,25 +473,43 @@ and not ``PCPU`` resources
 Flavor extra specs and image metadata properties
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-We will alias the ``hw:cpu_policy`` flavor extra spec and ``hw_cpu_policy``
-image metadata option to ``resources=(V|P)CPU:${flavor.vcpus}`` using a
-scheduler prefilter. For flavors/images using the ``shared`` policy, we will
-replace this with the ``resources=VCPU:${flavor.vcpus}`` extra spec, and for
-flavors/images using the ``dedicated`` policy, we will replace this with the
+:Summary: We will attempt to rewrite legacy flavor extra specs and image
+          metadata properties to the new resource types and traits, falling
+          back if no matches are found.
+
+We will alias the legacy ``hw:cpu_policy`` and ``hw:cpu_thread_policy`` flavor
+extra specs and their ``hw_cpu_policy`` and ``hw_cpu_thread_policy`` image
+metadata counterparts to placement requests.
+
+The ``hw:cpu_policy`` flavor extra spec and ``hw_cpu_policy`` image metadata
+option will be aliased to ``resources=(V|P)CPU:${flavor.vcpus}``. For
+flavors/images using the ``shared`` policy, the scheduler will replace this
+with the ``resources=VCPU:${flavor.vcpus}`` extra spec, and for flavors/images
+using the ``dedicated`` policy, we will replace this with the
 ``resources=PCPU:${flavor.vcpus}`` extra spec. Note that this is similar,
 though not identical, to how we currently translate ``Flavour.vcpus`` into a
 placement request for ``VCPU`` resources during scheduling.
 
-In addition, we will alias the ``hw:cpu_thread_policy`` flavor extra spec and
-``hw_cpu_thread_policy`` image metadata option to
-``trait:HW_CPU_HYPERTHREADING`` using a scheduler prefilter. For flavors/images
-using the ``isolate`` policy, we will replace this with
+The ``hw:cpu_thread_policy`` flavor extra spec and ``hw_cpu_thread_policy``
+image metadata option will be aliased to ``trait:HW_CPU_HYPERTHREADING``. For
+flavors/images using the ``isolate`` policy, we will replace this with
 ``trait:HW_CPU_HYPERTHREADING=forbidden``, and for flavors/images using the
 ``require`` policy, we will replace this with the
 ``trait:HW_CPU_HYPERTHREADING=required`` extra spec.
 
+If the requests for placement inventory matching these requests fails, we will
+revert to the legacy behavior and query placement once more. This second
+request may return hosts that have been upgraded but these requests will fail
+once the instance reaches the compute node as the libvirt driver will reject
+it.
+
 Placement inventory
 ~~~~~~~~~~~~~~~~~~~
+
+:Summary: We will automatically reshape inventory of existing instances using
+          pinned CPUs to use inventory of the ``PCPU`` resource class instead
+          of ``VCPU``. This will happen once the ``[compute]
+          cpu_dedicated_set`` config option is set.
 
 For existing compute nodes that have guests which use dedicated CPUs, the virt
 driver will need to move inventory of existing ``VCPU`` resources (which are
@@ -485,6 +526,32 @@ result in a 2x the number of ``PCPU``\ s being reserved (N ``PCPU`` resources
 for the instance itself and N ``PCPU`` allocated to avoid another instance
 using them). This will be considered legacy behavior and won't be supported for
 new instances.
+
+Summary
+~~~~~~~
+
+The final upgrade process will look like similar to standard upgrades, though
+there are some slight changes necessary:
+
+- Upgrade controllers
+
+- Update compute nodes in batches
+
+  For compute nodes hosting pinned instances:
+
+  - If set, unset ``vcpu_pin_set`` and set ``[compute] cpu_dedicated_set``. If
+    unset, set ``[compute] cpu_dedicated_set`` to the entire range of host
+    CPUs.
+
+  For compute nodes hosting unpinned instances:
+
+  - If set, unset ``vcpu_pin_set`` and set ``[compute] cpu_shared_set``. If
+    unset, no action is necessary unless:
+
+  - If set, unset ``reserved_host_cpus`` and set ``[compute] cpu_shared_set``
+    to the entire range of host cores minus a number of host cores you wish to
+    reserve.
+
 
 Implementation
 ==============
@@ -571,3 +638,5 @@ History
      - Proposed again, not accepted
    * - Train
      - Proposed again
+   * - Ussuri
+     - Updated, based on final implementation
