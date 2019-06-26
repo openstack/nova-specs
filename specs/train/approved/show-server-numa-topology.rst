@@ -16,10 +16,10 @@ Problem description
 ===================
 
 There is server-related NUMA information that is useful to both end user
-and Admin but currently there is no available API to retrieve that information.
+and admin but currently there is no available API to retrieve that information.
 
 The APIs ``GET /servers`` and ``GET /servers/{id}`` can list extra specs which
-may contain some hints about the guest numa topology but it is not easy to
+may contain some hints about the guest NUMA topology but it is not easy to
 interpret.
 
 
@@ -30,33 +30,33 @@ Use Cases
   guest VM.
 
 * The admin wants a unified way to get topology information, independent of
-  how the various gest OSes expose it.
+  how the various guest OSes expose it.
 
 * The admin wants to know the virtual-to-physical mapping for one or more
-  instances for the purpose of debugging, and admin need make sure the NUMA
-  topology is what it's supposed to be, and is correctly mapped onto Host.
+  instances for the purpose of debugging, and needs to make sure the NUMA
+  topology is what it's supposed to be, and is correctly mapped onto the host.
 
-* The end user could have all of above abilities if admin allows them by
-  changing the default policy rules.
+* The end user could have all of the above abilities if the admin
+  allowed them by changing the default policy rules.
 
 
 Proposed change
 ===============
 
-In nova, the instanceNUMATopology object contains groups of related
+In Nova, the InstanceNUMATopology object contains groups of related
 properties, like the amount of memory managed by a NUMA cell and the
 vCPU thread to logical host processor mapping. This spec proposes
 an API to present NUMA information, the cpu topology and memory page
 sizes.
 
-This spec proposes a new sub-resource 'topology' to servers API:
+This spec proposes a new sub-resource ``topology`` to the servers API:
 
 ``GET /servers/{server_id}/topology``
 
 This API is admin only by default, it could be exposed to users/roles by
 changing the default policy rule.
 
-The topology API returns the numa cell information for a server, including
+The topology API returns the NUMA cell information for a server, including
 the memory, cpuset, siblings, CPU pinning, host NUMA node number, cpu
 topology and page size.
 
@@ -66,13 +66,13 @@ will simply be set to None.
 Alternatives
 ------------
 
-Instead of put these information into ``GET /servers/{server_id}/topology``,
-there are other 2 options:
+Instead of putting this information into
+``GET /servers/{server_id}/topology``, there are two other options:
 
-* add NUMA information into existed sub-resource ``diagnostics``:
+* add NUMA information into the existing sub-resource ``diagnostics``:
   ``GET /servers/{server_id}/diagnostics``
   returns the NUMA information for one server. As NUMA toplogy does not change
-  for given server, it's better put under new ``topology`` sub-resource.
+  for a given server, it's better put under a new ``topology`` sub-resource.
 
 * put the NUMA information under ``GET /servers/{id}`` and
   ``GET /servers/detail``.
@@ -122,16 +122,17 @@ The returned information for NUMA topology::
                             "threads":2
                         }
 
-        "pagesize_kb": 4096,
+        "pagesize_kb": 4,
     }
 
 
 Security impact
 ---------------
 
-* These information exposed by this API is admin only by default, and fine
-  control policy ``TOPOLOGY % 'index:host_info'`` use to keep host only
-  information to admin while this API expose to end user.
+* The fine-grained information exposed by this API is admin only by
+  default, and the control policy ``TOPOLOGY % 'index:host_info'`` is
+  used to keep host only information to admin while this API is exposed
+  to the end user.
 
 * Add new ``topology`` policy, admin only by default:
 
@@ -209,7 +210,7 @@ Primary assignee:
 Work Items
 ----------
 
-* Add new microversion for this change.
+* Add a new microversion for this change.
 
 
 Dependencies
