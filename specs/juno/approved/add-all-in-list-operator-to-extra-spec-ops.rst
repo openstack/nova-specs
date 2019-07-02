@@ -116,7 +116,7 @@ None
 Implementation
 ==============
 
-Add a new lamda function to
+Add a new lambda function to
 nova/scheduler/filter/extra_specs_ops.py _ops_method dict:
 
 '<all-in>': lambda x, y: all(val in x for val in y)
