@@ -44,7 +44,7 @@ Proposed change
 Add a new microversion to the unshelve/restore shelved server
 (unshelve Action) API to support specifying AZ to restore a shelved server.
 
-If the operator configures cross_az_attach=True [3]_ in nova.conf, in the
+If the operator configures cross_az_attach=False [3]_ in nova.conf, in the
 [cinder] group, the server create flow will fail if the specified AZ does
 not match the volumes being attached to the server. Unshelve should likely
 also fail for the same reason, but to figure that out we'd have to iterate
