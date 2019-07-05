@@ -340,8 +340,8 @@ guests:
             INFO:root:Created and verified template_VARS.fd
 
    (b) Reboot the guest with a pointer to a unique copy of the above
-         ``template_VARS.fd``.  At which point, you will *actually* see
-         Secure Boot enabled. Which can be verified via `dmesg`::
+       ``template_VARS.fd``.  At which point, you will *actually* see
+       Secure Boot enabled. Which can be verified via `dmesg`::
 
             (fedora-vm)$ dmesg | grep -i secure
             [    0.000000] secureboot: Secure boot enabled
