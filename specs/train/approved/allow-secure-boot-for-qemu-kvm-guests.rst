@@ -8,7 +8,7 @@
 Allow Secure Boot (SB) for QEMU- and KVM-based guests
 =====================================================
 
-https://blueprints.launchpad.net/nova/+spec/allow-secure-boot-for-nova-instances
+https://blueprints.launchpad.net/nova/+spec/allow-secure-boot-for-qemu-kvm-guests
 
 Problem description
 ===================
