@@ -59,19 +59,19 @@ the `Licensed Windows Compute Hosts` thereby enabling operators to
 Proposed change
 ===============
 
-Add a new placement request filter ``forbidden_aggregates`` and a new config
-option of type boolean ``enable_forbidden_aggregates_filter``. Operator will
-set `True` to enable the request filter. By default the value will be set to
-`False`. Operator will need to set aggregate metadata key/value pairs
-`trait:<trait_name>=required` with traits which they expect to match with the
-`trait:<trait_name>=required` set in the flavor and images of the create
-server request from request_spec object. In the new request filter, it will
-get the required traits set in both flavor and images from request_spec object
-and compare it with the required traits set in the aggregate metadata.
-If any of the traits are not matching with the aggregate metadata, it will
-include that aggregate as forbidden aggregate in the ``member_of`` query
-parameter of ``GET /allocation_candidates`` API. If there are multiple
-forbidden aggregates, then the query parameter should be like:
+Add a new placement request filter to provide isolated aggregates, and a new
+config option of type boolean ``enable_isolated_aggregate_filtering`` to
+enable it. Operator will set `True` to enable the request filter. By default
+the value will be set to `False`. Operator will need to set aggregate metadata
+key/value pairs `trait:<trait_name>=required` with traits which they expect to
+match with the `trait:<trait_name>=required` set in the flavor and images of
+the create server request from request_spec object. In the new request filter,
+it will get the required traits set in both flavor and images from
+request_spec object and compare it with the required traits set in the
+aggregate metadata. If any of the traits are not matching with the aggregate
+metadata, it will include that aggregate as forbidden aggregate in the
+``member_of`` query parameter of ``GET /allocation_candidates`` API. If there
+are multiple forbidden aggregates, then the query parameter should be like:
 
 ``&member_of=!in:<agg1>,<agg2>,<agg3>``
 
@@ -89,14 +89,14 @@ windows OS images.
 
   openstack image set --property trait:CUSTOM_WINDOWS_LICENSED=required <image_uuid>
 
-Example, how to enable ``forbidden_aggregates`` placement request filter:
+Example, how to enable this new placement request filter:
 
 .. code::
 
   [scheduler]
-  enable_forbidden_aggregates_filter = True
+  enable_isolated_aggregate_filtering = True
 
-This ``forbidden_aggregates`` placement request filter supersedes
+This placement request filter which provides isolated aggregates supersedes
 existing ``IsolatedHostsFilter`` except it:-
 
 * Relies on aggregates rather than individual hosts (which won't scale in
@@ -167,23 +167,23 @@ None.
 Performance Impact
 ------------------
 
-DB call to fetch aggregates with value `required` in the
-``forbidden_aggregates`` placement request filter will marginally impact the
+DB call to fetch aggregates with value `required` in this
+new placement request filter will marginally impact the
 overall processing time of each `select_destination` request.
 
 Other deployer impact
 ---------------------
 
-A new config boolean option ``enable_forbidden_aggregates_filter`` will be
+A new config boolean option ``enable_isolated_aggregate_filtering`` will be
 added in nova.conf which will be used by nova-scheduler service.
 The default value of this config option will be set to false.
 
 .. code::
 
-  enable_forbidden_aggregates_filter=False
+  enable_isolated_aggregate_filtering=False
 
-To enable `forbidden_aggregates` request filter, operator should set this
-config option to true.
+To enable request filter which provides isolated aggregates, operator should
+set this config option to true.
 
 Developer impact
 ----------------
@@ -220,11 +220,11 @@ Primary assignee:
 Work Items
 ----------
 
-* Add a placement request filter ``forbidden_aggregates``.
-* Modify ``resources_from_request_spec`` method to add forbidden aggregates to
+* Add a placement request filter ``isolate_aggregates``.
+* Modify ``resources_from_request_spec`` method to add isolated aggregates to
   the Destination object.
 * Modify ``RequestGroup`` class `to_querystring` method to generate a
-  `member_of` query parameter to pass forbidden aggregates in format
+  `member_of` query parameter to pass isolated aggregates in format
   ``&member_of=!in:<agg1_uuid>,<agg2_uuid>,<agg3_uuid>``.
 * Add unit and functional tests for the changes.
 * Add releasenotes.
@@ -243,8 +243,7 @@ Add normal functional and unit testing.
 Documentation Impact
 ====================
 
-Add documentation to explain how to use ``forbidden_aggregates`` placement
-request filter.
+Add documentation to explain how to use newly added placement request filter.
 
 References
 ==========
