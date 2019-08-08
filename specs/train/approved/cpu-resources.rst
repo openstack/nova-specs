@@ -271,7 +271,7 @@ of complexity.
    For example::
 
        $ openstack flavor create --vcpus 8 ... example-3
-       $ openstack flavor set --property resources:VCPU=8 \
+       $ openstack flavor set --property resources:PCPU=8 \
            --property trait:HW_CPU_HYPERTHREADING=forbidden example-3
 
    Alternatively, you can skip the explicit resource request and trait request
