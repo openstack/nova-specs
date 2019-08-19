@@ -374,6 +374,8 @@ This is needed due to a chain of factors listed immediately below:
   the request and exceed that rlimit.  If the rlimit is not large
   enough then pinning the pages through this ioctl will fail.
 
+.. _memory_reservation_solutions:
+
 - Initially it was planned to ensure that the rlimit was raised
   sufficiently high enough by setting a hard memory limit via
   ``<hard_limit>`` in the ``<memtune>`` section of the
