@@ -1,1 +1,1 @@
-train-template.rst
+ussuri-template.rst

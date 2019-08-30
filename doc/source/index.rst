@@ -14,6 +14,7 @@ on for the upcoming release. This is the output of those discussions:
    :glob:
    :maxdepth: 1
 
+   priorities/ussuri-priorities
    priorities/train-priorities
    priorities/stein-priorities
    priorities/rocky-priorities
@@ -34,6 +35,7 @@ Here you can find the specs, and spec template, for each release:
    :glob:
    :maxdepth: 1
 
+   specs/ussuri/index
    specs/train/index
    specs/stein/index
    specs/rocky/index
