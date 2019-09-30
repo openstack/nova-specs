@@ -312,6 +312,12 @@ Primary assignee:
 Other contributors:
   efried dakshinai
 
+Feature Liaison
+---------------
+
+Feature liaison:
+  efried
+
 Work Items
 ----------
 

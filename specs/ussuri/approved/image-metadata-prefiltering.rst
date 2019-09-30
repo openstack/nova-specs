@@ -270,6 +270,12 @@ Assignee(s)
 
 sean-k-mooney
 
+Feature Liaison
+---------------
+
+Feature liaison:
+  sean-k-mooney
+
 Work Items
 ----------
 

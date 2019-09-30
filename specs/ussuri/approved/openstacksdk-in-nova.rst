@@ -203,6 +203,12 @@ Primary assignee:
 Other contributors:
   mordred <mordred@inaugust.com>, dtantsur <dtantsur@protonmail.com>
 
+Feature Liaison
+---------------
+
+Feature liaison:
+  efried
+
 Work Items
 ----------
 

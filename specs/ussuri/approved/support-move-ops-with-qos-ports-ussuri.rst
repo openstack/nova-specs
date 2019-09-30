@@ -157,10 +157,10 @@ Primary assignee:
 Other contributors:
   None
 
-Core Liaison
-------------
+Feature Liaison
+---------------
 
-Core liaison:
+Feature liaison:
   mriedem
 
 Work Items

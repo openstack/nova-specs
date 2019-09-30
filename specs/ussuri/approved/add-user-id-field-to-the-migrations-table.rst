@@ -209,8 +209,17 @@ Implementation
 ==============
 Assignee(s)
 -----------
+
+.. todo:: Make this Brinh https://review.opendev.org/#/c/685857/3/specs/ussuri/approved/add-user-id-field-to-the-migrations-table.rst@213
+
 Primary assignee:
   Brin Zhang
+
+Feature Liaison
+---------------
+
+Feature liaison:
+  mriedem
 
 Work Items
 ----------

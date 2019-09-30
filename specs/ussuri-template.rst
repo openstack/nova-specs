@@ -348,6 +348,31 @@ Primary assignee:
 Other contributors:
   <launchpad-id or None>
 
+Feature Liaison
+---------------
+
+Feature work must be sponsored by a member of the `nova core team`_ or
+other experienced and active nova developer. The purpose of a liaison is
+to:
+
+* Mentor developers through the arcana of nova's development processes.
+* Advocate for (aka "care about") the feature to the rest of the nova team.
+* Be the initial go-to for reviews.
+
+See the :ref:`feature-liaisons` for more details.
+
+Feature liaison:
+  <name and/or nick>
+
+* If you do not already have agreement from a nova developer to act as
+  your liaison, you may write "Liaison Needed" here and/or in your
+  commit message.
+* If you are a core or experienced nova dev, you need not have a
+  separate liaison; if you wish, you may just assign yourself, or put
+  "None"/"N/A".
+
+.. _`nova core team`: https://review.opendev.org/#/admin/groups/25,members
+
 Work Items
 ----------
 
