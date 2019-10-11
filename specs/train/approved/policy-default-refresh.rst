@@ -29,18 +29,20 @@ Most APIs default to use one these two policy rules:
 Firstly "admin_only" is used for the global admin that is able to make almost
 any change to Nova, and see all details of the Nova system.
 The rule actually passes for any user with an admin role, it doesn't matter
-which project is used, any user with the admin role gets this global access.
+which project is used, any user with the ``admin`` role gets this global
+access.
 
 Secondly "admin_or_owner" sounds like it checks if the user is a member of a
 project. However, for most APIs we use the default target which means this
 rule will pass for any authenticated user. The database layer has a check
-for the admin role that ensures only users in the correct project can access
-instances in that project. For example, this database check means it is
-impossible to have a custom role that allows a user to perform live-migration
-of a server in a different project to their token, without the user being given
-the global admin role. In addition, should a user have any role in a project,
-using the default policy, that user is able to access Nova and start instances
-in that project (subject to any quota limits on that project).
+for the project id (with project_only kwargs) that ensures only users in the
+correct project can access instances in that project. For example, this
+database check means it is impossible to have a custom role that allows a
+user to perform live-migration of a server in a different project to their
+token, without the user being given the global admin role. In addition,
+should a user have any role in a project, using the default policy, that user
+is able to access Nova and start instances in that project (subject to any
+quota limits on that project).
 
 Thirdly if you want a "reader" role, several APIs share a single policy rule
 for read and write actions, i.e. we don't have the granularity for such a role
@@ -85,7 +87,9 @@ The change will be made in the following stages:
 #. Ensure all context.can calls specify a target, then make target a required
    parameter and remove the default target. For example project_id.
    Currently we use context.project_id in many place which needs to be
-   replaced with actual target project_id.
+   replaced with actual target project_id. For example, for a server action,
+   we need to use the project_id of the server, not the project_id of the
+   context which made the request.
 
 #. Change DB check from "role:admin" to "scope:system" if enforce_scope is
    True. We can set system_scope on context for DB check.
@@ -192,7 +196,8 @@ scope_type=['system'] so check_str will be kept as 'role:reader and
 system_scope:all' where system_scope:all is special check so that token of
 reader role and project scope cannot access this API. Once nova default the
 [oslo_policy].enforce_scope to True then, system_scope:all can be removed
-from check_str.
+from check_str (this only applies to APIs that include the ``system`` as
+one of the scope_type).
 
 PoC: https://review.openstack.org/#/c/648480/
 
@@ -235,17 +240,6 @@ new rules will be added ``os_compute_api:os-agents:delete``,
     * GET '/servers/{server_id}/os-interface/{port_id}'
     * POST '/servers/{server_id}/os-interface',
     * DELETE '/servers/{server_id}/os-interface/{port_id}'
-
-* 'os_compute_api:os-cells':
-
-  * File: nova/policies/cells.py
-  * APIs Operation it control:
-
-    * GET '/os-cells',
-    * GET '/os-cells/detail',
-    * GET '/os-cells/info',
-    * GET '/os-cells/capacities',
-    * GET '/os-cells/{cell_id}'
 
 * 'os_compute_api:os-deferred-delete':
 
@@ -370,7 +364,7 @@ PoC: https://review.openstack.org/#/c/645427/
 Backward Compatibility and Migration plan
 -----------------------------------------
 
-Old rules are maintained as deprecated rule with same defaults
+Old rules are maintained as deprecated rule with same defaults as today
 so that existing deployement will keep working as it is.
 
 For two cycle (this is big updates so I think we should give two cycle
