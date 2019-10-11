@@ -210,7 +210,7 @@ Implementation
 Assignee(s)
 -----------
 Primary assignee:
-  Qiu Fossen
+  Brin Zhang
 
 Work Items
 ----------
