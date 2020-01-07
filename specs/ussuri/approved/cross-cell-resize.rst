@@ -145,28 +145,15 @@ is new enough to support the cross-cell resize flow. If so, the API will
 modify the RequestSpec to tell the scheduler to not restrict hosts to the
 source cell, but the source cell will be "preferred" by default.
 
-There are two major reasons why we perform this check in the API:
-
-1. The `2.56 microversion`_ allows users with the admin role to specify a
-   target host during a cold migration. Currently, the API validates that the
-   `target host exists`_ which will only work for hosts in the same cell in
-   which the instance lives (because the request context is targeted to that
-   cell). If the request is allowed to perform a cross-cell resize then we
-   will adjust the target host check to allow for other cells as well.
-
-.. _api-cast:
-
-2. Currently, the resize/migrate API actions are synchronous until conductor
-   RPC casts to ``prep_resize()`` on the selected target host. This could be
-   problematic during a cross-cell resize if the conductor needs to validate
-   potential target hosts since the REST API response could timeout. Until the
-   `2.34 microversion`_, the live migrate API had the same problem.
-   If the request is allowed to perform a cross-cell resize then we will RPC
-   cast from API to conductor.
+The `2.56 microversion`_ allows users with the admin role to specify a
+target host during a cold migration. Currently, the API validates that the
+`target host exists`_ which will only work for hosts in the same cell in
+which the instance lives (because the request context is targeted to that
+cell). If the request is allowed to perform a cross-cell resize then we
+will adjust the target host check to allow for other cells as well.
 
 .. _2.56 microversion: https://docs.openstack.org/nova/latest/reference/api-microversion-history.html#id51
 .. _target host exists: https://github.com/openstack/nova/blob/c295e395d/nova/compute/api.py#L3570
-.. _2.34 microversion: https://docs.openstack.org/nova/latest/reference/api-microversion-history.html#id31
 
 Scheduler
 ~~~~~~~~~
@@ -581,12 +568,6 @@ intact.
 While the instance is resized and contains records in both cells, the API will
 have to take care to filter out duplicate instance and migration records while
 listing those across cells (using the ``hidden`` field).
-
-As noted :ref:`above <api-cast>`, if cross-cell resize is allowed the API
-service will asynchronously cast to the conductor service rather than RPC
-call and block the HTTP response until a target host is chosen. Regardless
-of this the ``resize`` and ``migrate`` server action API response status code
-is always a 202.
 
 Security impact
 ---------------
