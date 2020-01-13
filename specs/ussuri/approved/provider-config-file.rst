@@ -119,17 +119,19 @@ The following is a simplified pseudo-schema for the file format.
     # List of dicts
       # Identify a single provider to configure.
       # Exactly one of uuid or name is mandatory. Specifying both is an error.
-      # The consuming nova-compute service must fail if the same provider is
-      # specified more than once across all provider configs.
+      # The consuming nova-compute service will error and fail to start if the
+      # same value is used more than once across all provider configs for name
+      # or uuid.
       # NOTE: Caution should be exercised when identifying ironic nodes,
       # especially via the `$COMPUTE_NODE` special value. If an ironic node
       # moves to a different compute host with a different provider config, its
       # attributes will change accordingly.
     - identification:
-          # UUID of the provider.
+          # Name or UUID of the provider.
           # The uuid can be set to the specialized string `$COMPUTE_NODE` which
           # will cause the consuming compute service to apply the configuration
-          # in this section to all nodes it manages.
+          # in this section to each node it manages unless that node is also
+          # identified by name or uuid.
           uuid: ($uuid_pattern|"$COMPUTE_NODE")
           # Name of the provider.
           name: $string
@@ -223,13 +225,14 @@ Configuration
     # Directory of yaml files containing resource provider configuration.
     # Default: /etc/nova/provider_config/
     # Files in this directory will be processed in lexicographic order.
-    provider_config = $directory
+    provider_config_location = $directory
 
 Loading, Parsing, Validation
-  On nova-compute startup, files in ``CONF.compute.provider_config`` are loaded
-  and parsed by standard libraries (e.g. ``yaml``), and schema-validated (e.g.
-  via ``jsonschema``). Schema validation failure causes nova-compute startup to
-  fail. Upon successful loading and validation, the resulting data structure is
+  On nova-compute startup, files in ``CONF.compute.provider_config_location``
+  are loaded and parsed by standard libraries (e.g. ``yaml``), and
+  schema-validated (e.g. via ``jsonschema``). Schema validation failure or
+  multiple identifications of a node will cause nova-compute startup to fail.
+  Upon successful loading and validation, the resulting data structure is
   stored in an instance attribute on the ResourceTracker.
 
 Provider Tree Merging
@@ -239,7 +242,9 @@ Provider Tree Merging
   inventory of a resource class managed by the virt driver. Conflicts should
   log a warning and cause the conflicting config inventory to be ignored.
   The exact location and signature of this method, as well as how it detects
-  conflicts, is left to the implementation.
+  conflicts, is left to the implementation. In the event that a resource
+  provider is identified by both explicit UUID/NAME and $COMPUTE_NODE, only the
+  UUID/NAME record will be used.
 
 ``_update_to_placement``
   In the ResourceTracker's ``_update_to_placement`` flow, the merging method is
@@ -289,7 +294,8 @@ None
 Other deployer impact
 ---------------------
 An understanding of this file and its implications is only required when the
-operator desires provider customization.
+operator desires provider customization. The deployer should be aware of the
+precedence of records with UUID/NAME identification over $COMPUTE_NODE.
 
 Developer impact
 ----------------
@@ -352,6 +358,7 @@ References
 .. _Konstantinos's device-placement-model spec: https://review.openstack.org/#/c/591037/8/specs/stein/approved/device-placement-model.rst
 .. _Eric's device-passthrough spec: https://review.openstack.org/#/c/579359/10/doc/source/specs/rocky/device-passthrough.rst
 .. _Resource Management Daemon_PTG Summary: http://lists.openstack.org/pipermail/openstack-discuss/2019-May/005809.html
+.. _Handling UUID/NAME and $COMPUTE_NODE conflicts: http://eavesdrop.openstack.org/irclogs/%23openstack-nova/%23openstack-nova.2019-11-19.log.html#t2019-11-19T21:25:26
 
 History
 =======
@@ -364,6 +371,6 @@ History
    * - Stein
      - Introduced
    * - Train
-     - Reintroduced, simplified
+     - Re-proposed, simplified
    * - Ussuri
-     - Reintroduced
+     - Re-proposed
