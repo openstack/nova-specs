@@ -322,34 +322,9 @@ get to the initial state of the VM.
 
 VM resize
 ---------
-Adding new virtual persistent memory devices to an instance is allowed.
-As for a concrete virtual persistent memory device, changing its backing
-namespace's resource class is not allowed. This is because it is not
-always possible to compare the sizes of two namespaces in different resource
-classes (e.g. CUSTOM_PMEM_NAMESPACE_128G and CUSTOM_PMEM_NAMESPACE_MEDIUM).
-
-By default the content of the original virtual persistent memory is copied
-to the new virtual persistent memory (if there is). This could be time
-consuming, so a flavor extra spec is introduced as a flag::
-
- hw:allow_pmem_copy=true|false (default false)
-
-If either the source or target has this flag set to ``true``, the
-data in virtual persistent memory is copied.
-If both the source and target have this flag set to ``false``, the
-data in virtual persistent memory is not copied. This (not copying data)
-is useful in scenarios such as virtual persistent memory is used as cache.
-For a graceful shutdown (which resize does), the data in the cache
-is flushed, so no need to copy the data.
-
-Nova compute libvirt driver uses daxio_ utility to read out the data from
-the source persistent memory namespace and write in to the target
-persistent memory namespace.
-If the source and target persistent memory namespaces are not on the
-same host, ssh tunnel is used to channel the data transfer. This ssh tunnel
-uses the same ssh key as of moving VM disks during resize. The copying
-via network won't work in case of cross-cell resize since there is no
-direct connectivity between the source and target host.
+Resizing to new flavor with arbitrary virtual persistent memory devices
+is allowed. The content of the original virtual persistent memory will not
+be copied to the new virtual persistent memory (if there is).
 
 Live migration
 --------------
@@ -404,63 +379,32 @@ the ideal interface to decribe NUMA.
 
 Data model impact
 -----------------
-A new VirtualPMEM object is introduced to track the virtual PMEM information
-of an instance, it stands for a virtual persistent memory device backed
-by a physical persistent memory namespace:
+A new LibvirtVPMEMDevice object is introduced to track the virtual PMEM
+information of an instance, it stands for a virtual persistent memory
+device backed by a physical persistent memory namespace:
 
 .. code-block:: python
 
- class VirtualPMEM(base.NovaObject):
+ class LibvirtVPMEMDevice(ResourceMetadata):
      # Version 1.0: Initial version
      VERSION = "1.0"
 
      fields = {
-         'rc_name': fields.StringField(),
-         'ns_name': fields.StringField(nullable=True),
+        'label': fields.StringField(),
+        'name': fields.StringField(),
+        'size': fields.IntegerField(),
+        'devpath': fields.StringField(),
+        'align': fields.IntegerField(),
      }
 
-In addition a VirtualPMEMList object is introduced to represent a list
-of VirtualPMEM objects:
 
-.. code-block:: python
+The 'resources' deferred-load column in class InstanceExtra stores a serialized
+ResourceList object for a given instance, each Resource object contain a
+specific resource information, it has a object field 'metadata', which can be
+subclass of ResourceMetadata object. Since LibvirtVPMEMDevice is introduced,
+virtual persistent memory information can be stored in 'resources' field of
+objects.Instance and persistent in database table InstanceExtra.
 
- class VirtualPMEMList(base.NovaObject):
-     # Version 1.0: Initial version
-     VERSION = "1.0"
-
-     fields = {
-         'vpmems': fields.ListOfObjectsField('VirtualPMEM'),
-     }
-
-A 'vpmems' deferred-load column is added to class InstanceExtra,
-which stores a serialized VirtualPMEMList object for a given instance:
-
-.. code-block:: python
-
- class InstanceExtra(BASE, NovaBase, models.SoftDeleteMixin):
-      ...
-      migration_context = orm.deferred(Column(Text))
-      keypairs = orm.deferred(Column(Text))
-      trusted_certs = orm.deferred(Column(Text))
-      vpmems = orm.deferred(Column(Text))
-      instance = orm.relationship(Instance,
-      ...
-
-Two new fields are introduced to MigrationContext to hold the
-old and new virtual persistent memory devices during migration:
-
-.. code-block:: python
-
- class MigrationContext(base.NovaPersistentObject, base.NovaObject):
-      ...
-      fields = {
-          'old_pci_requests': fields.ObjectField('InstancePCIRequests',
-                                                  nullable=True),
-          'new_vpmems': fields.ObjectField('VirtualPMEMList',
-                                           nullable=True),
-          'old_vpmems': fields.ObjectField('VirtualPMEMList',
-                                           nullable=True),
-     }
 
 REST API impact
 ---------------
