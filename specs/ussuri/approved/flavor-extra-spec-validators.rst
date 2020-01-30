@@ -59,7 +59,10 @@ however, the following are considered out-of-scope for this change:
   extra spec B be configured first. We will document the dependency but it
   won't be enforced.
 
-  .. note:: In most cases this is already handled by virt drivers.
+  .. note::
+
+      In most cases this is already handled by virt drivers, though this does
+      occur much later in the process that what this spec proposes.
 
 - Enforcement of virt driver dependencies. Unfortunately, while flavor extra
   specs should be generic, this isn't always the case. As above, we will
@@ -174,9 +177,9 @@ For example:
     ]
 
 Regardless of the source of the extra spec validator, they will be used by the
-API behind the :command:`openstack flavor set` command. A microversion will be
-introduced for this API to avoid breaking existing tools that are inadvertently
-setting the wrong values.
+``flavors/{flavor_id}/os-extra_specs`` API. A microversion will be introduced
+for this API to avoid breaking existing tools that are inadvertently setting
+the wrong values.
 
 Key validation
 --------------
@@ -226,12 +229,13 @@ Alternatives
 * We could introduce a configuration option to toggle strict API validation
   instead of or in addition to the API microversion. This introduces a new
   example of config-driven API behavior, which is something we're trying to
-  remove from nova. It is also unnecessary since users can use older API
-  microversions if necessary.
+  remove from nova. It is also unnecessary because the use of microversions
+  or the ``validation`` query parameter allows users to continue using the
+  older behavior when absolutely necessary.
 
 * We could initially log warnings for invalid keys and introduce the API change
   in a later release. This is unnecessary because the use of microversions
-  and/or the ``validation`` query parameter allows users to continue using the
+  or the ``validation`` query parameter allows users to continue using the
   older behavior when absolutely necessary.
 
 * We could introduce a new API microversion each time a new extra spec is
@@ -255,10 +259,10 @@ None.
 REST API impact
 ---------------
 
-We will add a REST API microversion to the ``POST
-flavors/{flavor_id}/os-extra_specs`` API to return HTTP 400 invalid flavor
-extra specs. We will also add support for a ``validation`` query parameter to
-partially or fully disable this behavior, if necessary.
+We will add an API microversion to the ``flavors/{flavor_id}/os-extra_specs``
+API to return HTTP 400 on invalid flavor extra specs. We will also add support
+for a ``validation`` query parameter to partially or fully disable this
+behavior, if necessary.
 
 Security impact
 ---------------
