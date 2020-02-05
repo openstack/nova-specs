@@ -73,7 +73,8 @@ is 'rule:admin_api').
 The event "details" are the same as the ``fault.message`` that the user would
 see when the server is in **ERROR** status. For NovaExceptions that would be
 the actual exception message but for non-NovaExceptions it's just the
-`exception class name`_.
+`exception class name`_ (In the defined ``exception_to_dict`` function to do
+``message = fault.__class__.__name__``).
 
 Alternatives
 ------------
@@ -229,8 +230,6 @@ References
    https://docs.openstack.org/api-guide/compute/faults.html#instance-faults
 
 .. _`exception class name`:
-   In the defined ``exception_to_dict`` function to do
-   ``message = fault.__class__.__name__`` (Just avoid invalid link).
    https://github.com/openstack/nova/blob/56fc3f28e48bd9c6faf72d2a8bfdf520cc3e60d0/nova/compute/utils.py#100
 
 .. _`bug 1851587`: https://bugs.launchpad.net/nova/+bug/1851587
