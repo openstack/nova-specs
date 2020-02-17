@@ -164,9 +164,9 @@ amount but rather a *qualitative* information that helps us to allocate
 .. note ::
 
     As we said above, we don't want to support children PCI devices for Ussuri
-    at the moment.Other current children RPs for a root compute node, like ones
-    for VGPU resources or bandwidth resources would still have their parent be
-    the compute node.
+    at the moment. Other current children RPs for a root compute node, like
+    ones for VGPU resources or bandwidth resources would still have their
+    parent be the compute node.
 
 NUMA RP
 -------
@@ -597,13 +597,14 @@ Assignee(s)
 
 Feature Liaison
 ---------------
-None
+bauzas
 
 Work Items
 ----------
 
 * libvirt driver passing NUMA topology through ``update_provider_tree()`` API
 * Hyper-V driver passing NUMA topology through ``update_provider_tree()`` API
+* Possible work on the NUMATopologyFilter to look at the candidates
 * Scheduler translating flavor extra specs for NUMA properties into Placement
   queries
 * ``nova-status pre-upgrade check`` command
