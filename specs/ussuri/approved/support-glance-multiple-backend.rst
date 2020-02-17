@@ -30,7 +30,7 @@ backend for uploading snapshots or backup images in more efficient way.
 
 Use Cases
 ---------
-1. Operator wants to upload all the snapshot or backup images to one
+1. Operator wants to upload all the snapshots or backup images to one
    specific/dedicated store in Glance.
 2. Fast snapshot using ceph even ceph is not a default store in glance.
 
@@ -49,8 +49,8 @@ Alternatives
 ------------
 * Add a new microversion to snapshot and backup API to support configuring to
   upload the snapshot/backup image to specific store. I am proposing to add
-  new --store option to snapshot and backup API where user can specify to
-  which store snapshot/backend image will be uploaded. If --store option
+  new ``--store`` option to snapshot and backup API where user can specify to
+  which store snapshot/backend image will be uploaded. If ``--store`` option
   is not specified then the image will be uploaded to default store.
 
   If user chooses the 'store' which is not configured in
@@ -96,8 +96,8 @@ Alternatives
 * Add a new configuration option 'store' under 'glance' section to
   upload all the snapshot/backup images to specified/dedicated store. If this
   option is not defined then all the snapshot/backup images will be uploaded to
-  default store. This solution will be efficient if operator doesn't want to
-  expose the use of uploading snapshot image to specific store to end user.
+  the default store. This solution will be efficient if operator doesn't want
+  to expose the use of uploading snapshot image to specific store to end user.
 
 Data model impact
 -----------------
@@ -145,7 +145,7 @@ Primary assignee:
 Feature Liaison
 ---------------
 Feature liaison:
-  Liaison Needed
+  Balazs Gibizer
 
 Work Items
 ----------
@@ -174,7 +174,7 @@ References
 History
 =======
 .. list-table:: Revisions
-      :header-rows: 1
+   :header-rows: 1
 
    * - Release Name
      - Description
