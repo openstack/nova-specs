@@ -88,7 +88,7 @@ class TestTitles(testtools.TestCase):
             if "http://" in line or "https://" in line:
                 continue
             # Allow lines which do not contain any whitespace
-            if re.match("\s*[^\s]+$", line):
+            if re.match(r"\s*[^\s]+$", line):
                 continue
             self.assertTrue(
                 len(line) < 80,
