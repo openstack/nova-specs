@@ -188,14 +188,6 @@ Work Items
 
 * Add ``details`` to the ``InstanceActionEvent`` object, and populating it,
   and the populating part requires some work.
-
-  .. note:: The defined ``exception_to_dict`` function behavior is not normal
-            in compute utils, it could mean leaking non-nova error details
-            which is why exception_to_dict just uses the exception type as
-            the message if it cannot format the value. Need to change the
-            ``serialize_args`` decorator to pass a format_exc_val kwarg, and
-            make it to be smarter. This will not be an obstacle to completing
-            this blueprint.
 * Modify the API to expose the ``details`` field in GET responses that expose
   instance action event.
 * Add related tests
