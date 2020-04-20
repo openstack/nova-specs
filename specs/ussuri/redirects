@@ -1,1 +1,16 @@
 approved/support-live-migration-with-vpmems.rst support-live-migration-with-virtual-persistent-memory.rst
+approved/action-event-fault-details.rst ../implemented/action-event-fault-details.rst
+approved/add-user-id-field-to-the-migrations-table.rst ../implemented/add-user-id-field-to-the-migrations-table.rst
+approved/cross-cell-resize.rst ../implemented/cross-cell-resize.rst
+approved/destroy-instance-with-datavolume.rst ../implemented/destroy-instance-with-datavolume.rst
+approved/flavor-extra-spec-validators.rst ../implemented/flavor-extra-spec-validators.rst
+approved/image-metadata-prefiltering.rst ../implemented/image-metadata-prefiltering.rst
+approved/image-precache-support.rst ../implemented/image-precache-support.rst
+approved/non-admin-filter-instance-by-az.rst ../implemented/non-admin-filter-instance-by-az.rst
+approved/nova-cyborg-interaction.rst ../implemented/nova-cyborg-interaction.rst
+approved/support-move-ops-with-qos-ports-ussuri.rst ../implemented/support-move-ops-with-qos-ports-ussuri.rst
+approved/vgpu-multiple-types.rst ../implemented/vgpu-multiple-types.rst
+approved/virt-bfv-instance-rescue.rst ../implemented/virt-bfv-instance-rescue.rst
+approved/virt-rescue-stable-disk-devices.rst ../implemented/virt-rescue-stable-disk-devices.rst
+approved/vm-scoped-sriov-numa-affinity.rst ../implemented/vm-scoped-sriov-numa-affinity.rst
+approved/policy-defaults-refresh.rst ../implemented/policy-defaults-refresh.rst

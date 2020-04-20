@@ -1,1 +1,0 @@
-../../ussuri-template.rst
