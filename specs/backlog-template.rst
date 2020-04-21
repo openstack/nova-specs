@@ -1,1 +1,1 @@
-ussuri-template.rst
+victoria-template.rst
