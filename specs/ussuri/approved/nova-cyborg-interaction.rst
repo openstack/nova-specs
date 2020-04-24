@@ -56,9 +56,7 @@ parts are covered by other specs, and describe what is covered in this spec.
 * Assignment of accelerators: We introduce the concept of Accelerator Request
   objects in Section `Accelerator Requests`_.  The workflow to create and use
   them is summarized in Section `Nova changes for Assignment workflow`_. The
-  same section also highlights the Nova changes needed. The details of the
-  Cyborg API implementation for this workflow is covered in Cyborg specs
-  ([#cy-api-impl]_).
+  same section also highlights the Nova changes needed.
 
 * Instance operations: The behavior with respect to accelerators for all
   standard instance operations are defined in [#inst-ops]_.
@@ -73,8 +71,8 @@ Use Cases
   Accelerated Function as a Service in the same cluster (see
   [#cy-nova-place]_).
 
-The following use cases are not addressed in Train but are of long term
-interest:
+The following use cases are not addressed in this release but are of
+long term interest:
 
 * A user requests to add one or more accelerators to an existing instance.
 * Live migration with accelerators.
@@ -91,13 +89,11 @@ report some PCI devices. The operator must ensure that both configurations
 are compatible.
 
 Ideally, there should be a single way for the operator to identify which PCI
-devices should be claimed by Nova and which by Cyborg. This could be along the
-lines suggested in [#generic-dev-disc]_ or [#kosamara]_. If such a mechanism
-could be agreed upon by all stakeholders, Cyborg could adopt it.
-
-Until that point, the operator tells Cyborg which devices to claim by
-using Cyborg's configuration file. The operator must ensure that this is
-compatible with the PCI whitelists configured in Nova.
+devices should be claimed by Nova and which by Cyborg. Until that is figured
+out, the operator shall use Cyborg's configuration file to specify which
+Cyborg drivers are enabled. Since each driver claims specific PCI IDs, the
+operator can and must ensure that none of these PCI IDs are included in Nova's
+PCI whitelist.
 
 Placement update
 ----------------
@@ -186,10 +182,11 @@ delete the ARQs after unbinding them.
 .. _match-rp:
 
 Each ARQ needs to be matched to the specific RP in the allocation candidate
-that Nova has chosen, before the ARQ is bound. Since Placement does not match
-RPs to request groups, this must be done in the Cyborg client module of Nova
-(`cyborg-client-module`_). The matching is done using the requester_id field
-in the ``RequestGroup`` object ([#requester-id]_) as below:
+that Nova has chosen, before the ARQ is bound. The current Nova code maps
+request groups to RPs, while the Cyborg client module in Nova
+(`cyborg-client-module`_) matches ARQs to request groups. The matching is
+done using the ``requester_id`` field in the ``RequestGroup`` object
+as below:
 
 * The order of request groups in a device profile is not significant, but it
   is preserved by Cyborg. Thus, each device profile request group has a unique
@@ -221,17 +218,19 @@ Cyborg API calls are routed through that.
 
 #. NEW: The Nova API server calls the Cyborg API ``GET
    /v2/device_profiles?name=$device_profile_name`` and gets back the device
-   profile request groups. These are added to the request spec.
+   profile. The request groups in that device profile are added to the
+   request spec.
 
 #. The Nova scheduler invokes Placement and gets a list of allocation
    candidates. It selects one of those candidates and makes
    claim(s) in Placement. The Nova conductor then sends a RPC message
    ``build_and_run_instances`` to the Nova compute manager.
 
-#. NEW: Nova calls the Cyborg API ``POST /v2/accelerator_requests`` with the
-   device profile name. Cyborg creates a set of unbound ARQs for that device
-   profile and returns them to Nova. (The call may originate from Nova
-   conductor or the compute manager; that will be settled in code review.)
+#. NEW: Nova compute manager calls the Cyborg API
+   ``POST /v2/accelerator_requests`` with the device profile name. Cyborg
+   creates a set of unbound ARQs for that device profile and returns them to
+   Nova. (The call may originate from Nova conductor or the compute manager;
+   that will be settled in code review.)
 
 #. NEW: The Cyborg client in Nova matches each ARQ to the resource provider
    picked for that accelerator. See `match-rp`_.
@@ -246,16 +245,16 @@ Cyborg API calls are routed through that.
 
     {
        "events": [
-          { "name": "arq_resolved",
-            "tag": $arq_uuid,
-            "server_uuid": $instane_uuid,
-            "status": "ok" # or "failed"
+          { "name": "accelerator-requests-bound",
+            "tag": $device_profile_name,
+            "server_uuid": $instance_uuid,
+            "status": "completed" # or "failed"
           },
           ...
        ]
     }
 
-#. NEW: The Nova virt driver waits for the notification, subject to the
+#. NEW: The Nova compute manager waits for the notification, subject to the
    timeout mentioned in Section `Other deployer impact`_. It then calls
    the Cyborg REST API ``GET
    /v2/accelerator_requests?instance=<uuid>&bind_state=resolved``.
@@ -268,9 +267,7 @@ Cyborg API calls are routed through that.
    another host or delete the (unbound) ARQs for the instance.
 
 This flow is captured by the following sequence diagram, in which the Nova
-conductor and scheduler are together represented as the Nova controller. The
-ARQ creation is shown to happen in Nova compute manager only for concreteness;
-it may be in the controller instead.
+conductor and scheduler are together represented as the Nova controller.
 
 .. seqdiag::
 
@@ -289,7 +286,7 @@ it may be in the controller instead.
              'Merge request groups into request_spec'];
          'Nova Controller' -> 'Placement' [label=
              'Get /allocation_candidates'];
-         'Nova Controller' -> 'Placement' [label=
+         'Nova Controller' <- 'Placement' [label=
              'allocation candidates with nested RPs'];
          'Nova Controller' -> 'Nova Controller' [label=
              'Select a candidate'];
@@ -335,7 +332,7 @@ REST API impact
 ---------------
 
 None. A new extra_spec key ``accel:device_profile_name`` is added to
-the flavor.
+the flavor, but no API is modified.
 
 Security impact
 ---------------
@@ -375,16 +372,15 @@ The deployer needs to configure a new tunable in ``nova-cpu.conf``::
 Developer impact
 ----------------
 
-Define two new standard resource classes: FPGA and PGPU.
+The resource classes FPGA and PGPU have already been standardized. But,
+as new device types are proposed, they will be represented as custom
+RCs to begin with, but may get standardized later. Such standardization
+requires changes to os-resource-classes.
 
-We have VGPU and VGPU_DISPLAY_HEAD RCs defined already. But we propose a
-PGPU as a different RC for the following reasons:
-
- * Both VGPU and VGPU_DISPLAY_HEAD RCs specifically refer to virtual GPUs.
-   We need a different one for physical GPUs.
- * It will be subject to separate quotas/limits in Keystone.
- * Using PCI_DEVICE RC is too general: we want quotas for GPU RC
-   specifically.
+For end-to-end testing with tempest, Cyborg shall provide a fake driver
+which returns attach handles of type ``TEST_PCI``. The Nova virt driver
+should ignore such attach handles, and create VMs as if such ARQs did
+not exist.
 
 Upgrade impact
 --------------
@@ -413,8 +409,7 @@ See the steps marked NEW in `Nova changes for Assignment workflow`_ section.
 Dependencies
 ============
 
-* Specification for device profiles [#dev-prof]_.
-* Cyborg API specification [#cy-api]_.
+None
 
 Testing
 =======
@@ -443,29 +438,17 @@ References
 .. [#dev-prof] `Device profiles specification
    <https://review.openstack.org/602978>`_
 
-.. [#cy-api-impl] `Specification for Cyborg API implementation
-   <https://review.openstack.org/#/c/608624/>`_
-
 .. [#inst-ops] `Specification for instance operations with accelerators
    <https://review.openstack.org/#/c/605237/>`_
-
-.. [#generic-dev-disc] `Generic device discovery
-   <https://review.openstack.org/#/c/603805/>`_
-
-.. [#kosamara] `Modelling passthrough devices for report to placement
-   <https://review.openstack.org/#/c/591037/>`_
 
 .. [#req-spec-groups] `Store RequestGroup objects in RequestSpec
    <https://review.openstack.org/#/c/567267/>`_
 
-.. [#requester-id] `Requester_id field in RequestGroup
-   <https://git.openstack.org/cgit/openstack/nova/tree/nova/objects/request_spec.py?h=refs/changes/27/619527/16#n818/>`_
-
 .. [#map-rg-to-rp] `Map request groups to resource providers
-   <https://review.openstack.org/#/c/616239/33/nova/objects/request_spec.py/>`_
+   <https://github.com/openstack/nova/blob/63380a6b494e0f0f220b67b197edec836f1c5a42/nova/objects/request_spec.py#L777>`_
 
 .. [#cy-api] `Specification for Cyborg API Version 2
-   <https://review.opendev.org/658263/>`_
+   <https://opendev.org/openstack/cyborg-specs/src/branch/master/specs/train/approved/cyborg-api.rst>`_
 
 History
 =======
