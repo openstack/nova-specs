@@ -31,7 +31,7 @@ project = u'Nova Specs'
 copyright = u'%s, OpenStack Nova Team' % datetime.date.today().year
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+pygments_style = 'native'
 
 # A list of ignored prefixes for module index sorting.
 modindex_common_prefix = ['nova-specs.']
@@ -54,13 +54,15 @@ html_use_index = False
 
 # -- openstackdocstheme configuration -----------------------------------------
 
-repository_name = 'openstack/nova-specs'
-use_storyboard = False
-
+openstackdocs_repo_name = 'openstack/nova-specs'
+openstackdocs_bug_project = 'nova'
+openstackdocs_bug_tag = 'specs'
+openstackdocs_auto_name = False
+openstackdocs_auto_version = False
 
 # -- yasfb configuration ------------------------------------------------------
 
-feed_base_url = 'http://specs.openstack.org/openstack/nova-specs'
+feed_base_url = 'https://specs.openstack.org/openstack/nova-specs'
 feed_author = 'OpenStack Nova Team'
 
 
