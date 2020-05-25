@@ -351,7 +351,7 @@ Other contributors:
 Feature Liaison
 ---------------
 
-Feature work must be sponsored by a member of the `nova core team`_ or
+Ideally feature work is sponsored by a member of the `nova core team`_ or
 other experienced and active nova developer. The purpose of a liaison is
 to:
 
@@ -364,6 +364,10 @@ See the :ref:`feature-liaisons` for more details.
 Feature liaison:
   <name and/or nick>
 
+* Feature liaison is optional. However we suggest to find a liaison for
+  your feature as it will help getting your feature merged. The
+  :ref:`feature-liaisons` has details about how to find a liaison for your
+  work.
 * If you do not already have agreement from a nova developer to act as
   your liaison, you may write "Liaison Needed" here and/or in your
   commit message.
