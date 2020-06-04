@@ -229,7 +229,8 @@ Feature Liaison FAQ
 
 In Ussuri, a mandatory "Feature Liaison" section was added to the spec
 template. This section attempts to address some of the questions around this
-concept.
+concept. In Victoria we made filling the section optional but still encourage
+contributors to use it.
 
 What does a Feature Liaison do?
   By signing up to be a feature liaison for a spec, you're agreeing to help
