@@ -264,10 +264,9 @@ specified in the flavor, a guest NUMA node 0 is constructed implicitly
 and all guest virutal persistent memory devices are put under it.
 Please note, under the second circumstance (implicitly constructing
 a guest NUMA node 0), the construction of guest NUMA node 0 happens
-at the libvirt driver while the guest libvirt domain specification
-is being built up. The NUMA topology logic in the scheduler is not
-applied. And from the perspective of any other parts of Nova, this
-guest is still a non-NUMA guest.
+at the Nova API, which means the NUMA topology logic in the scheduler
+is applied. And from the perspective of any other parts of Nova, this
+guest is a NUMA guest.
 
 Examples::
 
