@@ -150,6 +150,12 @@ there will be some timeout tunables related to how often we poll the
 Glance server for status on the copy, as well as an overall timeout
 for how long we are willing to wait.
 
+One other deployer consideration is that Glance requires an API setup
+capable of doing background tasks in order to support the
+``image_import`` API. That means ``mod_wsgi`` or similar, as ``uwsgi``
+does not provide reliable background task support. This is just a
+Glance requirement, but worth noting here.
+
 Developer impact
 ----------------
 
@@ -203,18 +209,32 @@ Dependencies
 Testing
 =======
 
-* Functional testing should be relatively easy to implement for decent
-  coverage.
+* Unit testing, obviously.
 
-* Devstack and tempest testing is *possible* although probably not
-  very fruitful. The simplest way to do this is to deploy a devstack
-  with both ceph and file stores. Uploading an image to the file store
-  will cause it to be copied to the RBD backend on first boot,
-  providing a very relevant (from Nova's perspective) single-RBD
-  analog of the multi-RBD environment. That will require devstack
-  changes, as well as a tempest test. It may be doable without tempest
-  *config* changes requiring tempest to be told about the stores.
+* Functional testing turns out to be quite difficult, as we stub out
+  massive amounts of the underlying image handling code underneath our
+  fake libvirt implementation. Adding functional tests for this would
+  require substantial refactoring of all that test infrastructure,
+  dwarfing the actual code in this change.
 
+* Devstack testing turns out to be relatively easy. I think we can get
+  a solid test of this feature on every run, by altering that job to:
+
+ * Enable Glance and Nova multistore support.
+ * Enable Glance image conversion support, to auto-convert the default
+   QCOW Cirros image to raw when we upload it.
+ * Create two stores, one file-backed (like other jobs) and one
+   RBD-backed (like the current Ceph job).
+ * Default the Cirros upload to the file-backed store.
+ * The first use of the Cirros image in a tempest test will cause Nova
+   to ask Glance to copy the image from the file-backed store to the
+   RBD-backed store. Subsequent tests will see it as already in the
+   RBD store and proceed as normal.
+
+   The real-world goal of this is to facilitate RBD-to-RBD backend
+   store copying, but from Nova's perspective file-to-RBD is an
+   identical process, so it's a good analog without having to
+   bootstrap two independent Ceph clusters in a devstack job.
 
 Documentation Impact
 ====================
