@@ -240,8 +240,8 @@ Other end user impact
 Aside from the API, are there other ways a user will interact with this
 feature?
 
-* Does this change have an impact on python-novaclient? What does the user
-  interface there look like?
+* Does this change have an impact on python-novaclient and openstack client?
+  What does the user interface there look like?
 
 Performance Impact
 ------------------
