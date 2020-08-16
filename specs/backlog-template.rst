@@ -1,1 +1,1 @@
-victoria-template.rst
+wallaby-template.rst
