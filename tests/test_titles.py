@@ -23,8 +23,7 @@ import testtools
 # - "History" introduced in Liberty should be
 # mandatory for M.
 OPTIONAL_SECTIONS = ("History",)
-OPTIONAL_SUBSECTIONS = collections.defaultdict(lambda: ())
-OPTIONAL_SUBSECTIONS['backlog'] = ('Upgrade impact',)
+OPTIONAL_SUBSECTIONS = collections.defaultdict(lambda: ('Feature Liaison',))
 OPTIONAL_SUBSECTIONS['queens'] = ('Upgrade impact',)
 
 
