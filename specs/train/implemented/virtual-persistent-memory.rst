@@ -231,7 +231,7 @@ resource even though they are of the same quantity.
 Persistent memory is by nature NUMA sensitive. However for the initial
 iteration, the resource inventories are put directly under ROOT resource
 provider of the compute host. Persistent memory NUMA affinity will be
-adddressed by a seperate follow-on spec.
+addressed by a separate follow-on spec.
 
 A change in the configuration will stop the nova compute agent from
 (re)starting if that change removes any namespaces in use by guests
