@@ -464,10 +464,18 @@ Work Items
 
 Dependencies
 ============
-* Kernel version >= 4.2
-* QEMU version >= 2.9.0
+* Kernel version >= 4.18
+
+.. note::
+  NVDIMM support is present in the Linux Kernel v4.0 or newer. It is
+  recommended to use Kernel version 4.2 or later since `NVDIMM support`_
+  is enabled by default. We met some bugs in older versions,
+  and we have done all verification works with OpenStack on 4.18 version,
+  so 4.18 version and newer will probably guarantee its functionality.
+
+* QEMU version >= 3.1.0
 * Libvirt version >= 5.0.0
-* ndctl version >= 4.7
+* ndctl version >= 62
 * daxio version >= 1.6
 
 
@@ -503,7 +511,7 @@ References
 .. _`NVDIMM Linux kernel document`: https://www.kernel.org/doc/Documentation/nvdimm/nvdimm.txt
 .. _ndctl: http://pmem.io/ndctl/
 .. _daxio: http://pmem.io/pmdk/daxio/
-
+.. _`NVDIMM support`: https://docs.pmem.io/persistent-memory/getting-started-guide/creating-development-environments/linux-environments
 
 History
 =======
