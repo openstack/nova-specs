@@ -1,0 +1,6 @@
+approved/add-emulated-virtual-tpm.rst ../implemented/add-emulated-virtual-tpm.rst
+approved/nova-image-download-via-rbd.rst ../implemented/nova-image-download-via-rbd.rst
+approved/provider-config-file.rst ../implemented/provider-config-file.rst
+approved/rbd-glance-multistore.rst ../implemented/rbd-glance-multistore.rst
+approved/sriov-interface-attach-detach.rst ../implemented/sriov-interface-attach-detach.rst
+approved/use-pcpu-vcpu-in-one-instance.rst ../implemented/use-pcpu-vcpu-in-one-instance.rst
