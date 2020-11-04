@@ -176,7 +176,7 @@ Documentation Impact
 ====================
 
 This feature will not add a new scheduling filter, but rather extend the
-existing NUMNA topology filter. We will add documentation as required.
+existing NUMA topology filter. We will add documentation as required.
 
 References
 ==========
