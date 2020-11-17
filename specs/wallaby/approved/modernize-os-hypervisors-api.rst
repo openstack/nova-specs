@@ -93,7 +93,8 @@ Next, the useful fields unique to the detailed view. These should also remain:
 - ``hypervisor_version``
 - ``service``
 
-Finally, the useless fields:
+Finally, the useless fields. There are varied reasons their uselessness,
+described below, but all should be removed:
 
 - ``current_workload``
 
@@ -126,7 +127,7 @@ Finally, the useless fields:
   instances on the host were to use all their allocated disk. This can go
   negative if disk overcommit is enabled or if an instance is force migrated to
   a host, bypassing the scheduler. This value is hard to use and frequently
-  misunderstood by end-users. Use placement.
+  misunderstood by end-users.
 
 - ``free_ram_mb``, ``memory_mb``, ``memory_mb_used``
 
@@ -141,6 +142,11 @@ Finally, the useless fields:
   Easily figured out by filtering running instances by host (admin-only, like
   this API).
 
+While we can remove the useless fields, the useful ones are still limited in
+their usefulness owing to the restrictive policy in place for this API. We can
+improve this by allowing users with the ``PROJECT_ADMIN`` role to list all
+hypervisors their project is allowed to access.
+
 .. [1] https://docs.openstack.org/api-ref/compute/?expanded=list-hypervisors-details-detail,show-hypervisor-details-detail
 .. [2] https://docs.openstack.org/api-ref/compute/?expanded=list-hypervisors-details-detail#id298
 
@@ -154,7 +160,11 @@ Proposed change
 
 Remove the resource-related fields from the output of the
 ``/os-hypervisors/detail`` API and remove the ``/os-hypervisors/statistics``
-API in its entirety.
+API in its entirety. Modify the default policy used for ``GET /os-hypervisors``
+from ``SYSTEM_READER`` to ``SYSTEM_READER_OR_PROJECT_ADMIN`` to allow users
+with the ``SYSTEM_READER`` role to see all hypervisors and users with the
+``PROJECT_ADMIN`` role to see only the hypervisors that their project is
+allowed to access, based on aggregate metadata.
 
 Alternatives
 ------------
@@ -176,8 +186,14 @@ no longer include the following fields in its response: ``cpu_info``,
 ``free_ram_mb``, ``memory_mb``, ``memory_mb_used``, ``vcpus``, ``vcpus_used``,
 and ``running_vms``.
 
-Starting from the new API microversion, the ``/os-hypervisors/statistics`` API
-will be removed entirely and will return a HTTP 410 (Gone).
+In addition, the ``/os-hypervisors/statistics`` API will be removed entirely
+and will return a HTTP 410 (Gone).
+
+Finally, change the policy used for the ``/os-hypervisors`` API from
+``SYSTEM_READER`` to ``SYSTEM_READER_OR_PROJECT_ADMIN``, allowing users with
+the ``PROJECT_ADMIN`` role to see all hypervisors their project is allowed
+access to. The other hypervisor-related APIs will not have their policies
+modified.
 
 Security impact
 ---------------
