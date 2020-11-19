@@ -172,8 +172,8 @@ Upgrade impact
 
 We should bump service object version and rpc version
 for the 'get_*_console' rpc call. Then only when the
-cluster fully upgrade to Ussuri release, the call can be
-success. otherwise return failure for the request.
+cluster fully upgrade to Victoria release, the call
+can be success. otherwise return failure for the request.
 
 Implementation
 ==============
