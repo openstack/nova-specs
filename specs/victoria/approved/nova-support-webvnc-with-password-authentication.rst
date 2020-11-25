@@ -5,10 +5,10 @@
  http://creativecommons.org/licenses/by/3.0/legalcode
 
 =========================================================
-Nova provides remote console with password anthentication
+Nova provides remote console with password authentication
 =========================================================
 
-https://blueprints.launchpad.net/nova/+spec/nova-support-webvnc-with-password-anthentication
+https://blueprints.launchpad.net/nova/+spec/nova-support-webvnc-with-password-authentication
 
 The feature aims at providing a safer remote console with password
 authentication. End users can set console password for their instances.
@@ -104,7 +104,7 @@ URL: /servers/{server_id}/remote-consoles
 
   - If ``password`` is present, console password will be updated while
     getting new access_url.
-  - Only `vnc` and `spice` console protols/types support reseting
+  - Only `vnc` and `spice` console protocols/types support reseting
     password. If both ``password`` and (``protocol``, ``type``)
     are provided, and protocol/type not in support list
     ``HttpBadRequest 400`` will be returned.
@@ -224,7 +224,7 @@ None
 Testing
 =======
 
-Add releated unit test
+Add related unit test
 
 Documentation Impact
 ====================

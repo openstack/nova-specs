@@ -5,10 +5,10 @@
  http://creativecommons.org/licenses/by/3.0/legalcode
 
 =========================================================
-Nova provides remote console with password anthentication
+Nova provides remote console with password authentication
 =========================================================
 
-https://blueprints.launchpad.net/nova/+spec/nova-support-webvnc-with-password-anthentication
+https://blueprints.launchpad.net/nova/+spec/nova-support-webvnc-with-password-authentication
 
 The feature aims at providing a safer remote console with password
 authentication. End users can set console password for their instances.
@@ -16,6 +16,7 @@ Any user trying to access the password-encrypted console of instance
 will get a locked window from web console prompting for ``password``
 input, and this provides almost the same experience as using VNC clients
 (e.g vncviewer) to access vnc servers that require password authentication.
+
 
 Problem description
 ===================
@@ -39,25 +40,23 @@ he forgets.
 Proposed change
 ===============
 
-* A new microversion will be provided in the nova API (``nova get-*-console``
-  subcommand) and OSC will need to provide a specific version for reseting
-  remote console password.
+* Changes will be patched to python-novaclient (``nova get-*-console``
+  subcommand) and equivalent in python-openstackclient to provide
+  ``--password`` for reseting remote console password.
 
-* The nova API will be extended to support console password when creating a
-  remote console.
-  There are two ``create console`` APIs. The first was only for the old
-  nova-consoles services (XenAPI-only) and was removed in Ussuri release [1]_.
-  The second, which is we will changes to support console password, is still
-  valid [2]_.
-  And the server actions for the other console [3]_, the console output
-  server action still need to be protected, and the deprecated action also
-  need to be blocked when the instance has a password set.
+* Changes will be patched to nova-api when creating remote console:
+  Extra logic will be added to handle both cases(console password
+  provided, and not). If password is not provided, we see it as the
+  existing ``Create Remote Console`` operation, then it jumps to old
+  logic. Or we know it's a request to reset password for
+  ``Remote Console``, and RPC call will be sent to compute service to
+  reset console password.
 
-* Changes will be proposed to nova-compute and virt driver to handle
+* Changes will be patched to nova-compute and virt driver to handle
   ``Reset Remote Console Password`` request. And this's only implment
   for libvirt driver. For other virt drivers, NotImplement will raise.
 
-* Changes will be proposed to nova-novncproxy: auth schemes(e.g:rfb.VNC)
+* Changes will be patched to nova-novncproxy: auth schemes(e.g:rfb.VNC)
   will be added. For the fact that project ``noVNC`` has already provided
   native support for password authentication(RFB version negotiation,
   handshakes and password authentication), so rfb.VNC can escape from
@@ -66,7 +65,7 @@ Proposed change
 Alternatives
 ------------
 
-New booting parameter ``console_pasword`` will be added to launch instances.
+New booting parameter ``console_password`` will be added to launch instances.
 And the password will be used to assemble ``graphics`` tag in libvirt XML.
 In this way, password-encrypted remote console will be implemented.
 The shortcoming of this implement is that no API provided to reset console
@@ -100,17 +99,16 @@ URL: /servers/{server_id}/remote-consoles
         }
      }
 
-  The ``password`` is in common password format (not more than 8 characters,
-  see `vnc security`_).
+  The ``password`` is in common password format.
   The ``password`` parameter is optional:
 
   - If ``password`` is present, console password will be updated while
     getting new access_url.
-  - Only `vnc` and `spice` console protols/types support reseting
+  - Only `vnc` and `spice` console protocols/types support reseting
     password. If both ``password`` and (``protocol``, ``type``)
     are provided, and protocol/type not in support list
     ``HttpBadRequest 400`` will be returned.
-  - And for unsupported virt driver, ``HttpBadRequest 400`` will be
+  - And for unsupported virt driver, `HttpNotImplemented 501` will be
     returned.
 
 Security impact
@@ -118,14 +116,9 @@ Security impact
 
 Surely it will make web console safer. And note that console password will
 only be securely kept by libvirtd and won't be displayed in the result
-of ``virsh dumpxml <Instance UUID>`` or definition XMLs managed by libvirt
+of ``virsh dumpxml <instance UUID>`` or definition XMLs managed by libvirt
 /qemu in local filesystem except. Briefly speaking, no potential security
 risks will be introduced.
-
-
-If we hard reboot the instance, it will be recreate XML when is booting,
-and the old console will be disconnect. If you want to open the instance's
-console again, you can reset the password and open a new console.
 
 Notifications impact
 --------------------
@@ -177,9 +170,10 @@ None
 Upgrade impact
 --------------
 
-We should bump service object version and rpc version for the 'get_*_console'
-rpc call. Then only when the cluster fully upgrade to Wallaby release, the
-call can be success. otherwise return ``HttpBadRequest 400`` for the request.
+We should bump service object version and rpc version
+for the 'get_*_console' rpc call. Then only when the
+cluster fully upgrade to Ussuri release, the call can be
+success. otherwise return failure for the request.
 
 Implementation
 ==============
@@ -188,16 +182,16 @@ Assignee(s)
 -----------
 
 Primary assignee:
-  brinzhang
+  pandatt
 
 Other contributors:
-  songwenping
+  brinzhang
 
 Feature Liaison
 ---------------
 
 Feature liaison:
-  brinzhang
+  Alex Xu
 
 Work Items
 ----------
@@ -211,7 +205,7 @@ Work Items
   reset remote console password.
 
 * nova-compute: some codes to handle the request to reset console
-  password: reassemble graphis tag with password and update it to
+  password: reassemble graphics tag with password and update it to
   libvirt XML.
 
 * nova-novncproxy: some codes to implement rfb auth schemes,
@@ -250,12 +244,6 @@ Documentation Impact
 References
 ==========
 
-.. [1] https://docs.openstack.org/api-ref/compute/#xenserver-vnc-proxy-xvp-consoles-os-consoles
-.. [2] https://docs.openstack.org/api-ref/compute/?expanded=#server-consoles
-.. [3] https://docs.openstack.org/api-ref/compute/?expanded=create-console-detail#get-vnc-console-os-getvncconsole-action-deprecated
-
-.. _`vnc security`: http://people.redhat.com/pbonzini/qemu-test-doc/_build/html/topics/vnc_005fsecurity.html
-
 * https://libvirt.org/formatdomain.html#elementsGraphics
 
 * https://bugzilla.redhat.com/show_bug.cgi?id=1180092
@@ -273,8 +261,4 @@ History
    * - Release Name
      - Description
    * - Ussuri
-     - Approved
-   * - Victoria
-     - Re-proposed
-   * - Wallaby
-     - Re-proposed
+     - Introduced
