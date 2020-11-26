@@ -132,6 +132,10 @@ Finally, the useless fields:
 
   Doesn't take overcommit or non-default pagesizes into account. Use placement.
 
+- ``vcpus``, ``vcpus_used``
+
+  Doesn't take overcommit or PCPU inventory into account. Use placement.
+
 - ``running_vms``
 
   Easily figured out by filtering running instances by host (admin-only, like
@@ -167,9 +171,10 @@ REST API impact
 ---------------
 
 Starting from the new API microversion, the ``/os-hypervisors/detail`` API will
-no longer include the following fields in it's response: ``cpu_info``,
+no longer include the following fields in its response: ``cpu_info``,
 ``free_disk_gb``, ``local_gb``, ``local_gb_used``, ``disk_available_least``,
-``free_ram_mb``, ``memory_mb``, ``memory_mb_used`` and ``running_vms``.
+``free_ram_mb``, ``memory_mb``, ``memory_mb_used``, ``vcpus``, ``vcpus_used``,
+and ``running_vms``.
 
 Starting from the new API microversion, the ``/os-hypervisors/statistics`` API
 will be removed entirely and will return a HTTP 410 (Gone).
@@ -192,13 +197,14 @@ need to be updated with recommendations to look at placement or other APIs
 instead. Specifically:
 
 - The ``free_disk_gb``, ``local_gb``, ``local_gb_used``, ``free_ram_mb``,
-  ``memory_mb`` and ``memory_mb_used`` values can be identified using a
-  combination of ``openstack resource provider inventory list`` and ``openstack
-  resource provider usage show``. For example::
+  ``memory_mb``, ``memory_mb_used``, ``vcpus`` and ``vcpus_used`` values can be
+  identified using a combination of ``openstack resource provider inventory
+  list`` and ``openstack resource provider usage show``. For example::
 
       $ openstack hypervisor show devstack-1 \
           -c local_gb -c local_gb_used -c free_disk_gb \
-          -c memory_mb -c memory_mb_used -c free_ram_mb
+          -c memory_mb -c memory_mb_used -c free_ram_mb \
+          -c vcpus -c vcpus_used
       +----------------+-------+
       | Field          | Value |
       +----------------+-------+
@@ -208,6 +214,8 @@ instead. Specifically:
       | memory_mb      | 16035 |
       | memory_mb_used | 1024  |
       | free_ram_mb    | 15011 |
+      | vcpus          | 12    |
+      | vcpus_used     | 1     |
       +----------------+-------+
 
       $ openstack resource provider inventory list bde27f9d-1249-446f-ae14-45f6ff3e63d5
