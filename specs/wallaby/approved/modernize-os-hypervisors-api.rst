@@ -187,7 +187,7 @@ no longer include the following fields in its response: ``cpu_info``,
 and ``running_vms``.
 
 In addition, the ``/os-hypervisors/statistics`` API will be removed entirely
-and will return a HTTP 410 (Gone).
+and will return a HTTP 404 (Not Found).
 
 Finally, change the policy used for the ``/os-hypervisors`` API from
 ``SYSTEM_READER`` to ``SYSTEM_READER_OR_PROJECT_ADMIN``, allowing users with
