@@ -22,8 +22,9 @@ API needs to slim down significantly.
 Problem description
 ===================
 
-Consider the output of a typical ``GET /os-hypervisors/detail`` call, as taken
-from the API ref [1]_:
+The majority of this spec is focused on changes to the
+``/os-hypervisors/detail`` API. Consider the output of a typical ``GET
+/os-hypervisors/detail`` call, as taken from the API ref [1]_:
 
 .. code-block:: json
 
@@ -147,6 +148,14 @@ their usefulness owing to the restrictive policy in place for this API. We can
 improve this by allowing users with the ``PROJECT_ADMIN`` role to list all
 hypervisors their project is allowed to access.
 
+In addition to the changes to the ``/os-hypervisors/detail`` API, there are
+also two other APIs that appear to have outlived their usefulness:
+``/os-hypervisors/statistics``, which provides summary information of the
+above, and ``/os-hypervisors/{hypervisor_id}/uptime``, which provides an entire
+API to a single figure. The former can be removed entirely in favour of
+placement, while the latter can be replaced by a new ``uptime`` field on the
+``/os-hypervisors/{hypervisor_id}`` API.
+
 .. [1] https://docs.openstack.org/api-ref/compute/?expanded=list-hypervisors-details-detail,show-hypervisor-details-detail
 .. [2] https://docs.openstack.org/api-ref/compute/?expanded=list-hypervisors-details-detail#id298
 
@@ -186,8 +195,14 @@ no longer include the following fields in its response: ``cpu_info``,
 ``free_ram_mb``, ``memory_mb``, ``memory_mb_used``, ``vcpus``, ``vcpus_used``,
 and ``running_vms``.
 
-In addition, the ``/os-hypervisors/statistics`` API will be removed entirely
-and will return a HTTP 404 (Not Found).
+The ``/os-hypervisors/statistics`` API contains summary information of the
+above fields and will be removed entirely, returning a HTTP 404 (Not Found) on
+the new API microversion.
+
+The uptime information shown by the ``/os-hypervisors/{hypervisor_id}/uptime``
+API doesn't warrant its own API and will also return a HTTP 404 (Not Found) on
+the new API microversion. This information will be accessible via a new
+``uptime`` field on responses from the ``/os-hypervisors/{hypervisor_id}`` API.
 
 Finally, change the policy used for the ``/os-hypervisors`` API from
 ``SYSTEM_READER`` to ``SYSTEM_READER_OR_PROJECT_ADMIN``, allowing users with
@@ -210,7 +225,7 @@ Other end user impact
 
 The clients will need to be updated. Documentation referencing these APIs will
 need to be updated with recommendations to look at placement or other APIs
-instead. Specifically:
+instead. Regarding the changes to the ``/os-hypervisors/detail`` API:
 
 - The ``free_disk_gb``, ``local_gb``, ``local_gb_used``, ``free_ram_mb``,
   ``memory_mb``, ``memory_mb_used``, ``vcpus`` and ``vcpus_used`` values can be
@@ -302,7 +317,9 @@ instead. Specifically:
   identified through inspection of the host.
 
 Horizon will need to be updated to talk to placement or use this API with an
-older microversion.
+older microversion. Similarly, any users of the
+``/os-hypervisors/{hypervisor_id}/uptime`` API will need to use the
+``/os-hypervisors/{hypervisor_id}`` API instead.
 
 Performance Impact
 ------------------
