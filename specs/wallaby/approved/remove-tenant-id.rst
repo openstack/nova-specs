@@ -61,7 +61,6 @@ Replace ``tenant_id`` with ``project_id`` in request body in follow APIs:
 * GET /os-quota-sets/{tenant_id}/defaults (List Default Quotas For Tenant)
 * GET /os-quota-sets/{tenant_id}/detail (Show The Detail of Quota)
 * GET /os-simple-tenant-usage/{tenant_id} (Show Usage Statistics For Tenant)
-* GET /os-cells (List Cells)
 
 Replace ``tenant_id`` with ``project_id`` in response body in follow APIs:
 
@@ -93,6 +92,8 @@ We should block change the ``tenant_id`` below the deprecated APIs:
 * GET /os-security-groups/{security_group_id} (Show Security Group Details)
 * PUT /os-security-groups/{security_group_id} (Update Security Group)
 * POST /os-security-group-rules (Create Security Group Rule)
+* GET /os-cells (List Cells)
+* GET /os-fping?all_tenants=1 (Ping Instances)
 
 By the way, tenant* reference will be replaced with project* in all policies,
 code and docs too.
