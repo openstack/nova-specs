@@ -27,8 +27,8 @@ todo_include_todos = True
 master_doc = 'index'
 
 # General information about the project.
-project = u'Nova Specs'
-copyright = u'%s, OpenStack Nova Team' % datetime.date.today().year
+project = 'Nova Specs'
+copyright = '%s, OpenStack Nova Team' % datetime.date.today().year
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'native'
