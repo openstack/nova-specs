@@ -191,11 +191,7 @@ None
 Upgrade impact
 --------------
 
-Upgraded host will report the new trait for vdpa support.
-This will ensure that instance with vDPA interfaces are only schduled to host
-that support them including during move operations.
-
-This will allow vDPA support to work during a rolling upgrade.
+None
 
 Implementation
 ==============
