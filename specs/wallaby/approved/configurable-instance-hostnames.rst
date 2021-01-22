@@ -57,6 +57,9 @@ Where multiple instances are requested, hostnames will be suffixed with
 ``-{idx}``, where ``{idx}`` is a 1-based index. If the combined name and suffix
 would exceed the 63 character limit, the name will be rejected.
 
+The ``OS-EXT-SRV-ATTR:hostname`` instance attribute, which is currently
+admin-only, will now be shown for non-admin users, since it doesn't make sense
+to allow users to configure the value but not see it.
 
 Alternatives
 ------------
@@ -102,6 +105,9 @@ would exceed the 63 character limit, the name will be rejected.
 When updating the hostname of an existing instance, the ``dns_name`` attribute
 of the port(s) in neutron will be updated, as will the ``hostname`` attribute
 exposed via the metadata service.
+
+The ``OS-EXT-SRV-ATTR:hostname`` instance attribute, which is currently
+admin-only, will now be accessible by non-admin users.
 
 Security impact
 ---------------
