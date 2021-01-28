@@ -1,1 +1,1 @@
-wallaby-template.rst
+xena-template.rst
