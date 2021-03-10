@@ -143,11 +143,6 @@ described below, but all should be removed:
   Easily figured out by filtering running instances by host (admin-only, like
   this API).
 
-While we can remove the useless fields, the useful ones are still limited in
-their usefulness owing to the restrictive policy in place for this API. We can
-improve this by allowing users with the ``PROJECT_ADMIN`` role to list all
-hypervisors their project is allowed to access.
-
 In addition to the changes to the ``/os-hypervisors/detail`` API, there are
 also two other APIs that appear to have outlived their usefulness:
 ``/os-hypervisors/statistics``, which provides summary information of the
@@ -169,11 +164,7 @@ Proposed change
 
 Remove the resource-related fields from the output of the
 ``/os-hypervisors/detail`` API and remove the ``/os-hypervisors/statistics``
-API in its entirety. Modify the default policy used for ``GET /os-hypervisors``
-from ``SYSTEM_READER`` to ``SYSTEM_READER_OR_PROJECT_ADMIN`` to allow users
-with the ``SYSTEM_READER`` role to see all hypervisors and users with the
-``PROJECT_ADMIN`` role to see only the hypervisors that their project is
-allowed to access, based on aggregate metadata.
+API in its entirety.
 
 Alternatives
 ------------
@@ -203,12 +194,6 @@ The uptime information shown by the ``/os-hypervisors/{hypervisor_id}/uptime``
 API doesn't warrant its own API and will also return a HTTP 404 (Not Found) on
 the new API microversion. This information will be accessible via a new
 ``uptime`` field on responses from the ``/os-hypervisors/{hypervisor_id}`` API.
-
-Finally, change the policy used for the ``/os-hypervisors`` API from
-``SYSTEM_READER`` to ``SYSTEM_READER_OR_PROJECT_ADMIN``, allowing users with
-the ``PROJECT_ADMIN`` role to see all hypervisors their project is allowed
-access to. The other hypervisor-related APIs will not have their policies
-modified.
 
 Security impact
 ---------------
@@ -398,3 +383,5 @@ History
      - Description
    * - Wallaby
      - Introduced
+   * - Wallaby
+     - Updated to remove references to policy changes, which were deferred.
