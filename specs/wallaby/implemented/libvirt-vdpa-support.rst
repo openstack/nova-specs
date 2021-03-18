@@ -36,8 +36,8 @@ the guest to use standard virtio drivers instead of a vendor specific driver.
   advantages of VDPA based networking over sriov is the ability to abstract the
   device state from the VM allowing transparent live migration via a software
   fallback. Until that fallback is implemented in QEMU, live migration will be
-  blocked at the api via a 403 error response so that we can enable it without
-  a new micro-version.
+  blocked at the api via a HTTP 409 (Conflict) error response so that we can
+  enable it without a new micro-version.
 
   As Open vSiwtch is currently the only control plane capable of managing VDPA
   devices and since that requires hardware offloads to function this spec
@@ -266,3 +266,5 @@ History
      - Description
    * - Wallaby
      - Introduced
+   * - Wallaby
+     - Updated to reflect changes to HTTP error codes
