@@ -1,0 +1,9 @@
+approved/allow-secure-boot-for-qemu-kvm-guests.rst ../implemented/allow-secure-boot-for-qemu-kvm-guests.rst
+approved/libvirt-driver-ip-metadata.rst ../implemented/libvirt-driver-ip-metadata.rst
+approved/libvirt-vdpa-support.rst ../implemented/libvirt-vdpa-support.rst
+approved/modernize-os-hypervisors-api.rst ../implemented/modernize-os-hypervisors-api.rst
+approved/port-scoped-sriov-numa-affinity.rst ../implemented/port-scoped-sriov-numa-affinity.rst
+approved/routed-networks-scheduling.rst ../implemented/routed-networks-scheduling.rst
+approved/support-interface-attach-with-qos-ports.rst ../implemented/support-interface-attach-with-qos-ports.rst
+approved/libvirt-default-machine-type.rst ../implemented/libvirt-default-machine-type.rst
+approved/pci-socket-affinity.rst ../implemented/pci-socket-affinity.rst

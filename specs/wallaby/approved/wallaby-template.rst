@@ -1,1 +1,0 @@
-../../wallaby-template.rst
