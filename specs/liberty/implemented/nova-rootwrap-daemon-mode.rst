@@ -156,7 +156,7 @@ References
 ==========
 
 .. [#rw_bp] oslo.rootwrap blueprint:
-   https://blueprints.launchpad.net/oslo.rootwrap/+spec/nova-rootwrap-daemon-mode
+   https://blueprints.launchpad.net/nova/+spec/nova-rootwrap-daemon-mode
 
 .. [#ne_ml] Original mailing list thread:
    http://lists.openstack.org/pipermail/openstack-dev/2014-March/029017.html
