@@ -100,53 +100,6 @@ vswitches are needed on the same compute host then we think it is easier to
 duplicate the agents handling them separately than enhancing the current agent
 to handle two switches.
 
-*Alternatively* it was suggested to define the packet processing inventory
-on the OVS bridge level. The big advantage of having the pps resource
-represented on the OVS bridge, on the same place as the bandwidth resource, is
-that it would simplify the overall design. It would means that we could still
-keep the assumption that the resource request of the port is always fulfilled
-from a single resource provider. Therefore the format of the
-``resource_request`` and the ``binding:profile.allocation`` does not need to
-change. However there are a list of counter arguments against this direction:
-
-* If we define packet processing capacity on the bridges then if there are
-  multiple bridges then the overall packet processing capacity of the whole OVS
-  would need to be statically split between the bridges, while the actual
-  resource usage of OVS are not split in that way in reality.
-  Configuration with multiple bridges are possible today, even in the
-  frequently used case of having one phynet bridge for VLAN traffic and one
-  tunneling bridge for the VXLAN traffic.
-
-* In case of bandwidth the actual resource is behind the physnet bridge, the
-  physical interface the bridge is connected to, so the resource is dedicated
-  to the bridge. But in case of packet processing the actual resource is not at
-  all dedicated to the given bridge but it is dedicated to the whole OVS
-  instance. So while we can assign a portion of the overall resource to the
-  bridge this assignment would never represent the reality well.
-
-* Traffic between the VMs on the same host does not flow through the physnet or
-  tunneling bridges but it does impact the capacity of the OVS on the host.
-
-* While the currently proposed design change is significant it makes the
-  solution more future proof. E.g. for the case when the IP pool resource
-  handling will be refactored to use the port's resource_request then we anyhow
-  need to be able to handle another resource provider that will not be the same
-  as any of the existing ones as the IP addresses are shared resource between
-  multiple host.
-
-*Another alternative* would be to represent the packet processing capacity on a
-new provider that maps to ``br-int`` the OVS integration bridge where the VMs
-are plugged. This have the benefit that the resource inventory would be global
-on OVS instance level and also it would clean up some of the confusion created
-by having a separate OVS Agent RP. Moving further we could even consider
-dropping the Agent RP altogether and only representing the bridge hierarchy in
-Placement with the resource provider hierarchy. Logically it is not different
-from that we rename today's OVS Agent RP to br-int RP. However `we agreed`_
-that keep this as a future exercise if and when more OVS instances would be
-needed per OVS agent.
-
-.. _we agreed: http://eavesdrop.openstack.org/irclogs/%23openstack-nova/%23openstack-nova.2021-05-21.log.html#t2021-05-21T10:33:22
-
 Resource inventory reporting
 ----------------------------
 For details of these Neutron changes please see the `Neutron specification`_.
@@ -177,18 +130,6 @@ minimum guaranteed QoS rule types. One which is directionless to support the
 case when the resource is also directionless. And two other that are direction
 aware to support the other deployment case where the pps resource are also
 direction aware.
-
-*Alternatively* it was suggested that it would be enough to have a single set
-of direction aware QoS rule types. Then in case of the normal OVS deployment
-scenario, where the resource is directionless, the resource requests from the
-direction aware QoS rules could be added together before matched against the
-single directionless resource inventory. Neutron would be able to differentiate
-between the two deployment situation on the port level based on the
-``vnic_type`` of the port. The ``normal`` ``vnic_type`` means that the port is
-requested to be backed by a normal OVS with directionless resource accounting.
-While the ``direct`` ``vnic_type`` means the port is requested to be backed by
-a hardware-offloaded OVS (or non OVS backend, like SRIOV) with a direction
-aware resource inventory.
 
 Nova servers with the new QoS policies
 --------------------------------------
@@ -298,7 +239,70 @@ minimum guarantee.
 Alternatives
 ------------
 
-See the alternatives embedded in the above chapters.
+Packet processing resource inventory
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+*Alternatively* it was suggested to define the packet processing inventory
+on the OVS bridge level. The big advantage of having the pps resource
+represented on the OVS bridge, on the same place as the bandwidth resource, is
+that it would simplify the overall design. It would means that we could still
+keep the assumption that the resource request of the port is always fulfilled
+from a single resource provider. Therefore the format of the
+``resource_request`` and the ``binding:profile.allocation`` does not need to
+change. However there are a list of counter arguments against this direction:
+
+* If we define packet processing capacity on the bridges then if there are
+  multiple bridges then the overall packet processing capacity of the whole OVS
+  would need to be statically split between the bridges, while the actual
+  resource usage of OVS are not split in that way in reality.
+  Configuration with multiple bridges are possible today, even in the
+  frequently used case of having one phynet bridge for VLAN traffic and one
+  tunneling bridge for the VXLAN traffic.
+
+* In case of bandwidth the actual resource is behind the physnet bridge, the
+  physical interface the bridge is connected to, so the resource is dedicated
+  to the bridge. But in case of packet processing the actual resource is not at
+  all dedicated to the given bridge but it is dedicated to the whole OVS
+  instance. So while we can assign a portion of the overall resource to the
+  bridge this assignment would never represent the reality well.
+
+* Traffic between the VMs on the same host does not flow through the physnet or
+  tunneling bridges but it does impact the capacity of the OVS on the host.
+
+* While the currently proposed design change is significant it makes the
+  solution more future proof. E.g. for the case when the IP pool resource
+  handling will be refactored to use the port's resource_request then we anyhow
+  need to be able to handle another resource provider that will not be the same
+  as any of the existing ones as the IP addresses are shared resource between
+  multiple host.
+
+*Another alternative* would be to represent the packet processing capacity on a
+new provider that maps to ``br-int`` the OVS integration bridge where the VMs
+are plugged. This have the benefit that the resource inventory would be global
+on OVS instance level and also it would clean up some of the confusion created
+by having a separate OVS Agent RP. Moving further we could even consider
+dropping the Agent RP altogether and only representing the bridge hierarchy in
+Placement with the resource provider hierarchy. Logically it is not different
+from that we rename today's OVS Agent RP to br-int RP. However `we agreed`_
+that keep this as a future exercise if and when more OVS instances would be
+needed per OVS agent.
+
+.. _we agreed: http://eavesdrop.openstack.org/irclogs/%23openstack-nova/%23openstack-nova.2021-05-21.log.html#t2021-05-21T10:33:22
+
+Requesting minimum packet rate guarantees
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+*Alternatively* it was suggested that it would be enough to have a single set
+of direction aware QoS rule types. Then in case of the normal OVS deployment
+scenario, where the resource is directionless, the resource requests from the
+direction aware QoS rules could be added together before matched against the
+single directionless resource inventory. Neutron would be able to differentiate
+between the two deployment situation on the port level based on the
+``vnic_type`` of the port. The ``normal`` ``vnic_type`` means that the port is
+requested to be backed by a normal OVS with directionless resource accounting.
+While the ``direct`` ``vnic_type`` means the port is requested to be backed by
+a hardware-offloaded OVS (or non OVS backend, like SRIOV) with a direction
+aware resource inventory.
 
 Data model impact
 -----------------
