@@ -8,7 +8,7 @@
 Add no user token auth when get Cyborg client
 =============================================
 
-https://blueprints.launchpad.net/nova/+spec/cyborg-no-user-token
+https://blueprints.launchpad.net/nova/+spec/cyborg-admin-user-client
 
 Add support for cyborg service credentials to create cyborg admin client
 instances.
