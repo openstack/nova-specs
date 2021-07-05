@@ -384,6 +384,15 @@ Work items or tasks -- break the feature up into the things that need to be
 done to implement it. Those parts might end up being done by different people,
 but we're mostly trying to understand the timeline for implementation.
 
+Consider creating an ordering of patches, that allows gradually merging
+instead of the need to merge them all at once. For example if you are
+introducing a feature that requires implementation changes in multiple VM
+lifecycle operations then first add a step that rejects all the not yet
+supported actions with a HTTP 400 Bad Request. The error should explain that
+the <operation> is not supported with <feature> at this time. Then gradually
+remove the limitation as you progress with the implementation. This way we can
+merge your changes gradually and regardless when the feature freeze hit we can
+be sure that the system is consistent.
 
 Dependencies
 ============
