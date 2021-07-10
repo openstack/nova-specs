@@ -1,1 +1,1 @@
-xena-template.rst
+yoga-template.rst
