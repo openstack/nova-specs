@@ -107,6 +107,13 @@ REST API impact
 
 In a new microversion, expose ``attachmentId`` in the following responses:
 
+.. note::
+
+    While implementing this spec it was agreed that the ``id`` field that
+    duplicates the ``volumeId`` field would be removed under this microversion
+    with the ``uuid`` of the underlying ``BlockDeviceMapping`` object also
+    added under a new ``bdm_uuid`` field.
+
 * GET ``/servers/{server_id}/os-volume_attachments``
 
 .. code-block:: json
@@ -116,20 +123,20 @@ In a new microversion, expose ``attachmentId`` in the following responses:
             {
                 "delete_on_termination": false,
                 "device": "/dev/sdc",
-                "id": "227cc671-f30b-4488-96fd-7d0bf13648d8",
                 "serverId": "d5e4ae35-ac0e-4311-a8c5-0ee863e951d9",
                 "tag": null,
                 "volumeId": "227cc671-f30b-4488-96fd-7d0bf13648d8",
-                "attachmentId": "1ce1a7ee-c88c-41ce-a4d3-ce78b1ab20bf"
+                "attachmentId": "1ce1a7ee-c88c-41ce-a4d3-ce78b1ab20bf",
+                "bdm_uuid": "2420cbab-4aef-409f-97c0-b60c0e1d6902"
             },
             {
                 "delete_on_termination": true,
                 "device": "/dev/sdb",
-                "id": "a07f71dc-8151-4e7d-a0cc-cd24a3f11113",
                 "serverId": "d5e4ae35-ac0e-4311-a8c5-0ee863e951d9",
                 "tag": "foo",
                 "volumeId": "a07f71dc-8151-4e7d-a0cc-cd24a3f11113",
-                "attachmentId": "810511b1-ab87-4f42-9033-199543376ddb"
+                "attachmentId": "810511b1-ab87-4f42-9033-199543376ddb",
+                "bdm_uuid": "e50caeba-b3f0-4a59-9973-7125d232d511"
             }
         ]
     }
@@ -143,11 +150,11 @@ In a new microversion, expose ``attachmentId`` in the following responses:
         "volumeAttachment": {
             "delete_on_termination": true,
             "device": "/dev/sdb",
-            "id": "a07f71dc-8151-4e7d-a0cc-cd24a3f11113",
             "serverId": "2aad99d3-7aa4-41e9-b4e6-3f960b115d68",
             "tag": "foo",
             "volumeId": "a07f71dc-8151-4e7d-a0cc-cd24a3f11113",
-            "attachmentId": "1ce1a7ee-c88c-41ce-a4d3-ce78b1ab20bf"
+            "attachmentId": "1ce1a7ee-c88c-41ce-a4d3-ce78b1ab20bf",
+            "bdm_uuid": "2420cbab-4aef-409f-97c0-b60c0e1d6902"
         }
     }
 
