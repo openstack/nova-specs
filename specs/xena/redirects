@@ -1,2 +1,7 @@
 approved/placement-allow-provider-re-parenting.rst https://docs.openstack.org/placement/latest/specs/xena/approved/allow-provider-re-parenting.html
 approved/placement-support-consumer-types.rst https://docs.openstack.org/placement/latest/specs/xena/approved/support-consumer-types.html
+approved/configurable-instance-hostnames.rst ../implemented/configurable-instance-hostnames.rst
+approved/generic-mdevs.rst ../implemented/generic-mdevs.rst
+approved/sriov-smartnic-support.rst ../implemented/sriov-smartnic-support.rst
+approved/add-attachmentid-to-responses-of-the-os-volume-attachments-api.rst ../implemented/add-attachmentid-to-responses-of-the-os-volume-attachments-api.rst
+approved/nova-manage-refresh-connection-info.rst ../implemented/nova-manage-refresh-connection-info.rst
