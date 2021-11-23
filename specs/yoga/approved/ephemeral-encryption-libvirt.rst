@@ -8,7 +8,7 @@
 libvirt driver support for flavor and image defined ephemeral encryption
 =========================================================================
 
-https://blueprints.launchpad.net/nova/+spec/ephemeral-storage-encryption
+https://blueprints.launchpad.net/nova/+spec/ephemeral-encryption-libvirt
 
 This spec outlines the specific libvirt virt driver implementation to support
 the Flavor and Image defined ephemeral storage encryption [1]_ spec.
