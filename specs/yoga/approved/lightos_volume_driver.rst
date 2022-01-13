@@ -8,7 +8,7 @@
 Lightbits LightOS(TM) Nova Spec
 ===============================
 
-https://blueprints.launchpad.net/nova/spec/nova-support-lightos-driver
+https://blueprints.launchpad.net/nova/+spec/nova-support-lightos-driver
 
 Lightbits Labs(TM) (http://www.lightbitslabs.com) LightOS(R) is software-defined,
 cloud native, high-performance, scale-out and redundant clustered NVMe/TCP
