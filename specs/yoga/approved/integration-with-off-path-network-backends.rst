@@ -308,42 +308,37 @@ The following needs to be addressed in the implementation:
     plane);
   * Storing of VF logical number and PF MAC could be in ``extra_info`` could
     be done to avoid extra database lookups;
-* Add logic to handle ports of type ``VNIC_SMARTNIC`` ("smart-nic");
-* Add a new Nova service version constant (``SUPPORT_VNIC_TYPE_SMARTNIC``) and
-  an instance build-time check (in ``_validate_and_build_base_options``) to
-  make sure that instances with this port type are scheduled only when all
-  compute services in all cells have this service version;
+* Add logic to handle ports of type ``VNIC_REMOTE_MANAGED`` ("remote-managed");
+* Add a new Nova compute service version constant
+  (``SUPPORT_VNIC_TYPE_REMOTE_MANAGED``) and an instance build-time check (in
+  ``_validate_and_build_base_options``) to make sure that instances with this
+  port type are scheduled only when all compute services in all cells have this
+  service version;
 
   * The service version check will need to be triggered only for network
-    requests containing port_ids that have ``VNIC_TYPE_SMARTNIC`` port type.
-    Nova will need to learn to query the port type by its ID to perform that
-    check;
+    requests containing port_ids that have ``VNIC_TYPE_REMOTE_MANAGED`` port
+    type. Nova will need to learn to query the port type by its ID to perform
+    that check;
 * Add a new compute driver capability called ``supports_remote_managed_ports``
   and a respective ``COMPUTE_REMOTE_MANAGED_PORTS`` trait to ``os-traits``;
 
   * Only the Libvirt driver will be set to have this trait since this is the
     first driver to support ``remote_managed`` ports;
 * Implement a prefilter that will check for the presence of port ids that have
-  ``VNIC_TYPE_SMARTNIC`` port type and add the ``COMPUTE_REMOTE_MANAGED_PORTS``
-  to the request spec in this case. This will make sure that instances are
-  scheduled on compute nodes that have the necessary virt driver supporting
-  remote managed ports enabled;
-* Add stubs in the Nova API to prevent the following lifecycle operations for
-  instances with VNIC_TYPE_SMARTNIC ports:
+  ``VNIC_TYPE_REMOTE_MANAGED`` port type and add the
+  ``COMPUTE_REMOTE_MANAGED_PORTS`` to the request spec in this case. This
+  will make sure that instances are scheduled on compute nodes that have the
+  necessary virt driver supporting remote managed ports enabled;
+* Add compute service version checks for the following operations for instances
+  with ``VNIC_TYPE_REMOTE_MANAGED`` ports:
 
-  * Resize;
-  * Shelve;
-  * Live migrate;
-  * Evacuate;
-  * Suspend;
-  * Attach/detach a VNIC_TYPE_SMARTNIC port;
-  * Rebuild;
-* Extend ``VIF.has_bind_time_event`` in Nova to return True for
-  VNIC_TYPE_SMARTNIC ports;
-* Handle early arrival of ``network-vif-plugged`` in the Libvirt virt driver
-  code for ``VNIC_TYPE_SMARTNIC`` ports by extending the
-  ``_get_neutron_events`` function to rely on ``VIF.has_bind_time_event`` for
-  filtering.
+  * Create server;
+  * Attach a VNIC_TYPE_REMOTE_MANAGED port;
+* Add ``VNIC_TYPE_REMOTE_MANAGED`` to the ``VNIC_TYPES_DIRECT_PASSTHROUGH``
+  list since Nova instance lifecycle operations like live migration will be
+  handled in the same way as other VNIC types already present there;
+* Avoid waiting for ``network-vif-plugged`` events for active ports with
+  ``VNIC_TYPE_REMOTE_MANAGED`` ports.
 
 Identifying Port Representors
 -----------------------------
@@ -458,9 +453,9 @@ VF VLAN Programming Considerations
 ----------------------------------
 
 Besides NIC Switch capability not being exposed to the hypervisor host,
-SmartNIC DPUs also prevent VLAN programming by for VFs, therefore, operations
-like the following will fail (see, [27]_ for the example driver code causing
-it)::
+SmartNIC DPUs also may prevent VLAN programming by for VFs, therefore,
+operations like the following will fail (see, [26]_ for the example driver
+code causing it which was later fixed in [27]_)::
 
   sudo ip link set enp130s0f0 vf 2 vlan 0 mac de:ad:be:ef:ca:fe
   RTNETLINK answers: Operation not permitted
@@ -656,21 +651,21 @@ Nova Service Versions
 ~~~~~~~~~~~~~~~~~~~~~
 
 The ``Proposed Change`` section discusses adding a service version constant
-(``SUPPORT_VNIC_TYPE_SMARTNIC``) and an instance build-time check across all
-cells. For operators, the upgrade impact will be such that this feature will
-not be possible to use until all Nova Compute services will be upgraded to
+(``SUPPORT_VNIC_TYPE_REMOTE_MANAGED``) and an instance build-time check across
+all cells. For operators, the upgrade impact will be such that this feature
+will not be possible to use until all Nova Compute services will be upgraded to
 support this service version.
 
 Neutron integration
 ~~~~~~~~~~~~~~~~~~~
 
 This section focuses on operational concerns with regards to Neutron being able
-to support instances booted with the ``VNIC_TYPE_SMARTNIC`` port type.
+to support instances booted with the ``VNIC_TYPE_REMOTE_MANAGED`` port type.
 
 At the time of writing, only the OVS mechanism driver supports [13]_
-``VNIC_TYPE_SMARTNIC`` ports but only if a particular configuration option is
-set in the Neutron OpenvSwitch Agent (which was done for Ironic purposes, not
-Nova [14]_).
+``VNIC_TYPE_REMOTE_MANAGED`` ports but only if a particular configuration
+option is set in the Neutron OpenvSwitch Agent (which was done for Ironic
+purposes, not Nova [14]_).
 
 Therefore, in the absence of mechanism drivers that would support ports of that
 type or when the mechanism driver is not configured to handle ports of that
@@ -734,9 +729,7 @@ changes required. Specifically, to make this work with OVN:
   at the SmartNIC DPU node side since the os-vif-like functionality to hook VFs
   up is still needed;
 
-  * Representor plugging and related OVN changes: [16]_ [17]_ [24]_ (note that
-    [24]_ will be hosted at [25]_ shortly per [26]_ and a follow-up discussion
-    that happened in the #openvswitch IRC channel);
+  * Representor plugging and related OVN changes: [16]_ [17]_ [24]_ [25]_;
 * The OVN driver code in Neutron needs to learn about SmartNIC DPU node
   hostnames and respective PCIe add-in-card serial numbers gathered via VPD:
 
@@ -797,17 +790,17 @@ References
 .. [14] https://opendev.org/openstack/ironic-specs/commit/f358fbdde9a1cadc838327b8bf34ee54a7e7f43a
 .. [15] https://docs.openstack.org/api-ref/network/v2/index.html?expanded=create-port-detail#id72
 .. [16] https://patchwork.ozlabs.org/project/ovn/list/?series=267834&state=3&archive=both
-.. [17] https://patchwork.ozlabs.org/project/ovn/list/?series=269965&state=*&archive=both
+.. [17] https://patchwork.ozlabs.org/project/ovn/list/?series=270569&archive=both&state=*
 .. [18] https://bugs.launchpad.net/neutron/+bug/1932154
 .. [19] https://review.opendev.org/c/openstack/neutron-specs/+/788821
 .. [20] https://review.opendev.org/c/openstack/neutron/+/808961
 .. [21] https://gitlab.com/libvirt/libvirt/-/commits/master?search=PCI.*VPD
-.. [22] https://listman.redhat.com/archives/libvir-list/2021-November/msg00431.html
+.. [22] https://gitlab.com/libvirt/libvirt/-/commit/09cdd16a9bf73bc1f75fe774216c71f9ebc78c88
 .. [23] https://review.opendev.org/c/openstack/nova-specs/+/791047
-.. [24] https://github.com/fnordahl/ovn-vif
-.. [25] https://github.com/ovn-org/ovn-vif
-.. [26] https://mail.openvswitch.org/pipermail/ovs-dev/2021-November/389200.html
-.. [27] https://github.com/torvalds/linux/blob/v5.15/drivers/net/ethernet/mellanox/mlx5/core/esw/legacy.c#L427-L434
+.. [24] https://github.com/ovn-org/ovn-vif
+.. [25] https://github.com/ovn-org/ovn-vif/pull/3
+.. [26] https://github.com/torvalds/linux/blob/v5.15/drivers/net/ethernet/mellanox/mlx5/core/esw/legacy.c#L427-L434
+.. [27] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=7846665d3504812acaebf920d1141851379a7f37
 .. [28] https://github.com/openstack/nova/blob/e28afc564700a1a35e3bf0269687d5734251b88a/nova/virt/libvirt/vif.py#L479-L485
 .. [29] https://github.com/openstack/nova/blob/e28afc564700a1a35e3bf0269687d5734251b88a/nova/virt/libvirt/designer.py#L97-L105
 .. [30] https://github.com/libvirt/libvirt/blob/7e6295cc7db2b11b28af7f4ef644f2dd30ea6840/src/conf/domain_conf.c#L29411-L29425
