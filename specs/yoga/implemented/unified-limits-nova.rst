@@ -220,8 +220,7 @@ No uncountable limits
 ---------------------
 
 As stated above, the focus for unified limits is the instance count and
-resource class allocations in placement. No other limits will be moved to
-unified limits, as agreed with operators in the Train Forum session.
+resource class allocations in placement.
 
 There are limits that are specific to nova-network. These are all ready
 deprecated. There are no plans to support these with unified limits turned on:
@@ -239,7 +238,7 @@ per project overrides for any of these limits.
 The following limits will be changed to only be set via registered limits in
 the unified limits system that applies equally to all projects:
 
-* ``server metadata_items``
+* ``server_metadata_items``
 * ``server_injected_files``
 * ``server_injected_file_content_bytes``
 * ``server_injected_file_path_bytes``
@@ -276,10 +275,51 @@ In summary the impact on the configuration options is:
   ``[quota]driver=nova.quota.UnifiedLimitsDriver``.
 * ``quota.metadata_items``, ``quota.injected_files``,
   ``quota.injected_file_content_bytes``, ``quota.injected_file_path_length``,
-  ``quota.server_groups``, ``quota.server_groups_members``,
+  ``quota.server_groups``, ``quota.server_group_members``,
   ``quota.key_pairs``:  these will all be kept, but the description will be
   updated to note if ``[quota]driver=nova.quota.UnifiedLimitsDriver`` all
   updates via the API are ignored.
+
+Enforcement of limits
+---------------------
+
+For consistency, all quota limits will be enforced using the |oslo.limit API|_.
+In this pattern, an ``Enforcer`` object is initialized with a callback that
+will count the existing usage of the resource being enforced. Some resources,
+however, are counted only from the Nova API request payload in which they were
+specified. We call these resource limits "API limits":
+
+* ``server_metadata_items``
+* ``server_injected_files``
+* ``server_injected_file_content_bytes``
+* ``server_injected_file_path_bytes``
+
+For example, when a server create request is received in the Nova API and
+metadata items are included in the request, we will compare the number of
+metadata items requested with the quota limit for ``server_metadata_items`` and
+we will not count anything in the database or placement as usage. An oslo.limit
+quota limit enforcement involves a limit, a delta, and the current usage. For
+API limits, we have only a limit and a delta. The current usage in these cases
+will always be zero. As such, we initialize the ``Enforcer`` object for API
+limits with a callback that always returns zero usage. This way, oslo.limit can
+do the enforcement properly using only the quota limit and the supplied delta.
+
+.. note::
+
+   With unified limits, the behavior of VCPU and PCPU quota usage will change
+   to count VCPU resources independently from PCPU resources, consistent with
+   how they are represented in the placement service.
+
+   Legacy quota behavior counts PCPU as VCPU and returns the sum of VCPU + PCPU
+   usage as the usage count for VCPU. A config option
+   ``[workarounds]unified_limits_count_pcpu_as_vcpu`` will be provided  for
+   operators who require the legacy quota usage behavior where VCPU = VCPU +
+   PCPU. Note that if ``class:PCPU`` is specified in the flavor explicitly, it
+   will be expected to have its own unified limit registered and PCPU usage
+   will *not* be merged into VCPU usage even when this option is set to True.
+
+.. |oslo.limit API| replace:: oslo.limit ``Enforcer.enforce`` API
+.. _oslo.limit API: https://docs.openstack.org/oslo.limit/latest/user/usage.html#enforce-a-limit
 
 Deprecate Nova's Quota APIs
 ---------------------------
