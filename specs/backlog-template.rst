@@ -1,1 +1,1 @@
-yoga-template.rst
+zed-template.rst

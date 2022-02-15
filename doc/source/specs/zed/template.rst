@@ -1,0 +1,1 @@
+../../../../specs/zed-template.rst
