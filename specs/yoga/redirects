@@ -1,0 +1,7 @@
+approved/boot-vm-with-unaddressed-port.rst ../implemented/boot-vm-with-unaddressed-port.rst
+approved/integration-with-off-path-network-backends.rst ../implemented/integration-with-off-path-network-backends.rst
+approved/pick-guest-arch-based-on-host-arch-in-libvirt-driver.rst ../implemented/pick-guest-arch-based-on-host-arch-in-libvirt-driver.rst
+approved/qos-minimum-guaranteed-packet-rate.rst ../implemented/qos-minimum-guaranteed-packet-rate.rst
+approved/unified-limits-nova.rst ../implemented/unified-limits-nova.rst
+approved/nova-support-lightos-driver.rst ../implemented/nova-support-lightos-driver.rst
+approved/libvirt-device-bus-model-update.rst ../implemented/libvirt-device-bus-model-update.rst
