@@ -50,7 +50,7 @@ for release in "${!specs_by_release[@]}"; do
   bld=doc/build/html/specs/$release
   files=${specs_by_release[$release]}
   echo "fast-specs: Building for ${release}:$files"
-  sphinx-build -c doc/source $src $bld $files
+  exec sphinx-build -W -c doc/source $src $bld $files
   # Save the full path to built files. (Wait until the end to output these, so
   # they're not lost between subdirectories.)
   for f in $files; do
