@@ -8,6 +8,8 @@
 Usage of new OWNER_NOVA trait
 =============================
 
+https://blueprints.launchpad.net/nova/+spec/owner-nova-trait-usage
+
 The spec is about the usage of new OWNER_NOVA trait.
 
 Problem description
