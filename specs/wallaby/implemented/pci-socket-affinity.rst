@@ -34,7 +34,7 @@ case. Depending on the BIOS configuration, there could be as little as 8 CPUs
 per NUMA node. This effectively makes a 16-CPU guest with a `require` PCI
 device un-schedulable, as no host NUMA node can fit the entire guest.
 
-.. seealso:: Zen2 BIOSes have a L3AsNUMA configration option, which creates a
+.. seealso:: Zen2 BIOSes have a L3AsNUMA configuration option, which creates a
    NUMA node for every level 3 cache. Up to 4 cores can share an L3 cache, with
    2 SMT threads per core. This is how the number 8 was arrived at. See the AMD
    Developer Documentation [1]_ for more details.

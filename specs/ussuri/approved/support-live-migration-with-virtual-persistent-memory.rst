@@ -29,7 +29,7 @@ or stored in migration_context when migrating. As far as Nova concerned,
 several problems need to be addressed:
 
 * Disable post-copy live migration with vpmem even if post-copy is enabled
-  by nova configration
+  by nova configuration
 * Claim resources from placement when migrating
 * Assign specific resources to instance according to the allcations from
   placement and track them
@@ -62,7 +62,7 @@ Proposed change
 
 * Libvirt Driver change for vpmem post-copy disable:
   if the instance has vpmems, disable the post-copy live migration even if
-  post-copy is enabled by Nova configration
+  post-copy is enabled by Nova configuration
 
 * Libvirt Driver change for vpmem xml:
   prepare dest xml on source host for live migration, update the dest virtual
