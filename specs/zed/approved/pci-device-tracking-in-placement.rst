@@ -143,7 +143,7 @@ extended to support two additional standard tags ``resource_class`` and
 
 The ``resource_class`` tag will be accepted only when the ``physical_network``
 tag is not defined and will enable a PCI device to be associated with a custom
-resource class. Each PCI whitelist entry may have at most one resource class
+resource class. Each PCI device_spec entry may have at most one resource class
 associated with it. Devices that have a ``physical_network`` tag will not be
 reported in Placement at this time as Neutron based SR-IOV is out of the
 scope of the current spec.
@@ -156,7 +156,7 @@ The ``traits`` tag will be a comma-separated list of standard or custom trait
 names that will be reported for the device RP in Placement.
 
 Nova will normalize and prefix the resource class and trait names with
-``CUSTOM_``, if isn't already prefixed, before creating them in Placement.
+``CUSTOM_``, if it isn't already prefixed, before creating them in Placement.
 Nova will first check the provided trait name in os_traits and if it exists
 as a standard trait then that will be used instead of creating a custom one.
 
@@ -177,18 +177,14 @@ as a standard trait then that will be used instead of creating a custom one.
   names for different VFs under the same parent PF, this is considered bad
   practice and unnecessary complexity. Such configuration will be rejected.
 
-  If different traits need to be supported on a PF than its children VFs
-  then it is suggested to match the PF and its VFs in two separate
-  ``device_spec`` entries and differentiate the PF and VF traits by namespacing
-  them, e.g.: CUSTOM_PCI_PF_XXX and CUSTOM_PCI_VF_YYY
-
 .. note::
 
   Nova will detect if the ``resource_class`` or ``traits`` configuration of
   an already reported device is changed at a nova-compute service restart. If
-  the affected device is free the Nova will apply the change in Placement but
-  if the device is already allocated then the nova-compute service will refuse
-  to start.
+  the affected device is free then Nova will apply the change in Placement. If
+  the device is allocated then changing the ``resource_class`` would result in
+  removing of existing allocations which is rejected by placement and therefore
+  the compute service will refuse to start.
 
 .. note::
 
@@ -248,8 +244,10 @@ the total resource inventory of VFs will be the total number of matching VF
 devices.
 
 Each PCI device RP will have traits reported according to the ``traits`` tag
-of the matching ``device_spec`` entry. Nova might report additional traits on
-the device RP automatically for scheduling purposes.
+of the matching ``device_spec`` entry. Additionally, Nova will report the
+``COMPUTE_MANAGED_PCI_DEVICE`` standard trait on the device RPs automatically.
+This is used by the nova-compute service to reject a reconfiguration where
+``[pci]report_in_placement`` is disable after it was enabled.
 
 Listing both the parent PF device and any of this children VF devices at the
 same time will not be support if ``[pci]report_in_placement`` is enabled. See
@@ -276,19 +274,37 @@ same time will not be support if ``[pci]report_in_placement`` is enabled. See
   ``[pci]device_spec`` configuration manually.
 
 
-Reporting inventories from libvirt to Placement
------------------------------------------------
+Reporting inventories from the ResourceTracker to Placement
+-----------------------------------------------------------
+The ResourceTracker and the PciDevTracker implements a virt driver agnostic
+PCI device inventory and allocation handling. This logic is extended to
+provide PCI inventory information to Placement by translating PciDevice and
+PciDeviceSpec objects to Placement resource providers, resource inventories,
+and traits.
 
-The resource tracker's ``update_available_resource`` periodic task calls the
-``update_provider_tree`` method on the libvirt virt driver. The
-implementation of ``update_provider_tree`` in the libvirt virt driver will be
-extended to create the relevant PF RPs, and report inventories and traits via
-the ``provider_tree`` interface to Placement.
+This new translator logic is also capable of healing missing PCI resource
+allocations of existing instances based on the ``instance_uuid`` field of the
+allocated PciDevice objects. The missing allocations will be created in
+Placement via the ``/reshape`` API.
 
-When ``update_provider_tree`` is called during compute service startup (via
-init_host) the virt driver will do a reshape of the provider tree to make sure
-that existing VMs with PCI allocation will have the corresponding resource
-allocation in Placement as well.
+To aid the PCI scheduling via placement this logic also records the UUID of the
+resource provider representing a PCI device into the PciDevice object. Then
+the existing PCI pooling logic will translate such mapping to a PCI device
+pool, resource provider UUID mapping. Note that the scheduler needs one to one
+mapping between resource provider and PCI device pool, so the PCI pooling logic
+is changed to represent each type-PCI and PF devices as separate pools and only
+pool together VFs from the same parent PF to the same Pool.
+
+The inventory and allocation handling logic will run in the
+``update_available_resource`` periodic as well as during resource tracked
+update due to instance actions.
+
+The allocation healing part of this implementation is temporary to support
+upgrading existing deployments with PCI allocations to the new Placement based
+logic. As soon as a deployment is upgraded and the scheduler logic is enabled
+the healing is expect to be noop as the scheduler creates all the necessary
+allocation in Placement. Therefore we plan to remove the healing logic from
+the codebase in a future release.
 
 .. note::
 
@@ -344,24 +360,45 @@ track the requested PCI devices for a VM.
 Scheduling
 ----------
 
-A new prefilter will be added to convert ``InstancePCIRequest`` requests into
-Placement resource requests. Each PCI request will be its own Placement named
-request group. If a PCI request comes from a PCI alias and the alias does not
-have a ``resource_class`` associated with it it will be computed using the
-``vendor_id`` and ``product_id`` ``CUSTOM_PCI_<vendor_id>_<product_id>``.
+.. important::
+   The implementation of the scheduling support has missed the deadline and
+   therefore not part of the Zed release.
 
-The prefilter will be disabled by default to enable rolling
-upgrades. There will be a new config option ``[scheduler]pci_prefilter`` that
-can be used to enable the prefilter. Enabling that prefilter has a list of
-prerequisites. See the `Upgrade impact`_ section for the full upgrade
-procedure.
 
-.. note::
+The ``RequestSpec`` creation logic is extended to translate
+``InstancePCIRequest`` objects to ``RequestGroup`` objects and store the new
+groups in the ``resource_request`` field of the ``RequestSpec``. At this time
+nova will only translate flavor based InstancePCIRequests the neutron port
+based requests will be handled in a later release.
 
-  For now the prefilter will only create request groups from PCI requests
-  coming from the flavor. PCI requests coming from Neutron ports will be
-  ignored by the prefilter and kept scheduled by the ``PciPassthroughFilter``.
+This translation logic is disable by default and can be enabled via the new
+``[filter_scheduler]pci_in_placement`` configuration after every compute in
+the deployment is upgraded and the ``[pci]report_in_placement`` configuration
+option is enabled.
 
+To be able to unambiguously connect ``InstancePCIRequest`` to
+``RequestGroups`` the ``request_id`` field of the ``InstancePCIRequest`` object
+always needs to be filled to a UUID. In the past nova only filled that field
+for neutron based requests.
+
+A single ``InstancePCIRequest`` object can potentially request multiple devices
+as the ``count`` field can be set to greater than 1 for flavor based request.
+In this case a single request object is split into multiple ``RequestGroup``
+objects to allow fulfilling those device requests from independent resource
+providers. The ``requester_id`` of the resulting ``RequestGroup`` objects are
+filled with a value generated by the ``InstancePCIRequest.request_id-<index>``
+formula where index is a runing index between 0..``count`` from the request.
+
+The ``resources`` and ``required_traits`` filed of the ``RequestGroup`` object
+is filled based on the ``spec`` field of the ``InstancePCIRequest`` that in
+turn are filled from the fields of the matching ``[pci]alias`` entry
+requested via the flavor ``extras_spec``. If a request comes from an alias that
+does not have a ``resource_class`` associated with it, then it will be
+defaulted to ``CUSTOM_PCI_<vendor_id>_<product_id>``.
+
+The existing scheduler implementation can be used to generate the
+``/allocation_candidates`` query to Placement including the new PCI related
+groups.
 
 Dependent device handling
 -------------------------
@@ -387,32 +424,33 @@ to the scheduler about which allocation candidate is valid from affinity
 perspective.
 
 To enable this the allocation candidates will be added to the ``HostState``
-object of the filter scheduler. The ``NUMATopologyFilter`` will then need to
-pass the allocation candidates to the hardware.py functions which will need to
-remove any allocation candidates from that list that do not fulfill the NUMA
-requirements. The filter should then pop any invalid allocation candidates
-from the ``HostState`` object. At the end of the scheduling process, the filter
-scheduler will have to reconstruct the host allocation candidate set from the
-``HostState`` object.
+object of the filter scheduler. The ``PciPassthroughFilter`` and
+``NUMATopologyFilter`` will then need to pass the allocation candidates to the
+hardware.py functions which will need to remove any allocation candidates from
+that list that do not fulfill the PCI or NUMA requirements. The filter should
+then pop any invalid allocation candidates from the ``HostState`` object. At
+the end of the scheduling process, the filter scheduler will have to
+reconstruct the host allocation candidate set from the ``HostState`` object.
 
 By extending the ``HostState`` object with the allocation candidate we will
 enable the filters to filter not just by the host but optionally by the
 allocation candidates of the host without altering the filter API therefore
 maintaining compatibility with external filters.
 
-PCI tracker
------------
+The PCI stats module
+--------------------
 
-The PCI tracker will have to be enhanced to support allocation aware claims.
-To do this we will need to extend the ``PciDevicePool`` object to have a unique
-identifier that can be correlated by the resource tracker to the RP in
-Placement. The suggested value is the PCI address. In the case of ``type-PF``
-and ``type-PCI`` the PCI address for the allocation will be the PCI address of
-the device to claim. In the case of ``type-VF`` it will be the address of the
-parent device.
+The stats module will have to be enhanced to support allocation aware claims.
+To the ``PciDevicePool`` object needs to be mapped to resource providers. This
+will be done by the PCI device inventory reporting logic in the PciDevTracker.
+During a scheduling attempt the scheduler filters can provide the resource
+provider UUIDs that the current allocation candidate is mapped to to restrict
+the PCI fitting logic according to the candidate.
 
-Both the instance claim and the move claim need to be extended similarly.
-
+After the scheduling decision is made the selected mapping is recorded into
+the ``InstancePCIRequest`` objects. So that during the PCI claim logic this
+information will be provider from those objects to ensure that the claim
+consumes PCI devices that are allocated for this request in Placement.
 
 VM lifecycle operations
 -----------------------
@@ -552,7 +590,7 @@ Data model impact
 forbidden traits and the resource class requested via the PCI alias in the
 flavor and defined in the PCI alias configuration.
 
-``PciDevicePool`` object will be extended to store PCI address information so
+``PciDevicePool`` object will be extended to store a resource provider UUID so
 that the PCI device allocated in Placement can be correlated to the PCI device
 to be claimed by the PCI tracker.
 
@@ -582,27 +620,25 @@ Performance Impact
 In general, this is expected to improve the scheduling performance but
 should have no runtime performance impact on guests.
 
-The introduction of a new prefilter will make the computation of the placement
-query slightly longer and the resulting execution time may increase for
-instances with PCI requests but should have no effect for instances without
-PCI requests. This added complexity is expected to be offset by the removal of
-the requirement to enable the ``PciPassthroughFilter`` scheduler filter
-eventually. As a result of the offloading of the filtering to Placement and the
-removal of reschedules due to racing for the last PCI device on a host, the
-overall performance is expected to improve.
+The introduction of new PCI ``RequestGroup`` objects will make the computation
+of the placement query slightly longer and the resulting execution time may
+increase for instances with PCI requests but should have no effect for
+instances without PCI requests. This added complexity is expected to be offset
+the result of the offloading of the filtering to Placement and the removal of
+reschedules due to racing for the last PCI device on a host, the overall
+performance is expected to improve.
 
 Other deployer impact
 ---------------------
 
 To utilize the new feature the operator will have to define two new config
-options. One to enable the placement prefilter and a second to enable the
-reporting of the PCI devices to Placement.
+options. One to enable the placement scheduling logic and a second to enable
+the reporting of the PCI devices to Placement.
 
 Developer impact
 ----------------
 
-Drivers, other than the libvirt virt driver, need to be adapted to use the new
-Placement based PCI device tracking.
+None
 
 Upgrade impact
 --------------
@@ -625,12 +661,6 @@ instances with PCI requests until a future release where the prefilter enabled
 by default. This is needed to keep the resource usage in sync in Placement
 even if the instance scheduling is done without the prefilter requesting
 PCI allocations in Placement.
-
-.. note::
-
-  Even after we make the prefilter enabled by default in a future release the
-  prefilter still need to be kept configurable as we don't know when the hyperv
-  virt driver will implement PCI tracking in Placement.
 
 .. note::
 
@@ -670,8 +700,9 @@ PCI allocations in Placement.
   disabled any more.
 
 Second, after every compute has been configured to report PCI inventories to
-Placement the scheduling prefilter needs to be enabled in the nova-scheduler
-configuration via the ``[scheduler]pci_prefilter`` configuration option.
+Placement the scheduling logic needs to be enabled in the nova-scheduler
+configuration via the ``[filter_scheduler]pci_in_placement`` configuration
+option.
 
 
 Implementation
