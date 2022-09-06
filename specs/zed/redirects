@@ -1,0 +1,4 @@
+approved/keypair-generation-removal.rst ../implemented/keypair-generation-removal.rst
+approved/libvirt-viommu-device.rst ../implemented/libvirt-viommu-device.rst
+approved/unshelve-to-host.rst ../implemented/unshelve-to-host.rst
+approved/volume-backed-server-rebuild.rst ../implemented/volume-backed-server-rebuild.rst
