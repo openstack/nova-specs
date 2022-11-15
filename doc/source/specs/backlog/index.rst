@@ -24,4 +24,8 @@ Template:
 
 Approved (but not implemented) backlog specs:
 
-None currently
+.. toctree::
+   :glob:
+   :maxdepth: 1
+
+   approved/*
