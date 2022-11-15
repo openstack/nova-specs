@@ -137,11 +137,12 @@ None
 Other end user impact
 ---------------------
 
-The python-novaclient, python-openstackclient and SDK will be updated
-to support the new microversion.
-An additional parameter ``--confirm-reimage`` will be added as a check
-(along with the microversion check) on the client side that will determine
-if the user really wants to opt into the new functionality.
+The python-novaclient and python-openstackclient will be updated to support
+the new microversion.
+Two additional parameters `--reimage-boot-volume`` and
+``--no-reimage-boot-volume`` will be added as a check (along with the
+microversion check) on the OpenStackClient side that will determine if
+the user really knows it will reimage the volume.
 
 Performance Impact
 ------------------
