@@ -25,13 +25,17 @@ or prevent evacuation when using encrypted volumes.
 Use Cases
 ---------
 
-As an operator, I would like to be able to evacuate instances to a
-shut-off state because my tenant workloads may have specific security
-requirements, that do not allow them to be started by the
-administrator.
-As an operator, I would like to be able to evacuate VMs with encrypted
-volumes without making the barbican secrete readable by admins and
-reducing the security.
+- As an operator, I would like to be able to evacuate instances to a
+  shut-off state because my tenant workloads may have specific
+  security requirements, that do not allow them to be started by the
+  administrator.
+- As an operator, I would like to be able to evacuate VMs with
+  encrypted volumes without making the barbican secret readable by
+  admins and reducing the security.
+- As a user, if my instance is offline due to a host outage, I don't
+  necessarily want an admin evacuating it and bringing it back online
+  without my knowledge as I may have already replaced it and the
+  zombie coming back may cause a conflict.
 
 Proposed change
 ===============
@@ -118,10 +122,11 @@ Upgrade impact
 --------------
 
 - Upgrade note will be added describing new behavior.
-- An RPC change is expected to make manager handling the new target
-  state, resulting in the version being incremented.
+- An RPC change is expected to make the compute manager handle the new
+  target state, resulting in the version being incremented.
 - At API level, a min version check will ensure that all services are
-  new enough to accept the request.
+  new enough to accept the request, if not the request will be
+  rejected with a NotSupported exception.
 
 Implementation
 ==============
@@ -165,7 +170,7 @@ The api-ref will be updated to reflect the changes.
 References
 ==========
 
-* https://docs.openstack.org/api-ref/compute/?expanded=evacuate-server-evacuate-action-detai
+* https://docs.openstack.org/api-ref/compute/?expanded=evacuate-server-evacuate-action-detail
 
 History
 =======
