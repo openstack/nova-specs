@@ -53,26 +53,15 @@ Proposed change
 - add a new api microversion to opt into using an FQDN in the hostname field.
 - increase the character length limit on the host name filed form 63 to 255
 - remove the rejection of "." and other legal characters in a FQDN.
-- change multi-create instance format to prefix with an index instead
-  of suffixing. e.g. ``<index>-my.instance.example.com``
-
-  This is allowed per section 2.1 of
-  https://datatracker.ietf.org/doc/html/rfc1123#page-13
-
-  """
-  The syntax of a legal Internet host name was specified in RFC-952
-  [DNS:4].  One aspect of host name syntax is hereby changed: the
-  restriction on the first character is relaxed to allow either a
-  letter or a digit.  Host software MUST support this more liberal
-  syntax.
-  """
+- currently, attempting to use multi-create with the ``--hostname`` parameter
+  results in an error 400. This spec continues this behavior: multi-create with
+  ``--hostname``, be it FQDN or short name, continues to be disallowed.
 
 ..NOTE::
 
   Today the instance.hostname field is propagated into the hostname field of
   the instance metadata. With this change the instance.hostname field can be an
-  FQDN and that will also be propagated as done today without alteration
-  other then the prefix for multi-create.
+  FQDN and that will also be propagated as done today without alteration.
 
 
 
@@ -90,12 +79,6 @@ e.g. openstack server create --hostname my-host --domain my.domain.com ...
 
 This is better then --FQDN but still requires a db and object changes for
 little benefit.
-
-Nova could implement the proposed change but block multi-create with FQDNs.
-
-While this would avoid changing the hostname template form a suffix to prefix
-in the new microversion it is a trivial code change and does not add much
-complexity vs multi-create in general.
 
 Nova could try to propagate hostname changes to neutron ports and floating IPs.
 This is seen as risky, complex and hard to understand.
