@@ -14,6 +14,7 @@ on for the upcoming release. This is the output of those discussions:
    :glob:
    :maxdepth: 1
 
+   priorities/2023.2-priorities
    priorities/2023.1-priorities
    priorities/zed-priorities
    priorities/yoga-priorities
@@ -41,6 +42,7 @@ Here you can find the specs, and spec template, for each release:
    :glob:
    :maxdepth: 1
 
+   specs/2023.2/index
    specs/2023.1/index
    specs/zed/index
    specs/yoga/index
