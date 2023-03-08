@@ -1,0 +1,6 @@
+approved/allowing-target-state-for-evacuate.rst ../implemented/allowing-target-state-for-evacuate.rst
+approved/fqdn-in-hostname.rst ../implemented/fqdn-in-hostname.rst
+approved/libvirt-cpu-state-mgmt.rst ../implemented/libvirt-cpu-state-mgmt.rst
+approved/pci-device-tracking-in-placement.rst ../implemented/pci-device-tracking-in-placement.rst
+approved/stable-compute-uuid.rst ../implemented/stable-compute-uuid.rst
+approved/nova-support-spice-compression-algorithm.rst ../implemented/nova-support-spice-compression-algorithm.rst
