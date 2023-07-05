@@ -269,48 +269,7 @@ Cyborg API calls are routed through that.
 This flow is captured by the following sequence diagram, in which the Nova
 conductor and scheduler are together represented as the Nova controller.
 
-.. seqdiag::
-
-     seqdiag {
-         edge_length = 200;
-         span_height = 15;
-         activation = none;
-         default_note_color = white;
-         'Nova Controller'; 'Placement'; 'Cyborg'; 'Nova Compute';
-
-         'Nova Controller' -> 'Cyborg' [label =
-             "GET /v2/device_profiles?name=mydp"];
-         'Nova Controller' <- 'Cyborg' [label =
-             '{"device_profiles": $device_profile}'];
-         'Nova Controller' -> 'Nova Controller' [label=
-             'Merge request groups into request_spec'];
-         'Nova Controller' -> 'Placement' [label=
-             'Get /allocation_candidates'];
-         'Nova Controller' <- 'Placement' [label=
-             'allocation candidates with nested RPs'];
-         'Nova Controller' -> 'Nova Controller' [label=
-             'Select a candidate'];
-         'Nova Controller' -> 'Nova Compute' [label=
-             'build_and_run_instances()'];
-         'Nova Compute' -> 'Cyborg' [label=
-             'POST /v2/accelerator_requests'];
-         'Nova Compute' <- 'Cyborg' [label=
-             '{"arqs": [$arq, ...]'];
-         'Nova Compute' -> 'Cyborg' [label=
-             'PATCH /v2/accelerator_requests'];
-         'Nova Compute' <- 'Cyborg' [label=
-             '{"arqs": [$arq, ...]'];
-         'Cyborg' -> 'Nova Controller' [label=
-             'POST /os-server-external-events'];
-         'Nova Compute' -> 'Nova Compute' [label=
-             'Wait for notification from Cyborg'];
-         'Nova Compute' -> 'Cyborg' [label=
-             'GET /v2/accelerator_requests?
-             instance=$uuid&bind_state=resolved'];
-         'Nova Compute' <- 'Cyborg' [label=
-             '{"arqs": [$arq, ....]}'];
-     }
-
+.. image:: /_media/ussuri/nova-cyborg-interaction.svg
 
 Alternatives
 ------------

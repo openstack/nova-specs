@@ -1,0 +1,108 @@
+<svg height="1160" viewBox="0 0 856 1160" width="856" xmlns="http://www.w3.org/2000/svg" xmlns:inkspace="http://www.inkscape.org/namespaces/inkscape" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs id="defs_block">
+    <filter height="1.504" id="filter_blur" inkspace:collect="always" width="1.1575" x="-0.07875" y="-0.252">
+      <feGaussianBlur id="feGaussianBlur3780" inkspace:collect="always" stdDeviation="4.2" />
+    </filter>
+  </defs>
+  <title>blockdiag</title>
+  <desc />
+  <rect fill="rgb(0,0,0)" height="40" stroke="rgb(0,0,0)" style="filter:url(#filter_blur);opacity:0.7;fill-opacity:1" width="128" x="67" y="21" />
+  <rect fill="rgb(0,0,0)" height="40" stroke="rgb(0,0,0)" style="filter:url(#filter_blur);opacity:0.7;fill-opacity:1" width="128" x="267" y="21" />
+  <rect fill="rgb(0,0,0)" height="40" stroke="rgb(0,0,0)" style="filter:url(#filter_blur);opacity:0.7;fill-opacity:1" width="128" x="467" y="21" />
+  <rect fill="rgb(0,0,0)" height="40" stroke="rgb(0,0,0)" style="filter:url(#filter_blur);opacity:0.7;fill-opacity:1" width="128" x="667" y="21" />
+  <path d="M 128 55 L 128 1160" fill="none" stroke="rgb(0,0,0)" stroke-dasharray="8 4" />
+  <path d="M 328 55 L 328 1160" fill="none" stroke="rgb(0,0,0)" stroke-dasharray="8 4" />
+  <path d="M 528 55 L 528 1160" fill="none" stroke="rgb(0,0,0)" stroke-dasharray="8 4" />
+  <path d="M 728 55 L 728 1160" fill="none" stroke="rgb(0,0,0)" stroke-dasharray="8 4" />
+  <rect fill="rgb(255,255,255)" height="40" stroke="rgb(0,0,0)" width="128" x="64" y="15" />
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="96" x="128.0" y="41">Resource Tracker</text>
+  <rect fill="rgb(255,255,255)" height="40" stroke="rgb(0,0,0)" width="128" x="264" y="15" />
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="78" x="328.0" y="41">Report Client</text>
+  <rect fill="rgb(255,255,255)" height="40" stroke="rgb(0,0,0)" width="128" x="464" y="15" />
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="54" x="528.0" y="41">Placement</text>
+  <rect fill="rgb(255,255,255)" height="40" stroke="rgb(0,0,0)" width="128" x="664" y="15" />
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="66" x="728.0" y="41">Virt Driver</text>
+  <path d="M 136 85 L 720 85" fill="none" stroke="rgb(0,0,0)" />
+  <polygon fill="rgb(0,0,0)" points="712,81 720,85 712,89" stroke="rgb(0,0,0)" />
+  <path d="M 136 125 L 720 125" fill="none" stroke="rgb(255,0,0)" />
+  <polygon fill="rgb(255,0,0)" points="144,121 136,125 144,129" stroke="rgb(255,0,0)" />
+  <path d="M 136 178 L 320 178" fill="none" stroke="rgb(255,0,0)" />
+  <polygon fill="rgb(255,0,0)" points="312,174 320,178 312,182" stroke="rgb(255,0,0)" />
+  <path d="M 336 231 L 520 231" fill="none" stroke="rgb(255,0,0)" />
+  <polygon fill="rgb(255,0,0)" points="512,227 520,231 512,235" stroke="rgb(255,0,0)" />
+  <path d="M 336 271 L 520 271" fill="none" stroke="rgb(255,0,0)" stroke-dasharray="4" />
+  <polygon fill="rgb(255,0,0)" points="344,267 336,271 344,275" stroke="rgb(255,0,0)" />
+  <path d="M 336 337 L 428 337" fill="none" stroke="rgb(255,0,0)" />
+  <path d="M 428 337 L 428 353" fill="none" stroke="rgb(255,0,0)" />
+  <path d="M 428 353 L 336 353" fill="none" stroke="rgb(255,0,0)" />
+  <polygon fill="rgb(255,0,0)" points="344,349 336,353 344,357" stroke="rgb(255,0,0)" />
+  <path d="M 336 406 L 520 406" fill="none" stroke="rgb(255,0,0)" />
+  <polygon fill="rgb(255,0,0)" points="512,402 520,406 512,410" stroke="rgb(255,0,0)" />
+  <path d="M 336 446 L 520 446" fill="none" stroke="rgb(255,0,0)" stroke-dasharray="4" />
+  <polygon fill="rgb(255,0,0)" points="344,442 336,446 344,450" stroke="rgb(255,0,0)" />
+  <path d="M 136 486 L 320 486" fill="none" stroke="rgb(255,0,0)" stroke-dasharray="4" />
+  <polygon fill="rgb(255,0,0)" points="144,482 136,486 144,490" stroke="rgb(255,0,0)" />
+  <path d="M 136 526 L 720 526" fill="none" stroke="rgb(255,0,0)" />
+  <polygon fill="rgb(255,0,0)" points="712,522 720,526 712,530" stroke="rgb(255,0,0)" />
+  <path d="M 136 551 L 720 551" fill="none" stroke="rgb(0,0,0)" stroke-dasharray="4" />
+  <polygon fill="rgb(0,0,0)" points="144,547 136,551 144,555" stroke="rgb(0,0,0)" />
+  <path d="M 136 617 L 320 617" fill="none" stroke="rgb(0,0,0)" />
+  <polygon fill="rgb(0,0,0)" points="312,613 320,617 312,621" stroke="rgb(0,0,0)" />
+  <path d="M 336 670 L 520 670" fill="none" stroke="rgb(0,0,0)" />
+  <polygon fill="rgb(0,0,0)" points="512,666 520,670 512,674" stroke="rgb(0,0,0)" />
+  <path d="M 336 710 L 520 710" fill="none" stroke="rgb(0,0,0)" stroke-dasharray="4" />
+  <polygon fill="rgb(0,0,0)" points="344,706 336,710 344,714" stroke="rgb(0,0,0)" />
+  <path d="M 336 789 L 520 789" fill="none" stroke="rgb(0,0,0)" />
+  <polygon fill="rgb(0,0,0)" points="512,785 520,789 512,793" stroke="rgb(0,0,0)" />
+  <path d="M 336 829 L 520 829" fill="none" stroke="rgb(0,0,0)" stroke-dasharray="4" />
+  <polygon fill="rgb(0,0,0)" points="344,825 336,829 344,833" stroke="rgb(0,0,0)" />
+  <path d="M 336 882 L 520 882" fill="none" stroke="rgb(0,0,0)" />
+  <polygon fill="rgb(0,0,0)" points="512,878 520,882 512,886" stroke="rgb(0,0,0)" />
+  <path d="M 536 948 L 628 948" fill="none" stroke="rgb(0,0,0)" stroke-dasharray="4" />
+  <path d="M 628 948 L 628 964" fill="none" stroke="rgb(0,0,0)" stroke-dasharray="4" />
+  <path d="M 628 964 L 536 964" fill="none" stroke="rgb(0,0,0)" stroke-dasharray="4" />
+  <polygon fill="rgb(0,0,0)" points="544,960 536,964 544,968" stroke="rgb(0,0,0)" />
+  <path d="M 536 1030 L 628 1030" fill="none" stroke="rgb(255,0,0)" stroke-dasharray="4" />
+  <path d="M 628 1030 L 628 1046" fill="none" stroke="rgb(255,0,0)" stroke-dasharray="4" />
+  <path d="M 628 1046 L 536 1046" fill="none" stroke="rgb(255,0,0)" stroke-dasharray="4" />
+  <polygon fill="rgb(255,0,0)" points="544,1042 536,1046 544,1050" stroke="rgb(255,0,0)" />
+  <path d="M 336 1086 L 520 1086" fill="none" stroke="rgb(0,0,0)" stroke-dasharray="4" />
+  <polygon fill="rgb(0,0,0)" points="344,1082 336,1086 344,1090" stroke="rgb(0,0,0)" />
+  <path d="M 136 1111 L 320 1111" fill="none" stroke="rgb(0,0,0)" stroke-dasharray="4" />
+  <polygon fill="rgb(0,0,0)" points="144,1107 136,1111 144,1115" stroke="rgb(0,0,0)" />
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="378" x="333.0" y="81">update_provider_tree(provider_tree, nodename, allocations=None)</text>
+  <text fill="rgb(255,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="114" x="659.0" y="121">raise ReshapeNeeded</text>
+  <text fill="rgb(255,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="174" x="231.0" y="161">get_allocations_for_provider_</text>
+  <text fill="rgb(255,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="36" x="162.0" y="174">tree()</text>
+  <text fill="rgb(255,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="174" x="431.0" y="214">GET /resource_providers/{uuid</text>
+  <text fill="rgb(255,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="78" x="383.0" y="227">}/allocations</text>
+  <text fill="rgb(255,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="48" x="492.0" y="267">HTTP 200</text>
+  <text fill="rgb(255,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="108" x="394.0" y="307">get_allocations_fo</text>
+  <text fill="rgb(255,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="108" x="394.0" y="320">r_consumer(context</text>
+  <text fill="rgb(255,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="66" x="373.0" y="333">, consumer)</text>
+  <text fill="rgb(255,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="174" x="431.0" y="389">GET /allocations/{consumer_uu</text>
+  <text fill="rgb(255,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="18" x="353.0" y="402">id}</text>
+  <text fill="rgb(255,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="48" x="492.0" y="442">HTTP 200</text>
+  <text fill="rgb(255,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="150" x="241.0" y="482">{allocations by consumer}</text>
+  <text fill="rgb(255,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="420" x="354.0" y="522">update_provider_tree(provider_tree, nodename, allocations=allocations)</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="156" x="222.0" y="587">update_from_provider_tree(</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="108" x="198.0" y="600">context, new_tree,</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="72" x="180.0" y="613">allocations)</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="144" x="416.0" y="653">POST /resource_providers</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="132" x="410.0" y="666">(create new providers)</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="48" x="492.0" y="706">HTTP 200</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="174" x="431.0" y="746">POST /resource_providers/{uui</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="120" x="404.0" y="759">d}/aggregates|traits</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="174" x="431.0" y="772">(fix up aggregates, traits, e</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="24" x="356.0" y="785">tc.)</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="48" x="492.0" y="825">HTTP 200</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="174" x="431.0" y="865">POST /reshaper {transformatio</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="60" x="374.0" y="878">n payload}</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="84" x="582.0" y="918">create/modify/</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="36" x="558.0" y="931">delete</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="66" x="573.0" y="944">inventories</text>
+  <text fill="rgb(255,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="84" x="582.0" y="1000">create/modify/</text>
+  <text fill="rgb(255,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="36" x="558.0" y="1013">delete</text>
+  <text fill="rgb(255,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="66" x="573.0" y="1026">allocations</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="48" x="492.0" y="1082">HTTP 204</text>
+</svg>

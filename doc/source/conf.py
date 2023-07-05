@@ -18,7 +18,6 @@ extensions = [
     'sphinx.ext.todo',
     'openstackdocstheme',
     'yasfb',
-    'sphinxcontrib.seqdiag',
 ]
 
 todo_include_todos = True
@@ -64,9 +63,3 @@ openstackdocs_auto_version = False
 
 feed_base_url = 'https://specs.openstack.org/openstack/nova-specs'
 feed_author = 'OpenStack Nova Team'
-
-
-# -- seqdiag configuration ----------------------------------------------------
-
-seqdiag_html_image_format = 'SVG'
-seqdiag_antialias = True

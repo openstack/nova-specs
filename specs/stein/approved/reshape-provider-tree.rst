@@ -43,44 +43,7 @@ Proposed change
 The overall flow is as follows. The parts in red only happen when a reshape is
 needed. This represents the happy path on compute startup only.
 
-.. seqdiag::
-
-    seqdiag {
-        edge_length = 200;
-        span_height = 15;
-        activation = none;
-        default_note_color = white;
-        'Resource Tracker'; 'Report Client'; Placement; 'Virt Driver';
-        'Resource Tracker' -> 'Virt Driver' [label = "update_provider_tree(provider_tree, nodename, allocations=None)"];
-        'Resource Tracker' <- 'Virt Driver' [label = "raise ReshapeNeeded", color = red];
-        'Resource Tracker' -> 'Report Client' [label = "get_allocations_for_provider_tree()", color = red];
-        'Report Client' -> Placement [label = "GET /resource_providers/{uuid}/allocations", color = red];
-        'Report Client' <-- Placement [label = "HTTP 200", color = red];
-        'Report Client' -> 'Report Client' [label = "get_allocations_for_consumer(context, consumer)", color = red];
-        'Report Client' -> Placement [label = "GET /allocations/{consumer_uuid}", color = red];
-        'Report Client' <-- Placement [label = "HTTP 200", color = red];
-        'Resource Tracker' <-- 'Report Client' [label = "{allocations by consumer}", color = red];
-        'Resource Tracker' -> 'Virt Driver' [label = "update_provider_tree(provider_tree, nodename, allocations=allocations)", color = red];
-        'Resource Tracker' <-- 'Virt Driver';
-        'Resource Tracker' -> 'Report Client' [label = "update_from_provider_tree(
-                                                        context, new_tree,
-                                                        allocations)"];
-        'Report Client' ->  Placement [label = "POST /resource_providers
-                                                (create new providers)"];
-        'Report Client' <-- Placement [label = "HTTP 200"];
-        'Report Client' ->  Placement [label = "POST /resource_providers/{uuid}/aggregates|traits
-                                                (fix up aggregates, traits, etc.)"];
-        'Report Client' <-- Placement [label = "HTTP 200"];
-        'Report Client' ->  Placement [label = "POST /reshaper {transformation payload}"];
-        Placement --> Placement [label = "create/modify/
-                                          delete
-                                          inventories"];
-        Placement --> Placement [label = "create/modify/
-                                          delete
-                                          allocations", color = red];
-        'Report Client' <-- Placement [label = "HTTP 204"];
-        'Resource Tracker' <-- 'Report Client'
-    }
+.. image:: /_media/stein/reshape-provider-tree.svg
 
 Note that, for Fast-Forward Upgrades, the ``Resource Tracker`` lane is actually
 the `Offline Upgrade Script`_.

@@ -1,0 +1,84 @@
+<svg height="885" viewBox="0 0 856 885" width="856" xmlns="http://www.w3.org/2000/svg" xmlns:inkspace="http://www.inkscape.org/namespaces/inkscape" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs id="defs_block">
+    <filter height="1.504" id="filter_blur" inkspace:collect="always" width="1.1575" x="-0.07875" y="-0.252">
+      <feGaussianBlur id="feGaussianBlur3780" inkspace:collect="always" stdDeviation="4.2" />
+    </filter>
+  </defs>
+  <title>blockdiag</title>
+  <desc />
+  <rect fill="rgb(0,0,0)" height="40" stroke="rgb(0,0,0)" style="filter:url(#filter_blur);opacity:0.7;fill-opacity:1" width="128" x="67" y="21" />
+  <rect fill="rgb(0,0,0)" height="40" stroke="rgb(0,0,0)" style="filter:url(#filter_blur);opacity:0.7;fill-opacity:1" width="128" x="267" y="21" />
+  <rect fill="rgb(0,0,0)" height="40" stroke="rgb(0,0,0)" style="filter:url(#filter_blur);opacity:0.7;fill-opacity:1" width="128" x="467" y="21" />
+  <rect fill="rgb(0,0,0)" height="40" stroke="rgb(0,0,0)" style="filter:url(#filter_blur);opacity:0.7;fill-opacity:1" width="128" x="667" y="21" />
+  <path d="M 128 55 L 128 885" fill="none" stroke="rgb(0,0,0)" stroke-dasharray="8 4" />
+  <path d="M 328 55 L 328 885" fill="none" stroke="rgb(0,0,0)" stroke-dasharray="8 4" />
+  <path d="M 528 55 L 528 885" fill="none" stroke="rgb(0,0,0)" stroke-dasharray="8 4" />
+  <path d="M 728 55 L 728 885" fill="none" stroke="rgb(0,0,0)" stroke-dasharray="8 4" />
+  <rect fill="rgb(255,255,255)" height="40" stroke="rgb(0,0,0)" width="128" x="64" y="15" />
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="90" x="128.0" y="41">Nova Controller</text>
+  <rect fill="rgb(255,255,255)" height="40" stroke="rgb(0,0,0)" width="128" x="264" y="15" />
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="54" x="328.0" y="41">Placement</text>
+  <rect fill="rgb(255,255,255)" height="40" stroke="rgb(0,0,0)" width="128" x="464" y="15" />
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="36" x="528.0" y="41">Cyborg</text>
+  <rect fill="rgb(255,255,255)" height="40" stroke="rgb(0,0,0)" width="128" x="664" y="15" />
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="72" x="728.0" y="41">Nova Compute</text>
+  <path d="M 136 85 L 520 85" fill="none" stroke="rgb(0,0,0)" />
+  <polygon fill="rgb(0,0,0)" points="512,81 520,85 512,89" stroke="rgb(0,0,0)" />
+  <path d="M 136 125 L 520 125" fill="none" stroke="rgb(0,0,0)" />
+  <polygon fill="rgb(0,0,0)" points="144,121 136,125 144,129" stroke="rgb(0,0,0)" />
+  <path d="M 136 191 L 224 191" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 224 191 L 224 207" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 224 207 L 136 207" fill="none" stroke="rgb(0,0,0)" />
+  <polygon fill="rgb(0,0,0)" points="144,203 136,207 144,211" stroke="rgb(0,0,0)" />
+  <path d="M 136 247 L 320 247" fill="none" stroke="rgb(0,0,0)" />
+  <polygon fill="rgb(0,0,0)" points="312,243 320,247 312,251" stroke="rgb(0,0,0)" />
+  <path d="M 136 300 L 320 300" fill="none" stroke="rgb(0,0,0)" />
+  <polygon fill="rgb(0,0,0)" points="312,296 320,300 312,304" stroke="rgb(0,0,0)" />
+  <path d="M 136 353 L 224 353" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 224 353 L 224 369" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 224 369 L 136 369" fill="none" stroke="rgb(0,0,0)" />
+  <polygon fill="rgb(0,0,0)" points="144,365 136,369 144,373" stroke="rgb(0,0,0)" />
+  <path d="M 136 409 L 720 409" fill="none" stroke="rgb(0,0,0)" />
+  <polygon fill="rgb(0,0,0)" points="712,405 720,409 712,413" stroke="rgb(0,0,0)" />
+  <path d="M 536 462 L 720 462" fill="none" stroke="rgb(0,0,0)" />
+  <polygon fill="rgb(0,0,0)" points="544,458 536,462 544,466" stroke="rgb(0,0,0)" />
+  <path d="M 536 502 L 720 502" fill="none" stroke="rgb(0,0,0)" />
+  <polygon fill="rgb(0,0,0)" points="712,498 720,502 712,506" stroke="rgb(0,0,0)" />
+  <path d="M 536 555 L 720 555" fill="none" stroke="rgb(0,0,0)" />
+  <polygon fill="rgb(0,0,0)" points="544,551 536,555 544,559" stroke="rgb(0,0,0)" />
+  <path d="M 536 595 L 720 595" fill="none" stroke="rgb(0,0,0)" />
+  <polygon fill="rgb(0,0,0)" points="712,591 720,595 712,599" stroke="rgb(0,0,0)" />
+  <path d="M 136 635 L 520 635" fill="none" stroke="rgb(0,0,0)" />
+  <polygon fill="rgb(0,0,0)" points="144,631 136,635 144,639" stroke="rgb(0,0,0)" />
+  <path d="M 736 701 L 816 701" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 816 701 L 816 717" fill="none" stroke="rgb(0,0,0)" />
+  <path d="M 816 717 L 736 717" fill="none" stroke="rgb(0,0,0)" />
+  <polygon fill="rgb(0,0,0)" points="744,713 736,717 744,721" stroke="rgb(0,0,0)" />
+  <path d="M 536 796 L 720 796" fill="none" stroke="rgb(0,0,0)" />
+  <polygon fill="rgb(0,0,0)" points="544,792 536,796 544,800" stroke="rgb(0,0,0)" />
+  <path d="M 536 836 L 720 836" fill="none" stroke="rgb(0,0,0)" />
+  <polygon fill="rgb(0,0,0)" points="712,832 720,836 712,840" stroke="rgb(0,0,0)" />
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="198" x="243.0" y="81">GET /v2/device_profiles?name=mydp</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="216" x="408.0" y="121">{"device_profiles": $device_profile}</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="108" x="194.0" y="161">Merge request grou</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="108" x="194.0" y="174">ps into request_sp</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="12" x="146.0" y="187">ec</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="156" x="222.0" y="243">Get /allocation_candidates</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="174" x="231.0" y="283">allocation candidates with ne</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="48" x="168.0" y="296">sted RPs</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="108" x="194.0" y="343">Select a candidate</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="150" x="219.0" y="405">build_and_run_instances()</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="174" x="629.0" y="452">POST /v2/accelerator_requests</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="120" x="604.0" y="498">{"arqs": [$arq, ...]</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="174" x="629.0" y="538">PATCH /v2/accelerator_request</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="6" x="713.0" y="551">s</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="120" x="604.0" y="591">{"arqs": [$arq, ...]</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="186" x="423.0" y="631">POST /os-server-external-events</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="96" x="788.0" y="671">Wait for notific</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="96" x="788.0" y="684">ation from Cybor</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="6" x="743.0" y="697">g</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="174" x="629.0" y="760">GET /v2/accelerator_requests?</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="174" x="629.0" y="773">instance=$uuid&amp;bind_state=res</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="30" x="701.0" y="786">olved</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="132" x="610.0" y="832">{"arqs": [$arq, ....]}</text>
+</svg>
