@@ -11,7 +11,8 @@ LOG = logging.getLogger(__name__)
 
 
 def process_redirect_file(app, path, ent):
-    parent_path = path.replace(app.builder.srcdir, app.builder.outdir)
+    parent_path = path.replace(
+        str(app.builder.srcdir), str(app.builder.outdir))
     with open(os.path.join(path, ent)) as redirects:
         for line in redirects.readlines():
             from_path, to_path = line.rstrip().split(' ')
