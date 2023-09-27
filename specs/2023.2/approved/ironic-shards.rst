@@ -10,6 +10,14 @@ Ironic Shards
 
 https://blueprints.launchpad.net/nova/+spec/ironic-shards
 
+
+.. note:: The series was implemented but eventually reverted due to some bug
+          that was found late. It should be again merged in the next release,
+          ie. 2024.1. That said, we kept the deprecation for the
+          ``[ironic]\peer_list`` config option, which was explained below in
+          `Config changes and Deprecations`_.
+
+
 Problem description
 ===================
 
