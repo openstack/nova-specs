@@ -120,14 +120,154 @@ The format will be provided as a string that maps to a
 * ``luks``  for the LUKSv1 format
 
 To enable snapshot and shelve of instances using ephemeral encryption, the UUID
-of the encryption security stored in the key manager for the resultant image
-will be kept with the image as a flavor extra spec or image property:
+of the encryption secret is stored in the key manager for the resultant image
+will be kept with the image as an image property:
 
-* ``hw:ephemeral_encryption_secret_uuid``
 * ``hw_ephemeral_encryption_secret_uuid``
 
 The secret UUID is needed when creating an instance from an ephemeral encrypted
 snapshot or when unshelving an ephemeral encrypted instance.
+
+Create a new key manager secret for every new encrypted disk image
+------------------------------------------------------------------
+
+The approach for disk image secrets is to never share secrets between different
+disk images and that each disk image has a unique secret. This is done to
+address both 1) the security implications and 2) the logistics of cleaning up
+secrets that are no longer in use.
+
+For example:
+
+Let's say ``Instance A`` has 3 disks: one root disk, one ephemeral disk, and
+one swap disk. Each disk will have its own secret.
+
+This table is intended to illustrate the way secrets are handled in various
+scenarios.
+
+.. code:: rst
+
+   +--------------------+-------------+--------------+------------------------------------------------------+
+   | Instance or Image  | Disk        | Secret       | Notes                                                |
+   |                    |             | (passphrase) |                                                      |
+   +====================+=============+==============+======================================================+
+   | Instance A         | disk (root) | Secret 1     | Secret 1, 2, and 3 will be automatically deleted     |
+   |                    +-------------+--------------+ by Nova when Instance A is deleted and its disks are |
+   |                    | disk.eph0   | Secret 2     | destroyed                                            |
+   |                    +-------------+--------------+                                                      |
+   |                    | disk.swap   | Secret 3     |                                                      |
+   +--------------------+-------------+--------------+------------------------------------------------------+
+   | Image Z (snapshot) | disk (root) | Secret 4     | Secret 4 will *not* be automatically deleted and     |
+   | created from       |             | (new secret  | manual deletion will be needed if/when Image Z is    |
+   | Instance A         |             |  is created) | deleted from Glance                                  |
+   +--------------------+-------------+--------------+------------------------------------------------------+
+   | Instance B         | disk (root) | Secret 5     | Secret 5, 6, and 7 will be automatically deleted     |
+   | created from       +-------------+--------------+ by Nova when Instance B is deleted and its disks are |
+   | Image Z (snapshot) | disk.eph0   | Secret 6     | destroyed                                            |
+   |                    +-------------+--------------+                                                      |
+   |                    | disk.swap   | Secret 7     |                                                      |
+   +--------------------+-------------+--------------+------------------------------------------------------+
+   | Instance C         | disk (root) | Secret 8     | Secret 8, 9, and 10 will be automatically deleted    |
+   |                    +-------------+--------------+ by Nova when Instance C is deleted and its disks are |
+   |                    | disk.eph0   | Secret 9     | destroyed                                            |
+   |                    +-------------+--------------+                                                      |
+   |                    | disk.swap   | Secret 10    |                                                      |
+   +--------------------+-------------+--------------+------------------------------------------------------+
+   | Image Y (snapshot) | disk (root) | Secret 8     | Secret 8 is *retained* when Instance C is shelved in |
+   | created by shelve  |             |              | part to prevent the possibility of a change in       |
+   | of Instance C      |             |              | ownership of the root disk secret if, for example,   |
+   |                    |             |              | an admin user shelves a non-admin user's instance.   |
+   |                    |             |              | This approach could be avoided if there is some way  |
+   |                    |             |              | we could create a new secret using the instance's    |
+   |                    |             |              | user/project rather than the shelver's user/project  |
+   +--------------------+-------------+--------------+------------------------------------------------------+
+   | Rescue disk        | disk (root) | Secret 11    | Secret 11 is stashed in the instance's system        |
+   | created by rescue  |             | (new secret  | metadata with key                                    |
+   | of Instance A      |             |  is created) | ``rescue_disk_ephemeral_encryption_secret_uuid``.    |
+   |                    |             |              | This is done because a BDM record for the rescue     |
+   |                    |             |              | disk is not going to be persisted to the database.   |
+   +--------------------+-------------+--------------+------------------------------------------------------+
+
+Snapshots of instances with ephemeral encryption
+````````````````````````````````````````````````
+
+When an instance with ephemeral encryption is snapshotted, a new encryption
+secret is created and its key manager secret UUID is kept as an image property
+``hw_ephemeral_encryption_secret_uuid`` and the image is uploaded to Glance.
+
+When a new instance is created from an encrypted image, the image property
+``hw_ephemeral_encryption_secret_uuid`` is passed down to the lower layers by
+storing it in the instance's system metadata with key
+``image_hw_ephemeral_encryption_secret_uuid``. This is done because at the
+lower layers (where ``qemu-img convert`` is called, for example) we no longer
+have access to the image metadata and refactoring to pass image metadata to
+several lower layer methods, or similar, would be required otherwise.
+
+Snapshots created by shelving instances with ephemeral encryption
+`````````````````````````````````````````````````````````````````
+
+When an instance with ephemeral encryption is shelved, the existing root disk
+encryption secret is *retained* and will be used to unshelve the instance
+later. This is done to prevent a potential change in ownership of the root disk
+encryption secret in a scenario where an admin user shelves a non-admin user's
+instance, for example. If a new secret were created owned by the admin user,
+the non-admin user who owns the instance will be unable to unshelve the
+instance.
+
+This behavior could be avoided however if there is some way we could create a
+new encryption secret using the instance's user and project rather than the
+shelver's user and project. If that is possible, we would not need to reuse the
+encryption secret.
+
+Rescue disk images created by rescuing instances with ephemeral encryption
+``````````````````````````````````````````````````````````````````````````
+
+When rescuing an instance and an encrypted rescue image is
+specified, the rescue image secret UUID from the image property will be stashed
+in the instance's system metadata with key
+``rescue_image_hw_ephemeral_encryption_secret_uuid`` to pass it down to the
+lower layers. This is considered separate from
+``image_hw_ephemeral_encryption_secret_uuid`` which means the encrypted image
+from which the instance was created. Another reason to keep it separate is to
+avoid confusion for those reading or working on the code.
+
+A new encryption secret is created when the rescue disk is created and its UUID
+is stashed in the instance's system metadata with key
+``rescue_disk_ephemeral_encryption_secret_uuid``. This is done because a block
+device mapping record for the rescue disk is not going to be persisted to the
+database.
+
+The corresponding virt driver secret name pattern is
+``<instance UUID>_rescue_disk`` and any existing secrets with that name are
+deleted by the virt driver when a new rescue is requested.
+
+The new encryption secret for the rescue disk is deleted from the key manager
+and the virt driver secret is also deleted when the instance is unrescued.
+
+Cleanup of ephemeral encryption secrets
+```````````````````````````````````````
+
+Ephemeral encryption secrets are deleted from the key manager and the virt
+driver when the corresponding instance is deleted and its disks are destroyed.
+The approach is that encryption secrets are *only* deleted when the disks
+associated with them are destroyed.
+
+Encryption secrets that are created when a snapshot is created are *never*
+deleted by Nova. It would only be acceptable to delete the secret if and when
+the snapshot image is deleted. Cleanup of secrets whose images have been
+deleted from Glance must be deleted manually by the user or an admin.
+
+.. note::
+
+    At the time of this writing, the newest Ceph release v17 (Quincy) does not
+    support creating a cloned image with an encryption key different from its
+    parent. For this reason, copy-on-write cloning will not be enabled for
+    instances which have specified ephemeral encryption.
+
+    Support for creating a cloned image with an encryption key different from
+    its parent should be supported in the next release of Ceph.
+    When we are able to require a Ceph version >= v18, copy-on-write cloning
+    with ephemeral encryption can be enabled.
+    See https://github.com/ceph/ceph/commit/1d3de19 for reference.
 
 BlockDeviceMapping changes
 --------------------------
