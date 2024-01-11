@@ -8,6 +8,8 @@
 List requested Availability Zones
 ==========================================
 
+https://blueprints.launchpad.net/nova/+spec/list-requested-az.html
+
 Currently server show and server list --long output, displays the
 current AZ of the instance. That is, the AZ to which the host of
 the instance belongs. There is no way to tell from this information

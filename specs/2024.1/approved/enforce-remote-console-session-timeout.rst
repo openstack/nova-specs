@@ -8,6 +8,8 @@
 Enforce remote console session timeout
 ==========================================
 
+https://blueprints.launchpad.net/nova/+spec/enforce-remote-console-session-timeout
+
 Currently providing vnc console consists 3 parts:
 
 1 - Working Conosle for Nova instance.
