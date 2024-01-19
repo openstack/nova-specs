@@ -1,1 +1,1 @@
-2024.1-template.rst
+2024.2-template.rst
