@@ -1,0 +1,7 @@
+approved/enforce-remote-console-session-timeout.rst ../implemented/enforce-remote-console-session-timeout.rst
+approved/ironic-shards.rst ../implemented/ironic-shards.rst
+approved/libvirt-dev-alias.rst ../implemented/libvirt-dev-alias.rst
+approved/libvirt-maxphysaddr-support.rst ../implemented/libvirt-maxphysaddr-support.rst
+approved/libvirt-mdev-live-migrate.rst ../implemented/libvirt-mdev-live-migrate.rst
+approved/virtio-packedring-configuration-support.rst ../implemented/virtio-packedring-configuration-support.rst
+approved/list-requested-az.rst ../implemented/list-requested-az.rst
