@@ -68,7 +68,7 @@ This effort can be broken into a number of distinct steps:
 - Add a new decorator for removed APIs and actions
 
   We have a number of APIs and actions that no longer have backing code and
-  return ``HTTP 410 (Gone)`` or ``HTTP 404 (Bad Request)``, respectively. We
+  return ``HTTP 410 (Gone)`` or ``HTTP 400 (Bad Request)``, respectively. We
   will not add schemas for these in the initial attempt at this so we need some
   mechanism to indicate this. We will add a new ``removed`` decorator that will
   highlight these removed APIs and indicate the version they were removed in
@@ -108,8 +108,8 @@ This effort can be broken into a number of distinct steps:
     "invalid" response.
 
     This will be the default in CI i.e. for our unit, functional and
-    integration tests. This should not be used in production and the help text
-    will indicate this.
+    integration tests. This should not be used in production. The help text
+    of the option will indicate this and we will set the ``advanced`` option.
 
   ``warn``
     Log a warning about an "invalid" response, prompting operations to file a
@@ -139,7 +139,13 @@ This effort can be broken into a number of distinct steps:
     usable across any OpenStack project that uses the same web frameworks
     (in Nova's case, WebOb + Routes).
 
-APIs
+.. note::
+
+    The impact of middleware that modifies either the request or response will
+    not be accounted for in this change. This is because these are configurable
+    and they cannot be guaranteed to exist in a given deployment. Examples
+    include the ``sizelimit`` middleware from ``oslo.middlware`` and the
+    ``auth_token`` middleware from ``keystonemiddleware``.
 
 Alternatives
 ------------
@@ -232,8 +238,7 @@ Performance Impact
 There will be a minimal impact on API performance when validation is enabled as
 we will now verify both requests and responses for all API resources. Given our
 existing extensive use of JSON Schema for API validation, it is expected that
-this should not be a significant issue. In addition, we will not recommend
-enabling this option in production.
+this should not be a significant issue.
 
 Other deployer impact
 ---------------------
