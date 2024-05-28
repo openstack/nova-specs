@@ -8,6 +8,8 @@
 libvit driver launching instances with stateless firmware
 =========================================================
 
+https://blueprints.launchpad.net/nova/+spec/libvirt-stateless-firmware
+
 Since v8.6.0, libvirt allows launching instance with stateless firmware, which
 disables the potential attack surface from hypervisor. This work aims to
 introduce the required feature to allow users to use this feature.
