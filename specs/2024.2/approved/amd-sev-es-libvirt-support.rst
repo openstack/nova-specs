@@ -79,6 +79,9 @@ with SEV functionality.
     to indicate that the kernel has SEV capabilities enabled.  This
     should be readable by any user (i.e. even non-root).
 
+  - Check QEMU version to determine whether the available QEMU binary supports
+    SEV-ES.
+
 - Add the new ``HW_CPU_AMD_SEV_ES`` trait to os-traits.
 
 - Make the libvirt driver `update the ProviderTree object
@@ -109,7 +112,8 @@ with SEV functionality.
      allocated for ES guests and non-ES guests exclusively, from the total
      ASIDs available. Minimum ASID for SEV (non-ES) guests, which is
      effectively same as maxumum ASID for ES guests, should be configured in
-     BIOS (or UEFI) to use SEV-ES.
+     BIOS (or UEFI) to use SEV-ES. A new validation to detect insufficient
+     ASIDs may be implemented.
 
   .. note::
      SEV-SNP uses the same ASID pool for ES by default when cyphertext hiding
@@ -154,7 +158,7 @@ with SEV functionality.
   specs in the ``RequestSpec`` object. If these new model parameter/property is
   absent or set to ``amd-sev`` then it would be translated to
   ``resources:MEM_ENCRYPTION_CONTEXT=1`` and
-  ``trait:HW_CPU_AMD_SEV=required``. If conflicting models are requestd by
+  ``trait:HW_CPU_AMD_SEV=required``. If conflicting models are requested by
   the instance flavor and the instance image (for example the flavor has
   ``hw:mem_encryption_model=amd-sev`` but the image has
   ``hw_mem_encryption_model=amd-sev-es``) then the request is rejected. Also
@@ -204,15 +208,19 @@ None
 Other end user impact
 ---------------------
 
-The end user will harness SEV-ES through the existing mechanisms of
-resources in flavor extra specs and image properties.
+The end user will harness SEV-ES through the existing mechanisms of resources
+in flavor extra specs and image properties.
+
+Also `the limitations of AMD SEV-encrypted guest
+<https://docs.openstack.org/nova/latest/admin/sev.html#impermanent-limitations>`_
+are applied when SEV-ES is used.
 
 Performance Impact
 ------------------
 
 No performance impact on nova is anticipated.
 
-Perfomance impact for the other parts are same as the existing SEV support
+Performance impact for the other parts are same as the existing SEV support
 feature.
 
 Other deployer impact
@@ -236,7 +244,7 @@ perform the following steps:
   that the various layers are all SEV-ES ready:
 
   - kernel >= 4.16
-  - QEMU >= 6.1.0
+  - QEMU >= 6.0.0
   - libvirt >= 8.0.0
   - ovmf >= commit 7f0b28415cb4 2020-08-12
 
@@ -245,9 +253,13 @@ perform the following steps:
      maximum number of SEV-ES guests via domain capability API requires libvirt
      >= 8.0.0 .
 
-Finally, a cloud administrator will need to define SEV-ES-enabled flavors
-as described above, unless it is sufficient for users to define
-SEV-ES-enabled images.
+A cloud administrator will need to define SEV-ES-enabled flavors as described
+above, unless it is sufficient for users to define SEV-ES-enabled images.
+
+The `[libvirt] num_memory_encrypted_guests` option is effective only for SEV,
+but a new option for SEV-ES is NOT added. Instead, the detection capability in
+libvirt is required to use SEV-ES. The `num_memory_encrypted_guests` option
+will be deprecated to reduce complexity.
 
 Developer impact
 ----------------
