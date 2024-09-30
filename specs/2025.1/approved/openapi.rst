@@ -21,8 +21,8 @@ OpenStack services, thus we would opt to use this format.
 
 .. note::
 
-    This is a continuation of a spec that was previously approved in Dalmation
-    (2023.2). We merged all of the groundwork for this in Dalmation but did not
+    This is a continuation of a spec that was previously approved in Dalmatian
+    (2024.2). We merged all of the groundwork for this in Dalmatian but did not
     get the response bodies schemas merged.
 
 Problem description
@@ -82,7 +82,7 @@ This effort can be broken into a number of distinct steps:
 
   .. note::
 
-     This was completed in Dalamation (2024.2)
+     This was completed in Dalmatian (2024.2)
 
 - Add missing request body and query string schemas
 
@@ -101,7 +101,7 @@ This effort can be broken into a number of distinct steps:
 
   .. note::
 
-     This was completed in Dalamation (2024.2)
+     This was completed in Dalmatian (2024.2)
 
 - Add response body schemas
 
