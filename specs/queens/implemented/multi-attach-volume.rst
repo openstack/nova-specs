@@ -47,7 +47,7 @@ rely on Cinder to do the check on the volume state when it's reserving the
 volume on the API level by calling attachment_create.
 
 There are problems today when multiple volume attachments share a single
-target to the volume backend. If we do not take care, multi-attach would
+target to the volume backend [#]_. If we do not take care, multi-attach would
 make these problems much worse. The simplest fix is to serialize all attach and
 detach operations involving a shared target. To do this Cinder will expose
 a volume info property of 'shared_targets', when True a lock will be

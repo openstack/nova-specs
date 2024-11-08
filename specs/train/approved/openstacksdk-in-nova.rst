@@ -259,11 +259,11 @@ References
 
 .. [#sdk_for_placement] https://review.opendev.org/#/c/656023/
 
-.. [#] http://lists.openstack.org/pipermail/openstack-discuss/2019-May/005810.html
+http://lists.openstack.org/pipermail/openstack-discuss/2019-May/005810.html
 
-.. [#] https://docs.openstack.org/openstacksdk/latest/user/config/configuration.html
+https://docs.openstack.org/openstacksdk/latest/user/config/configuration.html
 
-.. [#] http://eavesdrop.openstack.org/irclogs/%23openstack-sdks/%23openstack-sdks.2019-05-20.log.html#t2019-05-20T13:48:07
+http://eavesdrop.openstack.org/irclogs/%23openstack-sdks/%23openstack-sdks.2019-05-20.log.html#t2019-05-20T13:48:07
 
 
 History

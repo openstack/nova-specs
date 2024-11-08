@@ -406,9 +406,6 @@ References
 .. [#map-rg-to-rp] `Map request groups to resource providers
    <https://github.com/openstack/nova/blob/63380a6b494e0f0f220b67b197edec836f1c5a42/nova/objects/request_spec.py#L777>`_
 
-.. [#cy-api] `Specification for Cyborg API Version 2
-   <https://opendev.org/openstack/cyborg-specs/src/branch/master/specs/train/approved/cyborg-api.rst>`_
-
 History
 =======
 
