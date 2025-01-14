@@ -1,0 +1,1 @@
+../../../../specs/2025.2-template.rst
