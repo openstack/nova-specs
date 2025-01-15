@@ -131,9 +131,6 @@ introducing a new ``pci_devices`` field.
   the implementation progresses. This specification will then be amended
   accordingly.
 
-for the destination host by
-introducing a new ``pci_devices`` field as a ListOfObjectsField("PciDevice").
-
 Update the _live_migration_operation() function, with a specific focus
 on the get_updated_guest_xml() function, to incorporate the PCI addresses
 collected in the LiveMigrateData object into the destination XML file.
