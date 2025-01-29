@@ -45,7 +45,8 @@ Proposed change
 ===============
 
 In a new API microversion return the embedded image properties in the
-``GET /server/details`` and ``/server/{server_id}`` responses.
+``GET /server/details``, ``GET /server/{server_id}`` and the rebuild case of
+``POST /server/{server_id}/action`` responses.
 
 The implementation needs to populate this part of the api response from our
 cache of the image details in ``instance.system_metadata``.
@@ -67,6 +68,7 @@ In a new microversion the following API responses are extended:
 
 * ``GET /server/details``
 * ``GET /server/{server_id}``
+* ``POST /server/{server_id}`` where the action is rebuild
 
 A new ``properties`` subkey will be added under the struct at the existing
 ``image`` key as a dict where both the keys and the values are following the
