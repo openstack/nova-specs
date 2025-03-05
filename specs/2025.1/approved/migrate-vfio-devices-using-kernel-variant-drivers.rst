@@ -122,18 +122,15 @@ of live migratable devices by adding a new filter.
 Since VIF field is not used in this context, we need to claim PCI devices and
 retrieve the PCI addresses of the destination host.
 
-Update the ``LiveMigrateData`` object to include PCI device information (e.g.,
-addresses, live migratable, managed). For the destination host by
-introducing a new ``pci_devices`` field.
+Update the ``LiveMigrateData`` object to include the PCI device mapping
+between the source and destination device addresses. A new field,
+``pci_dev_map_src_dst``, defined as a  ``DictOfStringsField`` will
+be added to the ``LiveMigrateData`` object for this purpose.
 
-.. note::
-  The data structure required to store this information will be defined as
-  the implementation progresses. This specification will then be amended
-  accordingly.
-
-Update the _live_migration_operation() function, with a specific focus
-on the get_updated_guest_xml() function, to incorporate the PCI addresses
-collected in the LiveMigrateData object into the destination XML file.
+Update the _live_migration_operation() function, with a specific
+focus on the get_updated_guest_xml() function, to map the source PCI
+addresses to the destination addresses in the destination XML file
+using the data provided by the ``LiveMigrateData`` object.
 
 .. note::
   - If PCI in Placement is enabled then live migration will work as today
