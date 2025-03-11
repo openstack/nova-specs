@@ -1,0 +1,8 @@
+approved/enable-vfio-devices-with-kernel-variant-drivers.rst ../implemented/enable-vfio-devices-with-kernel-variant-drivers.rst
+approved/libvirt-spice-direct-consoles.rst ../implemented/libvirt-spice-direct-consoles.rst
+approved/libvirt-virtiofs-attach-manila-shares.rst ../implemented/libvirt-virtiofs-attach-manila-shares.rst
+approved/migrate-vfio-devices-using-kernel-variant-drivers.rst ../implemented/migrate-vfio-devices-using-kernel-variant-drivers.rst
+approved/openapi.rst ../implemented/openapi.rst
+approved/show-scheduler-hints-in-server-details.rst ../implemented/show-scheduler-hints-in-server-details.rst
+approved/unified-limits-nova-unset-limits.rst ../implemented/unified-limits-nova-unset-limits.rst
+approved/image-properties-in-server-show.rst ../implemented/image-properties-in-server-show.rst
