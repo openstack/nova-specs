@@ -426,6 +426,12 @@ Is this untestable in gate given current limitations (specific hardware /
 software configurations available)? If so, are there mitigation plans (3rd
 party testing, gate enhancements, etc).
 
+If this is adding a new API microversion which alters a response schema, we
+will also need a corresponding change in Tempest to add the new schema under
+tempest/lib/api_schema/. This is required in order for the new microversion to
+be used in Tempest tests. Otherwise, new microversion requests will fail
+response schema validation in Tempest.
+
 
 Documentation Impact
 ====================
