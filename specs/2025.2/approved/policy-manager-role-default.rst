@@ -131,11 +131,11 @@ default: PROJECT_MANAGER_OR_ADMIN:**
 
       * Default: ``ADMIN``
 
-* List server migration:
+* List server (in-progress live) migration:
 
   * Existing policy:
 
-    * ``os_compute_api:servers:migrations::index`` (Lists in-progress live
+    * ``os_compute_api:servers:migrations:index`` (Lists in-progress live
       migrations for a given server)
 
       * Default changing from: ``ADMIN`` -> ``PROJECT_MANAGER_OR_ADMIN``
@@ -146,6 +146,32 @@ default: PROJECT_MANAGER_OR_ADMIN:**
       migrations for a given server with host info)
 
       * Default: ``ADMIN``
+
+* List migrations:
+
+  * Existing policy:
+
+    * ``os_compute_api:os-migrations:index`` (List migrations without
+      host info)
+
+      * Default changing from: ``ADMIN`` -> ``PROJECT_MANAGER_OR_ADMIN``
+
+  * New policy:
+
+    * ``os_compute_api:os-migrations:index:host`` (List migrations with
+      host info)
+
+      * Default: ``ADMIN``
+
+    * ``os_compute_api:os-migrations:index:all_projects`` (List migrations
+      cross projects)
+
+      * Default: ``ADMIN``
+      * This APIs allow to list migration for all or cross projects. Because
+        we are opening current policy ``index`` to ``project manager`` user,
+        we need a separate new policy to control that only ``admin`` can acess
+        all or cross project migrations and ``project manager`` can only
+        access their own project migrations.
 
 .. note::
 
@@ -193,6 +219,7 @@ Below APIs policy default will be changed:
 * 'os_compute_api:servers:migrations:delete'
 * 'os_compute_api:os-migrate-server:migrate_live'
 * 'os_compute_api:servers:migrations:index'
+* 'os_compute_api:os-migrations:index'
 
 **Current default: PROJECT_MEMBER_OR_ADMIN -> New
 default: PROJECT_MANAGER_OR_ADMIN:**
@@ -204,6 +231,8 @@ default: PROJECT_MANAGER_OR_ADMIN:**
 
 * 'os_compute_api:os-migrate-server:migrate_live:host'
 * 'os_compute_api:servers:migrations:index:host'
+* 'os_compute_api:os-migrations:index:host'
+* 'os_compute_api:os-migrations:index:all_projects'
 
 Security impact
 ---------------
