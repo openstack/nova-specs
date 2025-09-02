@@ -1,0 +1,5 @@
+approved/amd-sev-es-libvirt-support.rst ../implemented/amd-sev-es-libvirt-support.rst
+approved/deprecate-v20-api.rst ../implemented/deprecate-v20-api.rst
+approved/one-time-use-devices.rst ../implemented/one-time-use-devices.rst
+approved/policy-manager-role-default.rst ../implemented/policy-manager-role-default.rst
+approved/policy-service-role-default.rst ../implemented/policy-service-role-default.rst
