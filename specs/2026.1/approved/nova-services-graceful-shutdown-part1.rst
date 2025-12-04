@@ -37,7 +37,7 @@ time it will stop the communication needed for the in-progress operations. For
 example, if live migration is in progress, the source and destination compute
 communicate (sync and async way) multiple times with each other. Once the RPC
 server on the compute service is stopped, it cannot communicate with the other
-compute and fail the live migration. It will lead the system as well as the
+compute and fails the live migration. It will lead the system as well as the
 instance to be in an unwanted or unrecoverable state
 
 Use Cases
@@ -117,7 +117,7 @@ Analysis per services and the required proposed RPC design change:
 
     Currently, nova.service.py->stop() calls stop() and wait() on RPC server.
     Once RPC server is stopped, it will stop listening to any new messages.
-    But it will not impact anything on the other scheduler worker, and they
+    But it will not impact anything on the other scheduler workers, and they
     continue listening to the same queue and process the request. If any of
     the scheduler worker is stopped, then the other workers will process the
     request.
@@ -140,7 +140,7 @@ Analysis per services and the required proposed RPC design change:
   The Nova conductor binary is a stateless service that can spawn multiple
   worker threads. Each instance of the Nova conductor has its own RPC server,
   but all the Nova conductor instances will listen to  the same RPC topic
-  and queue ``conductor``. This allows the conductor instance to ack as a
+  and queue ``conductor``. This allows the conductor instance to act as a
   distributed worker pool such that stopping an individual conductor instance
   will not impact the RPC communication for the pool of conductor instances,
   allowing other available workers to process the request. Each cell has its
@@ -452,7 +452,7 @@ None
 Feature Liaison
 ---------------
 
-gmaan
+None
 
 Work Items
 ----------
