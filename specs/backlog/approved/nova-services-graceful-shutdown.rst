@@ -115,8 +115,8 @@ As a graceful shutdown goal, we need to do two things:
    this is proposed to be done via time-based wait and later with a proper
    tracking mechanism.
 
-This backlog spec proposes achieving the above goals in two steps. Each step
-will be proposed as a separate spec for a specific release.
+This backlog spec proposes achieving the above goals in multiple steps. Each
+step will be proposed as a separate spec for a specific release.
 
 The Nova services which already gracefully shutdown:
 ----------------------------------------------------
@@ -524,6 +524,27 @@ replaces the wait time approach mentioned above with a tracker-based approach.
   * manager.finish_tasks(): wait for manager to finish the in-progress tasks.
   * RPCserver2.stop()
   * RPCserver2.wait()
+
+Spec 3: Safe termination point for Nova Operations:
+---------------------------------------------------
+
+In graceful shutdown, all the in-progress operations should reach their safe
+termination point, either completion or abort.
+
+This needs to be done based on the operation type and at what stage they are
+in. There are some operations, for example, pre-copy live migration, cold
+migration, resize, snapshot, or shelve_offload are ok to abort with proper
+logging and exception type. The user can request them again once the service
+is up.
+
+Some operation, for example, post-copy live migrations are difficult to
+abort if VM is already moved to the destination compute. This might need
+some way to revert the VM to the source or let it complete.
+
+The scope of this spec is to investigate and audit all the operations
+and categorize them 'Ok to abort' and 'Wait to complete'. Accordingly,
+graceful shutdown needs to implement the logic to abort or continue to
+wait for the operation completion.
 
 Graceful Shutdown Timeouts:
 ---------------------------
