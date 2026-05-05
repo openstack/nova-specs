@@ -81,8 +81,7 @@ Secret management
 
 When creating an instance with vTPM, Nova asks a key manager - normally
 Barbican - to generate a secret. Crucially, this is done with the user's token,
-and the created secret is owned by the user, with no one else - not even admin
-or the Nova service user - being able to read it. Nova then `defines the secret
+and the created secret is owned by the user. Nova then `defines the secret
 in Libvirt <https://libvirt.org/formatsecret.html>`_, and in the instance XML
 references the secret by its UUID. This tells Libvirt to encrypt the instance's
 vTPM state using the contents of that secret as the symmetric key. Nova
@@ -93,9 +92,9 @@ once the Libvirt domain spawns successfully.
 For vTPM live migration to work, a Libvirt secret with the same UUID and
 contents needs to be defined on the destination host so that destination
 Libvirt can decrypt the vTPM state. Currently, Nova has no way of doing this.
-Live migration is an admin operation, and neither admin nor the Nova service
-user have access to the Barbican secret (unless the admin happens to be the
-owen of the instance, but that's an edge case). The Libvirt secret cannot be
+Live migration is typically an admin operation, and the admin may not have
+access to the key manager secret depending on the key manager service's access
+control policy. The Libvirt secret cannot be
 read back on the source host either, because it's defined as `private
 <https://opendev.org/openstack/nova/src/commit/c79bec0f2257967da1dcccc9f562253d6ede535d/nova/virt/libvirt/host.py#L1115-L1116>`_
 and is undefined once the domain spawns.
@@ -142,17 +141,19 @@ below.
      - Security implications
      - Instance mobility
    * - ``user``
-     - Only the instance owner has access to the Barbican secret. This is
-       existing behavior and will be the default behavior.
-     - This is the most secure option, as even the Nova service user and root
-       on the compute host cannot read the secret.
+     - The key manager secret is created using the instance owner's
+       credentials. This is existing behavior and will be the default behavior.
+     - This is the most secure option. The key manager secret is not accessible
+       to root on the compute host. Whether other users can access the secret
+       depends on the key manager service's access control policy.
      - The instance is immovable and cannot be restarted by Nova in the event
        of a compute host crash or reboot.
    * - ``host``
      - The Libvirt secret is persistent and retrievable.
-     - This is "medium" security. API-level admins and the Nova service user do
-       not have access to the secret, but it can be accessed by users with
-       sufficient privileges on the compute host.
+     - This is "medium" security. The key manager secret is not accessed during
+       live migration or restart; instead the Libvirt secret is read directly.
+       Users with sufficient privileges on the compute host can read the
+       Libvirt secret.
      - The instance can be live migrated because Nova can read the secret back
        from Libvirt on the source host and send it to the destination over RPC.
        Security over the wire is left as the operator's responsibility, but TLS
