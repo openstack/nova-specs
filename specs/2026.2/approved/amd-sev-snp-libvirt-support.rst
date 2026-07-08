@@ -81,20 +81,25 @@ with SEV/SEV-ES functionality.
             ...
             <sev supported='yes'/>
               ...
+              <maxGuests>100</maxGuests>
+              <maxESGuests>15</maxESGuests>
             </sev>
+            <launchSecurity supported='yes>
+              <enum name='sectype'>
+                <value>sev</value>
+                <value>sev-snp</value>
+              </enum>
+            </launchSecurity>
           </features>
         </domainCapabilities>
 
-    Also the ``maxESGuests`` field should be present and its value should be
+    The ``maxESGuests`` field should be present and its value should be
     a positive (non-zero) value.
 
   - ``/sys/module/kvm_amd/parameters/sev_snp`` should have the value ``Y``
     to indicate that SEV-SNP support is enabled in BIOS (or UEFI) and also
     the SEV-SNP support of the kvm kernel module is enabled. This sysfs path
     should be readable by any user (i.e. even non-root).
-
-  - Check QEMU version and libvirt version to determine whether the available
-    QEMU binary and libvirt binary support SEV-SNP.
 
 - Add the new ``HW_CPU_AMD_SEV_SNP`` trait to os-traits.
 
