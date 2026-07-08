@@ -54,10 +54,9 @@ Proposed change
 We propose extending the existing implementation to support launching instances
 with SEV/SEV-ES functionality.
 
-- Make the libvirt driver to detect ``sev_snp`` cpu flag from
-  ``/proc/cpuinfo``. The driver should ignore the SEV-ES capability if the flag
-  is present. Also its ``init_host`` should fail if the flag is detected and
-  there are any existing instances with SEV-ES encryption in its host, with
+- Ignore SEV-ES capability if ``/sys/module/kvm_amd/parameters/sev_snp`` has
+  the value ``Y``. Also its ``init_host`` should fail if the flag is detected
+  and there are any existing instances with SEV-ES encryption in its host, with
   the explicit error message to request operators to disable SEV-SNP or migrate
   all these instances to different nodes.
 
@@ -320,9 +319,8 @@ Other contributors:
 Work Items
 ----------
 
-#. Add startup validation to fail when the ``sev_snp`` flag is available in
-   host CPU flags, but there is any existing instances with SEV-ES encryption
-   in that host.
+#. Add startup validation to fail when the ``sev_snp`` feature is enabled,
+   but there is any existing instances with SEV-ES encryption in that host.
 
 #. Add the new ``HW_CPU_AMD_SEV_SNP`` trait for os-traits
 
