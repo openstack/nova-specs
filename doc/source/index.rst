@@ -34,6 +34,7 @@ Here you can find the specs, and spec template, for each release:
    :glob:
    :maxdepth: 1
 
+   specs/2027.1/index
    specs/2026.2/index
    specs/2026.1/index
    specs/2025.2/index
