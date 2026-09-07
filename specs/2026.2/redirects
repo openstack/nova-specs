@@ -1,0 +1,6 @@
+approved/amd-sev-snp-libvirt-support.rst ../implemented/amd-sev-snp-libvirt-support.rst
+approved/cyborg-vgpu-support.rst ../implemented/cyborg-vgpu-support.rst
+approved/intel-tdx-libvirt-support.rst ../implemented/intel-tdx-libvirt-support.rst
+approved/nova-services-graceful-shutdown-part2-task-tracking.rst ../implemented/nova-services-graceful-shutdown-part2-task-tracking.rst
+approved/unpin-az.rst ../implemented/unpin-az.rst
+approved/virtiofs-cold-migration.rst ../implemented/virtiofs-cold-migration.rst
